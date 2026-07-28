@@ -7,9 +7,9 @@
  * copy the comp hardcoded into this one screen: the brief itself, Yara's
  * marking note, and the three rubric lines under it.
  *
- * `MY_ASSIGNMENT.feedback` in demo.ts is a *different*, longer note — that one
- * is what the instructor-side grading queue shows. The comp wrote two, and
- * they are deliberately not merged.
+ * The marking note lives here rather than in demo.ts because it is written
+ * about this one assignment. The grading queue does not reuse it — there the
+ * feedback box starts empty for the instructor to type into.
  */
 
 import type { Tone } from "../../components";

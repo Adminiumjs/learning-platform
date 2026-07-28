@@ -36,7 +36,14 @@ import {
 } from "../data/screens/exam";
 import { dataSource } from "../data/source";
 import type { ExamAnswer } from "../data/types";
-import { hasPassed, isAnswered, scoreExam, unansweredCount } from "../lib/exam";
+import {
+  attemptsLeftLabel,
+  canRetake,
+  hasPassed,
+  isAnswered,
+  scoreExam,
+  unansweredCount,
+} from "../lib/exam";
 import { hhmmss } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-exam.css";
@@ -56,6 +63,7 @@ export default function Exam() {
   const exI = useAppStore((s) => s.exI);
   const exAns = useAppStore((s) => s.exAns);
   const exLeft = useAppStore((s) => s.exLeft);
+  const exAttempts = useAppStore((s) => s.exAttempts);
   const set = useAppStore((s) => s.set);
   const go = useAppStore((s) => s.go);
   const openModal = useAppStore((s) => s.openModal);
@@ -117,6 +125,13 @@ export default function Exam() {
   if (exSubmitted) {
     const score = scoreExam(exAns);
     const passed = hasPassed(score);
+    /*
+     * D7: attempts are capped. The comp hardcoded "You have one attempt left"
+     * and let its retake button run forever; both now read the real count, so
+     * a course configured with one attempt refuses the second outright.
+     */
+    const retakeAllowed = canRetake(exAttempts);
+    const attemptsNote = attemptsLeftLabel(exAttempts);
 
     return (
       <div className="lp-page scr-ex">
@@ -136,7 +151,9 @@ export default function Exam() {
               <p className="scr-ex__verdictsub">
                 {passed
                   ? `You got ${score.correct} of ${score.total} auto-graded questions. The essay is with Yara — expect notes within two days.`
-                  : `You got ${score.correct} of ${score.total}. You have one attempt left, and the sections below say exactly where to look.`}
+                  : retakeAllowed
+                    ? `You got ${score.correct} of ${score.total}. You have ${attemptsNote.toLowerCase()}, and the sections below say exactly where to look.`
+                    : `You got ${score.correct} of ${score.total}. That was your last attempt, so this score stands — the sections below say where it went.`}
               </p>
             </div>
           </div>
@@ -169,8 +186,11 @@ export default function Exam() {
           </div>
 
           <div className="scr-ex__resultbtns">
-            <ButtonSecondary onClick={retakeExam}>Review your answers</ButtonSecondary>
+            <ButtonSecondary onClick={retakeExam} disabled={!retakeAllowed}>
+              {retakeAllowed ? "Review your answers" : "No attempts left"}
+            </ButtonSecondary>
             <ButtonPrimary onClick={() => go("grades")}>See my grades</ButtonPrimary>
+            <span className="scr-ex__attempts lp-mono">{attemptsNote}</span>
           </div>
         </div>
       </div>

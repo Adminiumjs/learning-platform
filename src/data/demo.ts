@@ -466,8 +466,6 @@ export const MY_ASSIGNMENT = {
   body: "I started from the type scale we built in week 2 and pushed it into a specimen page — headings at 1.25, body at 16/1.6, and a caption size I can actually defend.\n\nStill unsure about the display size. It looks right on desktop and far too shouty on a phone.",
   files: [{ n: "type_specimen.pdf" }, { n: "scale_tokens.json" }],
   briefFiles: [{ n: "brief_specimen.pdf" }, { n: "scale_reference.fig" }],
-  feedback:
-    "This is the strongest specimen in the cohort so far. The caption size earns its place because you wrote down the job it does — that is exactly the move. Two notes: the display size needs a phone rule (clamp it, or drop a step under 600px), and your 1.25 scale collides at the two largest steps, so consider skipping one.",
 } as const;
 
 /* ------------------------------------------------------ the grading queue */
