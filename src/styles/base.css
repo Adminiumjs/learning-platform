@@ -160,10 +160,25 @@ svg {
     opacity: 1;
   }
 }
+/*
+ * The mobile sheet slides in from the inline start.
+ *
+ * `transform` has no logical form, so the offset is a custom property that
+ * flips sign under `[dir="rtl"]`. Without this the sheet is positioned at
+ * `inset-inline-start: 0` — the right-hand edge in RTL — but animated in from
+ * the physical left, so it crosses the whole viewport from the wrong side.
+ */
+:root {
+  --lp-sheet-from: -102%;
+}
+[dir="rtl"] {
+  --lp-sheet-from: 102%;
+}
+
 @keyframes lp-sheet {
   from {
     opacity: 0;
-    transform: translateX(-102%);
+    transform: translateX(var(--lp-sheet-from));
   }
   to {
     opacity: 1;
