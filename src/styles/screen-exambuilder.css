@@ -1,1 +1,312 @@
-/* screen-exambuilder.css — Exam builder. */
+/*
+ * screen-exambuilder.css — Exam builder.
+ *
+ * One JS branch replaced: `S.w < 960` puts the open question under the list
+ * instead of beside it. The two columns are near-equal above that (the comp
+ * gives the editor a 1.05 share) because the editor holds the longer fields.
+ */
+
+.lp-page.scr-exambuilder {
+  max-inline-size: 1120px;
+  padding-block: clamp(24px, 3vw, 36px) 50px;
+}
+
+/* ----------------------------------------------------------------- head */
+
+.scr-exambuilder .eb-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-block-end: 18px;
+}
+.scr-exambuilder .eb-head__text {
+  min-inline-size: 0;
+}
+.scr-exambuilder .eb-title {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-exambuilder .eb-lede {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--fg-muted);
+}
+.scr-exambuilder .eb-save {
+  margin-inline-start: auto;
+  block-size: 42px;
+  padding-inline: 18px;
+}
+
+/* ----------------------------------------------------------------- grid */
+
+.scr-exambuilder .eb-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 16px;
+  align-items: start;
+}
+.scr-exambuilder .eb-col {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* -------------------------------------------------------- question list */
+
+.scr-exambuilder .eb-list {
+  border-radius: 20px;
+}
+.scr-exambuilder .eb-list__head {
+  margin: 0;
+  padding: 14px 18px;
+  border-block-end: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+
+.scr-exambuilder .eb-q {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 16px;
+  border: none;
+  border-block-end: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  text-align: start;
+}
+/* The open question, not a hover state — it has to survive the pointer
+   leaving, so it wins over `.lp-row:hover`. */
+.scr-exambuilder .eb-q.is-active,
+.scr-exambuilder .eb-q.is-active:hover {
+  background: var(--accent-soft);
+}
+.scr-exambuilder .eb-q__grip {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+  cursor: grab;
+}
+.scr-exambuilder .eb-q__n {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.scr-exambuilder .eb-q__text {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scr-exambuilder .eb-add {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13.5px;
+  font-weight: 800;
+  text-align: start;
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.scr-exambuilder .eb-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-inline-size: 0;
+}
+.scr-exambuilder .eb-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ---------------------------------------------------------------- rules */
+
+.scr-exambuilder .eb-rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.scr-exambuilder .eb-rule__label {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.scr-exambuilder .eb-rule__field {
+  inline-size: 96px;
+  flex-shrink: 0;
+  block-size: 40px;
+  padding-inline: 12px;
+  border-radius: 11px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------- the question */
+
+.scr-exambuilder .eb-editor {
+  padding: 22px;
+  gap: 16px;
+}
+.scr-exambuilder .eb-editor__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scr-exambuilder .eb-editor__kind {
+  margin-inline-start: auto;
+}
+
+.scr-exambuilder .eb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-inline-size: 0;
+}
+.scr-exambuilder .eb-field__label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.scr-exambuilder .eb-text {
+  min-block-size: 80px;
+  padding: 13px;
+  border-radius: 13px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 14.5px;
+  line-height: 1.6;
+  inline-size: 100%;
+  min-inline-size: 0;
+  resize: vertical;
+}
+.scr-exambuilder .eb-sec {
+  block-size: 44px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 14px;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.scr-exambuilder .eb-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.scr-exambuilder .eb-group__seg {
+  align-self: flex-start;
+  flex-wrap: wrap;
+}
+
+/* -------------------------------------------------------------- options */
+
+.scr-exambuilder .eb-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Round for single choice, rounded-square for "choose all" — the same shape
+   language the exam itself uses, so the key reads as the answer sheet. */
+.scr-exambuilder .eb-mark {
+  inline-size: 26px;
+  block-size: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  color: transparent;
+}
+.scr-exambuilder .eb-mark--multi {
+  border-radius: 8px;
+}
+.scr-exambuilder .eb-mark.is-on {
+  border-color: transparent;
+  background: var(--pos);
+  /* `--surface` rather than white: dark mode's `--pos` is a bright green that
+     a white tick disappears into. */
+  color: var(--surface);
+}
+.scr-exambuilder .eb-opt__field {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 42px;
+  padding-inline: 13px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 14px;
+}
+
+/* ----------------------------------------------------------------- foot */
+
+.scr-exambuilder .eb-editor__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Pins the pair to the bottom when the editor is the taller column. */
+  margin-block-start: auto;
+  padding-block-start: 6px;
+}
+.scr-exambuilder .eb-delete {
+  block-size: 42px;
+  padding-inline: 15px;
+  font-size: 13.5px;
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 38%, transparent);
+}
+.scr-exambuilder .eb-delete:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.scr-exambuilder .eb-next {
+  margin-inline-start: auto;
+  block-size: 42px;
+  padding-inline: 18px;
+  font-size: 13.5px;
+}
+
+/* ---------------------------------------------------------- breakpoints */
+
+/* 960: the comp's `S.w < 960` — the open question drops below the list. */
+@media (max-width: 960px) {
+  .scr-exambuilder .eb-grid {
+    grid-template-columns: 1fr;
+  }
+}

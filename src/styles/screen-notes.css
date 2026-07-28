@@ -1,1 +1,147 @@
-/* screen-notes.css — Notes. */
+/*
+ * screen-notes.css — the note archive.
+ *
+ * A single column at every width; the header's search field is the only
+ * thing that reflows, and `lp-pagehead` already wraps it for us.
+ */
+
+.scr-notes__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.scr-notes__group {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.scr-notes__grouphead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.scr-notes__groupnum {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.scr-notes__grouplabel {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+
+/* --------------------------------------------------------- search field */
+
+.scr-notes__search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  block-size: 42px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  inline-size: min(260px, 100%);
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+.scr-notes__search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.scr-notes__searchico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.scr-notes__searchinput {
+  flex: 1;
+  min-inline-size: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 13.5px;
+}
+
+/* ------------------------------------------------------------- the notes */
+
+.scr-notes__note {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+.scr-notes__notehead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.scr-notes__stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  block-size: 30px;
+  padding-inline: 11px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.scr-notes__lesson {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.scr-notes__at {
+  margin-inline-start: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+.scr-notes__text {
+  margin: 11px 0 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  /* n3 is a two-line note; the break is part of the copy. */
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+.scr-notes__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-block-start: 12px;
+}
+.scr-notes__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fg-subtle);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  transition: color 0.13s ease;
+}
+
+/* ------------------------------------------------------------ empty state */
+
+/* The comp draws the empty case as a dashed well rather than the shared
+   borderless block, so the border and the taller padding are added here. */
+.scr-notes__empty {
+  border: 1px dashed var(--border-strong);
+  border-radius: 20px;
+  padding-block: clamp(40px, 8vw, 64px);
+}

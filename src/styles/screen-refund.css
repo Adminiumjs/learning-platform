@@ -1,1 +1,220 @@
 /* screen-refund.css — Refund request. */
+
+.lp-page.scr-refund {
+  max-inline-size: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ------------------------------------------------------------ the request */
+
+.rf-head__title {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.rf-head__lede {
+  margin: 9px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+.lp-cardbox.rf-course {
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+/* 54px sits between the shared md and lg coverchip steps. */
+.lp-coverchip.rf-course__thumb {
+  inline-size: 54px;
+  block-size: 54px;
+  border-radius: 15px;
+}
+.rf-course__text {
+  flex: 1;
+  min-inline-size: 180px;
+}
+.rf-course__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.rf-course__meta {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  margin-block-start: 5px;
+}
+.rf-course__price {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/*
+ * The shared callout tints its text with the tone. Here the sentence is the
+ * message, not the alarm — only the icon and the hairline carry the colour.
+ */
+.lp-callout.rf-policy .lp-callout__text {
+  color: var(--fg);
+}
+.lp-callout--pos.rf-policy {
+  border: 1px solid color-mix(in srgb, var(--pos) 24%, transparent);
+}
+.lp-callout--warn.rf-policy {
+  border: 1px solid color-mix(in srgb, var(--warn) 24%, transparent);
+}
+
+.lp-cardbox.rf-form {
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rf-form__head {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.rf-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.lp-checkrow.rf-reason {
+  padding: 14px 15px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.lp-textarea.rf-text {
+  min-block-size: 110px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.rf-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lp-btn.rf-send,
+.lp-btn--secondary.rf-never {
+  block-size: 46px;
+  border-radius: 13px;
+  font-size: 14.5px;
+}
+.lp-btn.rf-send {
+  padding-inline: 20px;
+}
+.lp-btn--secondary.rf-never {
+  padding-inline: 16px;
+  color: var(--fg-muted);
+}
+
+/* --------------------------------------------------------- confirmation */
+
+.lp-page.scr-refund.rf-done {
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding-block-start: clamp(28px, 5vw, 62px);
+  animation: lp-pop 0.26s ease;
+}
+.rf-tick {
+  inline-size: 60px;
+  block-size: 60px;
+  border-radius: 19px;
+  background: var(--pos-soft);
+  color: var(--pos);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rf-done__title {
+  margin: 6px 0 0;
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.rf-done__body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  max-inline-size: 420px;
+  text-wrap: pretty;
+}
+.rf-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--fg-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 9px 14px;
+  border-radius: 11px;
+}
+
+.rf-timeline {
+  inline-size: 100%;
+  max-inline-size: 440px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  overflow: hidden;
+  margin-block-start: 6px;
+}
+.rf-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-block-end: 1px solid var(--border);
+}
+.rf-step:last-child {
+  border-block-end: none;
+}
+.rf-step__dot {
+  inline-size: 26px;
+  block-size: 26px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.rf-step__dot--done {
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+.rf-step__label {
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: start;
+  flex: 1;
+  min-inline-size: 0;
+}
+.rf-step__at {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.lp-btn--secondary.rf-back {
+  margin-block-start: 6px;
+  block-size: 46px;
+  padding-inline: 18px;
+  border-radius: 13px;
+  font-size: 14.5px;
+}

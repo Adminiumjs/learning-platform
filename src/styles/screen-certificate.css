@@ -1,1 +1,224 @@
 /* screen-certificate.css — Certificate. */
+
+/*
+ * The sheet is the whole screen, so the page is capped tighter than the
+ * default 1240 — a certificate that runs the full width of a monitor stops
+ * looking like a document.
+ */
+.lp-page.scr-certificate {
+  max-inline-size: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+/* The column gap already spaces the head; drop its own trailing margin. */
+.scr-certificate .ce-head {
+  margin-block-end: 0;
+}
+
+/* ------------------------------------------------------------- the sheet */
+
+.ce-frame {
+  position: relative;
+}
+
+.ce-sheet {
+  border: 1px solid var(--border-strong);
+  border-radius: 22px;
+  /* One background, two layers: the accent bloom sits over the surface. */
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--accent-soft), transparent 55%),
+    var(--surface);
+  box-shadow: var(--shadow);
+  padding: clamp(22px, 4vw, 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ce-sheet__head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.ce-sheet__mark {
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.ce-sheet__brand {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.ce-sheet__id {
+  margin-inline-start: auto;
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+
+.ce-sheet__body {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-block: clamp(18px, 4vw, 34px);
+}
+.ce-sheet__eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--fg-subtle);
+}
+.ce-sheet__line {
+  font-size: 13.5px;
+  color: var(--fg-muted);
+}
+.ce-sheet__line--wrap {
+  max-inline-size: 440px;
+  margin-inline: auto;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+.ce-sheet__name {
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+.ce-sheet__course {
+  font-size: clamp(18px, 2.6vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.ce-sign {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding-block-start: 18px;
+  border-block-start: 1px solid var(--border);
+}
+.ce-sign__col {
+  flex: 1;
+  min-inline-size: 160px;
+}
+.ce-sign__value {
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  padding-block-end: 8px;
+  border-block-end: 1px solid var(--border-strong);
+}
+.ce-sign__label {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+  margin-block-start: 7px;
+}
+
+/* --------------------------------------------------------- the lock veil */
+
+.ce-lock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  backdrop-filter: blur(3px);
+  border-radius: 22px;
+}
+.ce-lock__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  text-align: center;
+  padding: 22px;
+}
+.ce-lock__ico {
+  inline-size: 46px;
+  block-size: 46px;
+  border-radius: 15px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ce-lock__title {
+  font-size: 15.5px;
+  font-weight: 800;
+}
+.ce-lock__body {
+  font-size: 13.5px;
+  color: var(--fg-muted);
+  max-inline-size: 300px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------- actions */
+
+.ce-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+/* Still pressable when the course is unfinished — it explains why, in a toast. */
+.lp-btn.ce-dl--off {
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.lp-btn--secondary.ce-verify {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+/* ------------------------------------------------------- what it certifies */
+
+.ce-rows__head {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.lp-list__row.ce-row {
+  padding-inline: 20px;
+}
+.ce-row__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.ce-row__k {
+  font-size: 14px;
+  color: var(--fg-muted);
+  font-weight: 600;
+  flex: 1;
+  min-inline-size: 0;
+}
+.ce-row__v {
+  font-size: 13px;
+  font-weight: 600;
+}
+.ce-row__v--pos {
+  color: var(--pos);
+  font-weight: 700;
+}
+.ce-row__v--subtle {
+  color: var(--fg-subtle);
+  font-weight: 700;
+}

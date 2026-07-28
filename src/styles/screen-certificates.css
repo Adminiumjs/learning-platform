@@ -1,1 +1,200 @@
-/* screen-certificates.css — Certificates. */
+/* screen-certificates.css — Certificates (instructor). */
+
+.lp-page.scr-certificates {
+  max-inline-size: 1040px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* The page is a flex column with its own gap; the head's margin would double it. */
+.lp-pagehead.ct-head {
+  margin-block-end: 0;
+}
+
+/* The comp's 900px window check, as the media query it always wanted to be. */
+.ct-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .ct-grid {
+    grid-template-columns: minmax(0, 1fr) 330px;
+  }
+}
+
+.ct-card__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------- awarded */
+
+.lp-list.ct-awarded {
+  border-radius: 20px;
+  min-inline-size: 0;
+}
+.ct-awarded__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.ct-awarded__count {
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+.lp-list__row.ct-row {
+  gap: 13px;
+  padding: 14px 20px;
+}
+.lp-avatar.ct-ava {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+.ct-row__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ct-row__who {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.ct-row__id {
+  display: block;
+  font-size: 11px;
+  color: var(--fg-subtle);
+  margin-block-start: 3px;
+}
+.ct-row__at {
+  font-size: 12.5px;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.lp-btn--secondary.ct-row__view {
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* -------------------------------------------------------------- wording */
+
+.ct-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+.ct-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lp-textarea.ct-wording {
+  min-block-size: 90px;
+  padding: 13px;
+  border-radius: 13px;
+  background: var(--surface-2);
+  line-height: 1.65;
+}
+
+.ct-preview {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ct-preview__eyebrow {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--fg-subtle);
+}
+.ct-preview__name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.ct-preview__line {
+  font-size: 12.5px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+
+.ct-examrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ct-examrow__label {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.lp-btn.ct-save {
+  block-size: 42px;
+  border-radius: 12px;
+}
+
+/* --------------------------------------------------------- verification */
+
+.ct-verify {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.ct-verify__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.ct-verify__ico {
+  color: var(--pos);
+  flex-shrink: 0;
+}
+.ct-verify__title {
+  font-size: 14px;
+  font-weight: 800;
+}
+.ct-verify__body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+/* Text, not a link: the app makes no external requests. */
+.ct-verify__url {
+  align-self: flex-start;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 8px;
+}

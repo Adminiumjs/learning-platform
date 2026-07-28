@@ -1,1 +1,149 @@
-/* screen-live.css — Live session. */
+/*
+ * screen-live.css — Live session.
+ *
+ * A single 760px reading column. The comp branched on no viewport width on
+ * this screen, so there is nothing to turn into a media query; the one soft
+ * spot is the fact rows, whose "When" value is long enough to wrap on a phone.
+ *
+ * Rules that override a shared component class are scoped with the screen
+ * class, so the cascade never depends on which sheet loaded last.
+ */
+
+.scr-live {
+  max-inline-size: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* The comp's kicker is a muted icon + label rather than the accent uppercase
+   eyebrow the shared page head draws. Worth the override: it carries a radio. */
+.scr-live .lp-pagehead__eyebrow {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  color: var(--fg-subtle);
+}
+.scr-live .lv-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* ------------------------------------------------------------------ cover */
+
+.scr-live .lv-cover {
+  block-size: clamp(160px, 22vw, 230px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.scr-live .lv-state {
+  position: absolute;
+  inset-block-start: 14px;
+  inset-inline-end: 14px;
+}
+
+/* -------------------------------------------------------------- fact card */
+
+.scr-live .lv-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scr-live .lv-fact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.scr-live .lv-fact__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.scr-live .lv-fact__k {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  min-inline-size: 110px;
+}
+.scr-live .lv-fact__v {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.scr-live .lv-fact__v.lp-mono {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------- countdown */
+
+.scr-live .lv-count {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.scr-live .lv-count__ico {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.scr-live .lv-count__clock {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.scr-live .lv-count__to {
+  margin-inline-start: auto;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------- actions */
+
+.scr-live .lv-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.scr-live .lv-actions > * {
+  block-size: 46px;
+  padding-inline: 18px;
+  border-radius: 13px;
+  font-size: 14.5px;
+}
+
+/* ----------------------------------------------------------- what to bring */
+
+.scr-live .lv-bring {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scr-live .lv-bring__title {
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-live .lv-bring__body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}

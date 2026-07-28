@@ -1,1 +1,244 @@
-/* screen-reviews.css — Reviews. */
+/*
+ * screen-reviews.css — Course reviews.
+ *
+ * The comp measured the window (`S.w < 720`) to decide whether the score and
+ * the histogram sit side by side. That is a media query, so it is one here.
+ */
+
+.lp-page.scr-reviews {
+  max-inline-size: 980px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.scr-reviews .rv-head {
+  margin-block-end: 0;
+}
+
+/* ------------------------------------------------------------------ stars */
+
+.rv-stars {
+  display: inline-flex;
+  gap: 3px;
+}
+/* Unearned stars keep the outline only; `fill` is what reads as "given". */
+.rv-star {
+  color: var(--border-strong);
+  fill: none;
+}
+.rv-star.is-on {
+  color: var(--warn);
+  fill: var(--warn);
+}
+
+/* -------------------------------------------------------- score + spread */
+
+.rv-top {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 720px) {
+  .rv-top {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}
+
+.lp-cardbox.rv-score {
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.rv-score__num {
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.rv-score__count {
+  font-size: 13px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+}
+
+.lp-cardbox.rv-dist {
+  border-radius: 20px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+}
+.rv-dist__row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.rv-dist__n {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  inline-size: 26px;
+}
+.lp-bar.rv-dist__bar {
+  flex: 1;
+  min-inline-size: 0;
+}
+.rv-dist__c {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  inline-size: 26px;
+  text-align: end;
+}
+
+/* ------------------------------------------------------------- write box */
+
+.lp-cardbox.rv-form {
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rv-form__title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.rv-pickrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rv-picker {
+  display: flex;
+  gap: 5px;
+}
+.lp-btn.rv-pick {
+  inline-size: 38px;
+  block-size: 38px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.rv-picklabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.lp-textarea.rv-text {
+  min-block-size: 100px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.lp-btn--primary.rv-post {
+  align-self: flex-start;
+  padding-inline: 20px;
+  border-radius: 12px;
+}
+
+/* ------------------------------------------------------------- the list */
+
+.lp-filterchip.rv-filter {
+  block-size: 34px;
+  padding-inline: 14px;
+  font-size: 12.5px;
+}
+.rv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lp-cardbox.rv-card {
+  padding: 18px;
+}
+.rv-card__body {
+  display: flex;
+  gap: 13px;
+}
+.rv-card__main {
+  flex: 1;
+  min-inline-size: 0;
+}
+.rv-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rv-card__who {
+  font-size: 14px;
+  font-weight: 800;
+}
+.rv-card__at {
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+.rv-card__text {
+  margin: 0;
+  margin-block-start: 9px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+.rv-reply {
+  margin-block-start: 13px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  gap: 11px;
+}
+.lp-avatar.rv-reply__av {
+  inline-size: 30px;
+  block-size: 30px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+.rv-reply__who {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.rv-reply__text {
+  margin: 0;
+  margin-block-start: 5px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+.rv-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-block-start: 12px;
+}
+.rv-helpful {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fg-subtle);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.rv-helpful[aria-pressed="true"] {
+  color: var(--accent);
+}

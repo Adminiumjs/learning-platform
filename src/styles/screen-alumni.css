@@ -1,1 +1,207 @@
-/* screen-alumni.css — Alumni directory. */
+/*
+ * screen-alumni.css — Alumni directory.
+ *
+ * The card grid is `auto-fill` + `minmax`, so the comp's window-width branch
+ * is gone: the browser decides how many columns fit, at any width, in any
+ * writing direction.
+ */
+
+.lp-page.scr-alumni {
+  max-inline-size: 1120px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.scr-alumni .al-head {
+  margin-block-end: 0;
+}
+
+/* ---------------------------------------------------------- search field */
+
+.al-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  block-size: 44px;
+  padding-inline: 15px;
+  border-radius: 13px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  inline-size: min(280px, 100%);
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+.al-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.al-search__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.al-search__input {
+  flex: 1;
+  min-inline-size: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 14px;
+}
+
+/* ---------------------------------------------------------------- filters */
+
+.al-filters {
+  align-items: center;
+  gap: 8px;
+}
+.lp-filterchip.al-filter {
+  block-size: 34px;
+  padding-inline: 14px;
+  font-size: 12.5px;
+}
+.al-count {
+  margin-inline-start: auto;
+  font-size: 13px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ people grid */
+
+.al-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.lp-cardbox.al-card {
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.al-card__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lp-avatar.al-av {
+  border-radius: 14px;
+  font-size: 14px;
+}
+.al-card__who {
+  min-inline-size: 0;
+  flex: 1;
+}
+.al-card__name {
+  display: block;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.al-card__role {
+  display: block;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.al-card__line {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+.al-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+/* Not an `lp-pill`: these are inert labels, so they read as bordered chips
+   rather than borrowing a status tone. */
+.al-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+}
+
+.al-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--border);
+  /* Pushed to the bottom so a short line does not leave the button floating. */
+  margin-block-start: auto;
+}
+.al-card__city {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+.lp-btn--secondary.al-say {
+  margin-inline-start: auto;
+  block-size: 36px;
+  padding-inline: 14px;
+  border-radius: 11px;
+  font-size: 12.5px;
+}
+/* The latched state has to survive `lp-gi:hover`, which repaints the surface. */
+.lp-btn--secondary.al-say--sent,
+.lp-btn--secondary.al-say--sent:hover {
+  border-color: transparent;
+  background: var(--pos-soft);
+  color: var(--pos);
+  cursor: default;
+}
+
+.lp-empty.al-empty {
+  border: 1px dashed var(--border-strong);
+  border-radius: 20px;
+}
+
+/* ----------------------------------------------------------- listing CTA */
+
+.al-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 22px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.al-cta.is-listed {
+  border-color: color-mix(in srgb, var(--pos) 28%, transparent);
+  background: var(--pos-soft);
+}
+.al-cta__ico {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.al-cta__text {
+  flex: 1;
+  min-inline-size: 200px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.lp-btn--primary.al-cta__btn {
+  border-radius: 12px;
+  padding-inline: 18px;
+}

@@ -1,1 +1,259 @@
-/* screen-lessoned.css — Lesson editor. */
+/*
+ * screen-lessoned.css — Lesson editor.
+ *
+ * One JS branch to replace: the comp's `S.w < 560` stacks the duration/points
+ * pair. Everything else on this screen was already fluid.
+ *
+ * The form fields here are hand-rolled rather than `TextInput`/`TextArea`,
+ * because the comp gives them their own heights, radii and a `--surface-2`
+ * ground; they still carry `lp-fld` so focus behaves exactly like every other
+ * field in the app.
+ */
+
+.lp-page.scr-lessoned {
+  /* The comp's lesson column is 900px; the sticky bar owns the tail padding. */
+  max-inline-size: 900px;
+  padding-block: clamp(28px, 4vw, 44px) 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ----------------------------------------------------------------- head */
+
+.scr-lessoned .le-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.scr-lessoned .le-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-lessoned .le-title {
+  margin: 9px 0 0;
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.scr-lessoned .le-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+.scr-lessoned .le-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* --------------------------------------------------------------- fields */
+
+.scr-lessoned .le-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-inline-size: 0;
+}
+.scr-lessoned .le-field__label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.scr-lessoned .le-input {
+  block-size: 46px;
+  padding-inline: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 15px;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+/* The title is the one field on the page that reads as a heading. */
+.scr-lessoned .le-input--title {
+  block-size: 48px;
+  border-radius: 13px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.scr-lessoned .le-desc {
+  min-block-size: 120px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 14.5px;
+  line-height: 1.7;
+  inline-size: 100%;
+  min-inline-size: 0;
+  resize: vertical;
+}
+
+.scr-lessoned .le-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.scr-lessoned .le-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.scr-lessoned .le-group__seg {
+  align-self: flex-start;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------ drop zone */
+
+/* Nothing is droppable — there are no real uploads — so this is a prompt, not
+   a drop target. It stays dashed to say so. */
+.scr-lessoned .le-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 28px 20px;
+  border-radius: 16px;
+  border: 1.5px dashed var(--border-strong);
+  background: var(--surface-2);
+}
+.scr-lessoned .le-drop__ico {
+  color: var(--fg-subtle);
+}
+.scr-lessoned .le-drop__title {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 800;
+}
+.scr-lessoned .le-drop__sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+.scr-lessoned .le-drop__file {
+  background: var(--surface);
+}
+.scr-lessoned .le-drop__pick {
+  block-size: 38px;
+  padding-inline: 15px;
+  border-radius: 11px;
+  font-size: 13.5px;
+}
+
+/* ------------------------------------------------------------ resources */
+
+.scr-lessoned .le-res {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.scr-lessoned .le-res__chip {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+.scr-lessoned .le-res__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--border-strong);
+  background: transparent;
+  color: var(--fg-subtle);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* -------------------------------------------------------------- release */
+
+.scr-lessoned .le-note {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 15px;
+  border-radius: 13px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.scr-lessoned .le-note__ico {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+.scr-lessoned .le-note__text {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+
+/* ----------------------------------------------------------- sticky bar */
+
+.le-bar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 200;
+  background: var(--surface-header);
+  backdrop-filter: blur(14px);
+  border-block-start: 1px solid var(--border);
+}
+.le-bar__inner {
+  max-inline-size: 900px;
+  margin-inline: auto;
+  padding: 12px clamp(16px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+/* Destructive, so it is text on a hairline of the same colour rather than a
+   filled button sitting next to "Save". */
+.le-bar__delete {
+  padding-inline: 15px;
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 38%, transparent);
+}
+.le-bar__delete:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.le-bar__preview {
+  margin-inline-start: auto;
+  padding-inline: 16px;
+}
+
+/* ---------------------------------------------------------- breakpoints */
+
+/* 560: the comp's `S.w < 560` — duration and points stack. */
+@media (max-width: 560px) {
+  .scr-lessoned .le-pair {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,1 +1,225 @@
-/* screen-grades.css — Grades. */
+/*
+ * screen-grades.css — the gradebook.
+ *
+ * One table and a certificate card. The comp branched on `S.w < 720` to pick
+ * between two sets of grid tracks for the header and every row; that is the
+ * single media query at the bottom of this file, written mobile-first so the
+ * tight tracks are the default and the roomy ones arrive at 720px.
+ *
+ * The tracks are declared once as `--scr-gr-cols` and shared by the header and
+ * the rows, because a header that drifts out of step with its own columns is
+ * exactly the bug this table invites.
+ */
+
+.scr-gr {
+  --scr-gr-cols: minmax(0, 1fr) 70px 60px 78px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-inline-size: 980px;
+}
+
+/* ------------------------------------------------------------------ head */
+
+.scr-gr__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.scr-gr__title {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.scr-gr__sub {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--fg-muted);
+}
+
+/** The overall-grade ring and its caption, pushed to the far end of the row. */
+.scr-gr__overall {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-inline-start: auto;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.scr-gr__overalltitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.scr-gr__overallsub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+/* ----------------------------------------------------------- the table */
+
+.scr-gr__table {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.scr-gr__thead {
+  display: grid;
+  grid-template-columns: var(--scr-gr-cols);
+  gap: 12px;
+  padding: 13px 20px;
+  border-block-end: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+
+.scr-gr__row {
+  display: grid;
+  grid-template-columns: var(--scr-gr-cols);
+  gap: 12px;
+  align-items: center;
+  padding: 14px 20px;
+  border-block-end: 1px solid var(--border);
+}
+
+/** Items that have not opened yet still list, but recede. */
+.scr-gr__row.is-locked {
+  opacity: 0.6;
+}
+
+.scr-gr__item {
+  min-inline-size: 0;
+}
+
+/** Truncates rather than wraps — the row height has to stay on the grid. */
+.scr-gr__name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scr-gr__itemsub {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+.scr-gr__kind {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+
+/* The two numeric columns, in the header and in the body. */
+.scr-gr__num,
+.scr-gr__weight,
+.scr-gr__score {
+  text-align: end;
+}
+
+.scr-gr__weight {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+}
+
+/*
+ * The score's default is the muted "nothing here yet" tone; `is-ok` is a mark
+ * that has landed and `is-pending` is one waiting on Yara.
+ */
+.scr-gr__score {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.scr-gr__score.is-ok {
+  color: var(--pos);
+}
+.scr-gr__score.is-pending {
+  color: var(--info);
+}
+
+/* ------------------------------------------------------ the certificate */
+
+.scr-gr__cert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+}
+.scr-gr__cert.is-done {
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: var(--accent-soft);
+}
+
+.scr-gr__certico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: 52px;
+  block-size: 52px;
+  border-radius: 16px;
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.scr-gr__cert.is-done .scr-gr__certico {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.scr-gr__certbody {
+  flex: 1;
+  min-inline-size: 200px;
+}
+
+.scr-gr__certtitle {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.scr-gr__certtext {
+  margin: 7px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+
+/* ---------------------------------------------------------------------------
+ * 720px — the comp's `S.w < 720`. The four columns get room to breathe.
+ * ------------------------------------------------------------------------- */
+
+@media (min-width: 720px) {
+  .scr-gr {
+    --scr-gr-cols: minmax(0, 1fr) 120px 90px 110px;
+  }
+}

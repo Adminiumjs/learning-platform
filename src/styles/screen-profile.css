@@ -1,1 +1,240 @@
-/* screen-profile.css — Student profile. */
+/*
+ * screen-profile.css — Student profile.
+ *
+ * The comp's one JS branch on this page was `S.w < 720`, which folded the
+ * details grid from two columns to one. That is the media query at the bottom
+ * of this sheet; nothing here measures anything.
+ *
+ * Rules that touch a shared component class are scoped under `.scr-profile`,
+ * so the cascade never depends on which sheet loaded last.
+ */
+
+/* The comp's profile column is 900px — between --narrow (880) and the
+   1240 default, so it is stated rather than borrowed. */
+.lp-page.scr-profile {
+  max-inline-size: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ------------------------------------------------------------- identity */
+
+.scr-profile .pr-id {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* A banner, not a cover: shorter, and the glyph sits quietly behind the
+   avatar rather than announcing itself. */
+.scr-profile .pr-id__banner {
+  block-size: 96px;
+}
+.scr-profile .pr-id__banner .lp-cover__glyph {
+  opacity: 0.4;
+}
+
+.scr-profile .pr-id__row {
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 0 22px 22px;
+  /* Lifts the avatar over the banner's lower edge. */
+  margin-block-start: -34px;
+}
+
+.scr-profile .pr-id__avatar {
+  inline-size: 78px;
+  block-size: 78px;
+  border-radius: 24px;
+  font-size: 26px;
+  border: 3px solid var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.scr-profile .pr-id__who {
+  flex: 1;
+  min-inline-size: 200px;
+}
+.scr-profile .pr-id__name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.scr-profile .pr-id__meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 6px 0 0;
+}
+.scr-profile .pr-id__handle {
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+.scr-profile .pr-id__since {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.scr-profile .pr-id__share {
+  block-size: 40px;
+  padding-inline: 15px;
+  font-size: 13.5px;
+}
+
+/* ---------------------------------------------------------------- stats */
+
+.scr-profile .pr-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  border-block-start: 1px solid var(--border);
+}
+.scr-profile .pr-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 16px 20px;
+  border-inline-end: 1px solid var(--border);
+}
+/* The comp ruled the last cell too, which drew a line down the card's edge. */
+.scr-profile .pr-stat:last-child {
+  border-inline-end: none;
+}
+.scr-profile .pr-stat__value {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.scr-profile .pr-stat__label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+
+/* -------------------------------------------------------------- details */
+
+.scr-profile .pr-block {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.scr-profile .pr-block__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.scr-profile .pr-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.scr-profile .pr-save {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.scr-profile .pr-save__btn {
+  block-size: 44px;
+  padding-inline: 20px;
+}
+.scr-profile .pr-save__at {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+}
+
+/* --------------------------------------------------------- notifications */
+
+.scr-profile .pr-notify {
+  border-radius: 20px;
+}
+.scr-profile .pr-notify__head {
+  margin: 0;
+  padding: 18px 22px;
+  border-block-end: 1px solid var(--border);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-profile .pr-notify__row {
+  padding: 15px 22px;
+}
+.scr-profile .pr-notify__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.scr-profile .pr-notify__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.scr-profile .pr-notify__sub {
+  display: block;
+  margin-block-start: 3px;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+}
+
+/* ---------------------------------------------------------------- leave */
+
+.scr-profile .pr-leave {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+}
+.scr-profile .pr-leave__text {
+  flex: 1;
+  min-inline-size: 220px;
+}
+.scr-profile .pr-leave__title {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 800;
+}
+.scr-profile .pr-leave__sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-muted);
+}
+/* The one destructive control on the page: danger text on a hairline of the
+   same colour, rather than a filled button that begs to be pressed. */
+.scr-profile .pr-leave__btn {
+  block-size: 42px;
+  padding-inline: 16px;
+  font-size: 13.5px;
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+}
+.scr-profile .pr-leave__btn:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* ----------------------------------------------------------- breakpoint */
+
+/* 720: the comp's `S.w < 720` — the details grid folds to one column. */
+@media (max-width: 720px) {
+  .scr-profile .pr-fields {
+    grid-template-columns: 1fr;
+  }
+}

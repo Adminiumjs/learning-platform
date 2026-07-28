@@ -1,1 +1,236 @@
-/* screen-grading.css — Grading queue. */
+/*
+ * screen-grading.css — Grading queue.
+ *
+ * The comp folded this to one column at `S.w < 900`; that is the single media
+ * query below. Everything else — the wrapping score row, the file chips —
+ * reflows on its own.
+ */
+
+.gq-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 2.5vw, 20px);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .gq-grid {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------- queue */
+
+.gq-queue {
+  min-inline-size: 0;
+}
+.gq-queue__head {
+  padding: 14px 18px;
+  border-block-end: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+
+.gq-row {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 16px;
+  border: none;
+  border-block-end: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.gq-row:last-child {
+  border-block-end: none;
+}
+/* The open submission stays tinted, including under the row's hover wash. */
+.gq-row.is-on,
+.gq-row.is-on:hover {
+  background: var(--accent-soft);
+}
+
+.gq-row__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.gq-row__who,
+.gq-row__item {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gq-row__who {
+  font-size: 14px;
+  font-weight: 700;
+}
+.gq-row__item {
+  margin-block-start: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+/* -------------------------------------------------------------- detail */
+
+.gq-detail {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.gq-detail__head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-wrap: wrap;
+  padding: 18px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.gq-detail__who {
+  min-inline-size: 0;
+}
+.gq-detail__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.gq-detail__meta {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.gq-detail__tag {
+  margin-inline-start: auto;
+}
+
+.gq-detail__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* ---------------------------------------------------------- their work */
+
+.gq-work {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-2);
+  padding: 18px;
+}
+.gq-work__label {
+  margin-block-end: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+/* The submissions carry their own paragraph breaks as newlines. */
+.gq-work__text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--fg-muted);
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+.gq-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-block-start: 14px;
+}
+
+/* -------------------------------------------------------------- scoring */
+
+.gq-score {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.gq-field {
+  flex-shrink: 0;
+}
+.gq-ptsrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.gq-pts {
+  inline-size: 92px;
+  block-size: 46px;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+}
+.gq-max {
+  font-size: 15px;
+  color: var(--fg-subtle);
+}
+
+.gq-quick {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.gq-quickbtn {
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+.gq-fb {
+  min-block-size: 130px;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+/* --------------------------------------------------------------- footer */
+
+.gq-foot {
+  margin-block-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-block-start: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.gq-save {
+  margin-inline-start: auto;
+}
+
+/* --------------------------------------------------------------- empty */
+
+.gq-clear {
+  padding-block: 70px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 20px;
+}
+/* Scoped to this screen's empty state only — a cleared queue is good news. */
+.gq-clear .lp-empty__ico {
+  background: var(--pos-soft);
+  color: var(--pos);
+}

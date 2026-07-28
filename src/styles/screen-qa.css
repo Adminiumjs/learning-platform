@@ -1,1 +1,139 @@
-/* screen-qa.css — Q&A. */
+/*
+ * screen-qa.css — the cohort question board.
+ *
+ * One column at every width, so there is no media query here: the comp's
+ * 900px cap rounds to the shared `lp-page--narrow` (880px) and everything
+ * inside wraps on its own.
+ */
+
+/* --------------------------------------------------------------- ask box */
+
+.scr-qa__ask {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-block-end: 18px;
+}
+.scr-qa__askinput {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 48px;
+  border-radius: 14px;
+  font-size: 14.5px;
+}
+.scr-qa__askbtn {
+  block-size: 48px;
+  border-radius: 14px;
+  padding-inline: 20px;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.scr-qa__note {
+  margin-block-end: 20px;
+  border-radius: 13px;
+}
+.scr-qa__filters {
+  margin-block-end: 16px;
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.scr-qa__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.scr-qa__card {
+  display: flex;
+  gap: 13px;
+  padding: 18px;
+}
+/* The student's own questions read as accent-on-soft, not solid accent —
+   solid is reserved for the instructor's reply avatar below. */
+.scr-qa__ava.is-mine {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.scr-qa__body {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.scr-qa__meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.scr-qa__who {
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-qa__at {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+.scr-qa__lesson {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-qa__state {
+  margin-inline-start: auto;
+}
+
+.scr-qa__text {
+  margin: 9px 0 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------------- reply */
+
+.scr-qa__reply {
+  margin-block-start: 14px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  gap: 11px;
+}
+.scr-qa__replybody {
+  min-inline-size: 0;
+}
+.scr-qa__replymeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.scr-qa__replywho {
+  font-size: 13px;
+  font-weight: 800;
+}
+.scr-qa__replyat {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fg-subtle);
+}
+.scr-qa__replytext {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+.scr-qa__waiting {
+  margin-block-start: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}

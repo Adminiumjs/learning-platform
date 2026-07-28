@@ -1,1 +1,125 @@
-/* screen-saved.css — Saved courses. */
+/*
+ * screen-saved.css — Saved courses.
+ *
+ * No layout breakpoint of its own: the comp's saved rows wrap rather than
+ * switch, so the row is a wrapping flex line at every width.
+ *
+ * Rules that override a shared component class are scoped with the screen
+ * class, so the cascade never depends on which sheet loaded last.
+ */
+
+/* The comp's saved page is 1000px wide — between --narrow (880) and 1240. */
+.lp-page.scr-saved {
+  max-inline-size: 1000px;
+}
+
+.scr-saved .sv-head__cta {
+  block-size: 40px;
+  padding-inline: 15px;
+  font-size: 13.5px;
+}
+
+.scr-saved .sv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------------------------------------------------------------- a row */
+
+.scr-saved .sv-row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.scr-saved .sv-row__body {
+  flex: 1;
+  min-inline-size: 200px;
+}
+.scr-saved .sv-row__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.scr-saved .sv-row__title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.scr-saved .sv-row__sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--fg-muted);
+  line-height: 1.55;
+}
+.scr-saved .sv-row__notify {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 9px 0 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.scr-saved .sv-row__price {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.scr-saved .sv-row__acts {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.scr-saved .sv-row__cta {
+  block-size: 42px;
+  padding-inline: 17px;
+  font-size: 13.5px;
+}
+.scr-saved .sv-row__remove {
+  inline-size: 42px;
+  block-size: 42px;
+  border-radius: 12px;
+  border-color: var(--border-strong);
+  color: var(--fg-subtle);
+}
+
+/* --------------------------------------------------------------- empty */
+
+/* The dashed frame is the comp's "this is a hole, not a card" signal. */
+.scr-saved .sv-empty {
+  border: 1px dashed var(--border-strong);
+  border-radius: 20px;
+}
+
+/* -------------------------------------------------------- compare strip */
+
+.scr-saved .sv-compare {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-block-start: 20px;
+}
+.scr-saved .sv-compare__ico {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.scr-saved .sv-compare__text {
+  flex: 1;
+  min-inline-size: 200px;
+  font-size: 14px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+.scr-saved .sv-compare__cta {
+  block-size: 42px;
+  padding-inline: 16px;
+  font-size: 13.5px;
+}

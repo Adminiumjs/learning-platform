@@ -1,1 +1,215 @@
-/* screen-catalog.css — Catalog. */
+/*
+ * screen-catalog.css — Catalog.
+ *
+ * The grid is `auto-fill / minmax(272px, 1fr)`, which is the whole of the
+ * responsive story: the comp recomputed a column count from `S.w` on every
+ * render, and this does the same job with no JavaScript and no breakpoint.
+ */
+
+/* The hero owns the top of the page, so the page wrapper gives up its own. */
+.scr-catalog.lp-page {
+  padding-block-start: 0;
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.scr-catalog__hero {
+  padding-block: clamp(44px, 7vw, 84px) clamp(28px, 4vw, 44px);
+  max-inline-size: 760px;
+}
+
+.scr-catalog__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--fg-subtle);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 6px 11px;
+  border-radius: 999px;
+}
+.scr-catalog__dot {
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: var(--pos);
+}
+
+.scr-catalog__title {
+  margin: 20px 0 0;
+  font-size: clamp(34px, 5.4vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  text-wrap: pretty;
+}
+.scr-catalog__lede {
+  margin: 18px 0 0;
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.65;
+  color: var(--fg-muted);
+  max-inline-size: 560px;
+  text-wrap: pretty;
+}
+
+.scr-catalog__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-block-start: 26px;
+}
+.scr-catalog__herobtn {
+  block-size: 46px;
+  border-radius: 13px;
+  font-size: 14.5px;
+}
+
+/* ---------------------------------------------------------------- filters */
+
+.scr-catalog__filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-block-end: 20px;
+}
+.scr-catalog__count {
+  margin-inline-start: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+/* ------------------------------------------------------------------- grid */
+
+.scr-catalog__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 20px;
+}
+
+.scr-catalog__card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  inline-size: 100%;
+  text-align: start;
+  color: inherit;
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+/* The level chip rides the cover: surface on border, not a semantic tone. */
+.scr-catalog__level {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-end: 12px;
+  background: var(--surface);
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+}
+
+.scr-catalog__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 18px 18px 20px;
+}
+.scr-catalog__name {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+.scr-catalog__teacher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+.scr-catalog__ini {
+  inline-size: 22px;
+  block-size: 22px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  color: var(--fg-muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+.scr-catalog__badge {
+  align-self: flex-start;
+}
+.scr-catalog__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: auto;
+  padding-block-start: 11px;
+  border-block-start: 1px solid var(--border);
+}
+.scr-catalog__meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.scr-catalog__price {
+  margin-inline-start: auto;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* -------------------------------------------------------------- fallbacks */
+
+.scr-catalog__skel {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.scr-catalog__skelcover {
+  display: block;
+  block-size: 168px;
+  border-radius: 0;
+}
+.scr-catalog__skelbody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+}
+.scr-catalog__skelline {
+  display: block;
+  block-size: 12px;
+}
+.scr-catalog__skelline--title {
+  block-size: 16px;
+  inline-size: 78%;
+}
+.scr-catalog__skelline--a {
+  inline-size: 52%;
+}
+.scr-catalog__skelline--b {
+  inline-size: 66%;
+}
+
+.scr-catalog__empty {
+  border: 1px dashed var(--border-strong);
+  border-radius: 20px;
+}

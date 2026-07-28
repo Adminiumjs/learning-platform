@@ -1,1 +1,300 @@
-/* screen-payouts.css — Payouts. */
+/*
+ * screen-payouts.css — Payouts.
+ *
+ * Two JS branches replaced: `S.w < 900` stacks both grids (the headline over
+ * the stat tiles, the history over the side rail), and `S.w < 720` drops the
+ * history table's Method column.
+ */
+
+.lp-page.scr-payouts {
+  max-inline-size: 1080px;
+  padding-block: clamp(28px, 4vw, 44px) 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ----------------------------------------------------------------- head */
+
+.scr-payouts .py-title {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-payouts .py-lede {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--fg-muted);
+}
+
+/* ------------------------------------------------------ headline + stats */
+
+.scr-payouts .py-top {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+/* The one accent block on the page: the number the whole screen is about. */
+.scr-payouts .py-avail {
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: 20px;
+  background: var(--accent-soft);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.scr-payouts .py-avail__label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.scr-payouts .py-avail__value {
+  font-size: clamp(30px, 4.4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.scr-payouts .py-avail__next {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+.scr-payouts .py-avail__btn {
+  align-self: flex-start;
+  margin-block-start: 4px;
+  block-size: 42px;
+  padding-inline: 18px;
+}
+
+.scr-payouts .py-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+.scr-payouts .py-stat {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.scr-payouts .py-stat__value {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.scr-payouts .py-stat__label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-payouts .py-stat__delta {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-payouts .py-stat__delta--pos {
+  color: var(--pos);
+}
+
+/* --------------------------------------------------------- history + rail */
+
+.scr-payouts .py-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 16px;
+  align-items: start;
+}
+
+.scr-payouts .py-history {
+  min-inline-size: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.scr-payouts .py-history__title {
+  margin: 0;
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* One template for the head and the rows, so a column change moves both. */
+.scr-payouts .py-cols {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 110px 100px;
+  gap: 12px;
+  align-items: center;
+  border-block-end: 1px solid var(--border);
+}
+.scr-payouts .py-cols--head {
+  padding: 12px 20px;
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+.scr-payouts .py-cols--row {
+  padding: 14px 20px;
+}
+.scr-payouts .py-cols--row:last-child {
+  border-block-end: none;
+}
+.scr-payouts .py-col--end {
+  text-align: end;
+}
+
+.scr-payouts .py-date {
+  font-size: 12.5px;
+  color: var(--fg-muted);
+}
+.scr-payouts .py-method {
+  min-inline-size: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scr-payouts .py-amount {
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: end;
+}
+.scr-payouts .py-statuscell {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ------------------------------------------------------------ side rail */
+
+.scr-payouts .py-side {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.scr-payouts .py-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.scr-payouts .py-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.scr-payouts .py-course {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.scr-payouts .py-course__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scr-payouts .py-course__title {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scr-payouts .py-course__amount {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.scr-payouts .py-course__bar {
+  block-size: 7px;
+}
+.scr-payouts .py-course__sub {
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+
+.scr-payouts .py-method-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+}
+.scr-payouts .py-method-card__ico {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 13px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg-muted);
+}
+.scr-payouts .py-method-card__text {
+  flex: 1;
+  min-inline-size: 140px;
+}
+.scr-payouts .py-method-card__label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-payouts .py-method-card__detail {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+.scr-payouts .py-method-card__btn {
+  block-size: 38px;
+  padding-inline: 14px;
+  border-radius: 11px;
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------- breakpoints */
+
+/* 900: the comp's `S.w < 900` — both grids become single columns. */
+@media (max-width: 900px) {
+  .scr-payouts .py-top,
+  .scr-payouts .py-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 720: the comp's `S.w < 720` — the Method column goes. Every row carries the
+   same account and the method card below states it in full. */
+@media (max-width: 720px) {
+  .scr-payouts .py-cols {
+    grid-template-columns: minmax(0, 1fr) 90px 84px;
+  }
+  .scr-payouts .py-col--method {
+    display: none;
+  }
+}

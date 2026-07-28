@@ -1,1 +1,315 @@
-/* screen-cohort.css — Cohort setup. */
+/*
+ * screen-cohort.css — Cohort setup.
+ *
+ * Two JS branches replaced: `S.w < 900` folds the preview rail under the form,
+ * `S.w < 560` stacks each two-up field pair. 560 is not one of the app's usual
+ * thresholds but it is the number the comp used, and the pairs hold together
+ * down to it.
+ */
+
+.lp-page.scr-cohort {
+  /* 960 in the comp; the sticky bar below takes over the tail padding. */
+  max-inline-size: 960px;
+  padding-block: clamp(28px, 4vw, 44px) 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ----------------------------------------------------------------- head */
+
+.scr-cohort .cs-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.scr-cohort .cs-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-cohort .cs-title {
+  margin: 9px 0 0;
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-cohort .cs-state {
+  margin-inline-start: auto;
+}
+
+/* ----------------------------------------------------------------- grid */
+
+.scr-cohort .cs-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+.scr-cohort .cs-col {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.scr-cohort .cs-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+.scr-cohort .cs-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* --------------------------------------------------------------- fields */
+
+.scr-cohort .cs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-inline-size: 0;
+}
+.scr-cohort .cs-field__label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.scr-cohort .cs-input {
+  block-size: 46px;
+  padding-inline: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 14.5px;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.scr-cohort .cs-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.scr-cohort .cs-days {
+  align-self: flex-start;
+  flex-wrap: wrap;
+}
+
+.scr-cohort .cs-note {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 15px;
+  border-radius: 13px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.scr-cohort .cs-note__ico {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.scr-cohort .cs-note__text {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+
+/* ------------------------------------------------------------ seat count */
+
+.scr-cohort .cs-seats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.scr-cohort .cs-seats__step {
+  inline-size: 42px;
+  block-size: 42px;
+  border-radius: 12px;
+  border-color: var(--border-strong);
+  color: var(--fg);
+}
+.scr-cohort .cs-seats__n {
+  min-inline-size: 58px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.scr-cohort .cs-seats__unit {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-cohort .cs-price {
+  margin-inline-start: auto;
+}
+.scr-cohort .cs-price__field {
+  inline-size: 130px;
+  font-size: 15px;
+}
+
+.scr-cohort .cs-wait {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-block-start: 6px;
+}
+.scr-cohort .cs-wait__text {
+  flex: 1;
+  min-inline-size: 180px;
+}
+.scr-cohort .cs-wait__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-cohort .cs-wait__sub {
+  display: block;
+  margin-block-start: 4px;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+}
+
+/* -------------------------------------------------------------- preview */
+
+/* Accent-washed, because it is the only block on the page that is not an
+   input — it is the result of all of them. */
+.scr-cohort .cs-preview {
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: 20px;
+  background: var(--accent-soft);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.scr-cohort .cs-preview__eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.scr-cohort .cs-preview__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.scr-cohort .cs-preview__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.scr-cohort .cs-preview__k {
+  min-inline-size: 88px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-cohort .cs-preview__v {
+  font-size: 12.5px;
+  font-weight: 700;
+  min-inline-size: 0;
+}
+.scr-cohort .cs-preview__v.lp-mono {
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------- waitlist */
+
+.scr-cohort .cs-waitcard {
+  padding: 20px;
+  gap: 11px;
+}
+.scr-cohort .cs-waitcard__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.scr-cohort .cs-waitcard__ico {
+  color: var(--fg-subtle);
+}
+.scr-cohort .cs-waitcard__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-cohort .cs-waitcard__n {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.scr-cohort .cs-waitcard__go {
+  block-size: 40px;
+  border-radius: 11px;
+  font-size: 13.5px;
+}
+
+/* ----------------------------------------------------------- sticky bar */
+
+.cs-bar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 200;
+  background: var(--surface-header);
+  backdrop-filter: blur(14px);
+  border-block-start: 1px solid var(--border);
+}
+.cs-bar__inner {
+  max-inline-size: 960px;
+  margin-inline: auto;
+  padding: 12px clamp(16px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cs-bar__at {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.cs-bar__draft {
+  margin-inline-start: auto;
+  padding-inline: 16px;
+}
+
+/* ---------------------------------------------------------- breakpoints */
+
+/* 900: the comp's `S.w < 900` — the preview rail folds under the form. */
+@media (max-width: 900px) {
+  .scr-cohort .cs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 560: the comp's `S.w < 560` — the two-up field pairs stack. */
+@media (max-width: 560px) {
+  .scr-cohort .cs-pair {
+    grid-template-columns: 1fr;
+  }
+  /* With the pair stacked there is no room to push the price to the end. */
+  .scr-cohort .cs-price {
+    margin-inline-start: 0;
+  }
+}

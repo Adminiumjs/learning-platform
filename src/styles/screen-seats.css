@@ -1,1 +1,254 @@
 /* screen-seats.css — Team seats. */
+
+.lp-page.scr-seats {
+  max-inline-size: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.scr-seats .ts-head {
+  margin-block-end: 0;
+}
+
+/*
+ * The comp branched on `S.w < 900` to drop the invite panel below the plan
+ * card. Same threshold, decided in CSS.
+ */
+.ts-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .ts-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------- plan card */
+
+.lp-cardbox.ts-plan {
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ts-plan__head,
+.ts-invite__head {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ts-count {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.lp-iconbtn.ts-step {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 13px;
+  border-color: var(--border-strong);
+  color: var(--fg);
+}
+.ts-count__n {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  min-inline-size: 64px;
+  text-align: center;
+}
+.ts-price {
+  margin-inline-start: auto;
+  text-align: end;
+}
+.ts-price__total {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.ts-price__per {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+  margin-block-start: 3px;
+}
+
+.ts-claimed {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lp-bar.ts-claimed__bar {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ts-claimed__n {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  white-space: nowrap;
+}
+
+.ts-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.lp-btn.ts-buy,
+.lp-btn--secondary.ts-billing {
+  block-size: 44px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+.lp-btn.ts-buy {
+  padding-inline: 18px;
+}
+.lp-btn--secondary.ts-billing {
+  padding-inline: 16px;
+}
+
+/* ----------------------------------------------------------- invite panel */
+
+.ts-invite {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.lp-input.ts-invite__field {
+  block-size: 46px;
+  padding-inline: 15px;
+  border-radius: 13px;
+  font-size: 14.5px;
+}
+/* The shared segmented control sits on --surface-2; inside this panel that
+   would vanish, so it takes the card treatment the comp gave it. */
+.lp-seg.ts-seg {
+  background: var(--surface);
+}
+.lp-btn.ts-send {
+  block-size: 44px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+.ts-invite__note {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  line-height: 1.55;
+}
+
+/* ----------------------------------------------------------- member table */
+
+.lp-list.ts-table {
+  border-radius: 20px;
+}
+.ts-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 150px 100px;
+  gap: 14px;
+  align-items: center;
+  padding: 13px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.ts-row:last-child {
+  border-block-end: none;
+}
+.ts-row--head {
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+
+.ts-member {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-inline-size: 0;
+}
+.lp-avatar.ts-av {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+/* An unclaimed seat is drawn as an outline — there is nobody in it yet. */
+.lp-avatar.ts-av--open {
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+}
+.ts-member__text {
+  min-inline-size: 0;
+}
+.ts-member__name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ts-member__email {
+  display: block;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.ts-member__course {
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 600;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ts-row--head .ts-member__course {
+  font-size: inherit;
+  color: inherit;
+  font-weight: inherit;
+}
+
+.ts-progress {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-inline-size: 0;
+}
+.lp-bar.ts-progress__bar {
+  block-size: 7px;
+  flex: 1;
+  min-inline-size: 40px;
+}
+.ts-progress__pct {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.ts-cell-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/*
+ * Below 720px the comp squeezed the course column to `0px`, which only hid it
+ * by accident — the text still spilled. Removing the cell and its track is the
+ * intent, cleanly.
+ */
+@media (max-width: 720px) {
+  .ts-row {
+    grid-template-columns: minmax(0, 1fr) 90px 84px;
+  }
+  .ts-cell-course {
+    display: none;
+  }
+}

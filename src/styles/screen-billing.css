@@ -1,1 +1,254 @@
 /* screen-billing.css — Orders and receipts. */
+
+.lp-page.scr-billing {
+  max-inline-size: 940px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.scr-billing .bl-head {
+  margin-block-end: 0;
+}
+.lp-btn--secondary.bl-topbtn {
+  block-size: 40px;
+  padding-inline: 15px;
+  border-radius: 12px;
+  font-size: 13.5px;
+}
+
+/*
+ * The comp measured the window (`S.w < 900`) to decide between the two-column
+ * layout and the stacked one. This is that decision as a media query.
+ */
+.bl-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .bl-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bl-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+
+/* ------------------------------------------------------------ the panels */
+
+.lp-list.bl-panel {
+  border-radius: 20px;
+}
+.bl-panel__head {
+  margin: 0;
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* --------------------------------------------------------- enrolment rows */
+
+.bl-enrol {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.bl-enrol:last-child {
+  border-block-end: none;
+}
+/* The comp's thumb is 48px — between the shared sm (40) and md (52) steps. */
+.lp-coverchip.bl-thumb {
+  inline-size: 48px;
+  block-size: 48px;
+  border-radius: 14px;
+}
+.bl-enrol__text {
+  flex: 1;
+  min-inline-size: 150px;
+}
+.bl-enrol__title {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+.bl-enrol__sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 4px;
+}
+.bl-enrol__amount {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------- receipt rows */
+
+.bl-rcpt {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 110px 90px;
+  gap: 12px;
+  align-items: center;
+  padding: 13px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.bl-rcpt:last-child {
+  border-block-end: none;
+}
+.bl-rcpt--head {
+  padding-block: 12px;
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+.bl-rcpt__no {
+  font-size: 12.5px;
+}
+.bl-rcpt__date {
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.bl-rcpt--head .bl-rcpt__date {
+  font-size: inherit;
+  color: inherit;
+  font-weight: inherit;
+}
+.bl-rcpt__amount {
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: end;
+}
+.bl-rcpt--head .bl-rcpt__amount {
+  font-size: inherit;
+  font-weight: inherit;
+}
+.bl-rcpt__act {
+  display: flex;
+  justify-content: flex-end;
+}
+.lp-btn--secondary.bl-pdf {
+  block-size: 32px;
+  padding-inline: 11px;
+  border-radius: 9px;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  gap: 6px;
+}
+
+/*
+ * The comp collapsed the date to a `0px` grid column below 640px, which left
+ * the text overflowing into its neighbour. Dropping the cell instead — and
+ * dropping its track with it — is what that was trying to be.
+ */
+@media (max-width: 640px) {
+  .bl-rcpt {
+    grid-template-columns: minmax(0, 1fr) 84px 60px;
+  }
+  .bl-rcpt__date {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------- payment + promise */
+
+.lp-cardbox.bl-card {
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.bl-card__head {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.bl-card__row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.bl-card__ico {
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bl-card__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.bl-card__no {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+.bl-card__exp {
+  display: block;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.lp-btn--secondary.bl-change {
+  block-size: 40px;
+  border-radius: 11px;
+  font-size: 13.5px;
+  inline-size: 100%;
+}
+
+.bl-promise {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bl-promise__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.bl-promise__ico {
+  color: var(--pos);
+  flex-shrink: 0;
+}
+.bl-promise__title {
+  font-size: 14px;
+  font-weight: 800;
+}
+.bl-promise__body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}

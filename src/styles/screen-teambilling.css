@@ -1,1 +1,246 @@
 /* screen-teambilling.css — Organisation account. */
+
+.lp-page.scr-teambilling {
+  max-inline-size: 1040px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.scr-teambilling .tb-head {
+  margin-block-end: 0;
+}
+.lp-btn--secondary.tb-topbtn {
+  block-size: 40px;
+  padding-inline: 15px;
+  border-radius: 12px;
+  font-size: 13.5px;
+}
+
+/* The comp's `S.w < 960` split, as a media query. */
+.tb-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .tb-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tb-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+
+/* -------------------------------------------------------------- plan card */
+
+.tb-plan {
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: 20px;
+  background: var(--accent-soft);
+  padding: 22px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.tb-plan__text {
+  flex: 1;
+  min-inline-size: 180px;
+}
+.tb-plan__eyebrow {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.tb-plan__name {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-block-start: 6px;
+}
+.tb-plan__renews {
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 600;
+  margin-block-start: 6px;
+}
+.tb-plan__price {
+  text-align: end;
+}
+.tb-plan__amount {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.tb-plan__per {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+  margin-block-start: 3px;
+}
+
+/* --------------------------------------------------------------- invoices */
+
+.lp-list.tb-panel,
+.lp-list.tb-details {
+  border-radius: 20px;
+}
+.tb-panel__head {
+  margin: 0;
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.tb-inv {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) 110px 100px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 20px;
+  border: none;
+  border-block-end: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  inline-size: 100%;
+  text-align: start;
+}
+.tb-inv:last-child {
+  border-block-end: none;
+}
+.tb-inv--head {
+  padding-block: 12px;
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+.tb-inv__no {
+  font-size: 12.5px;
+}
+.tb-cell-date {
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.tb-inv--head .tb-cell-date {
+  font-size: inherit;
+  color: inherit;
+  font-weight: inherit;
+}
+.tb-inv__amount {
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: end;
+}
+.tb-inv--head .tb-inv__amount {
+  font-size: inherit;
+  font-weight: inherit;
+}
+.tb-inv__status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Below 720px the comp collapsed the date column to `0px`, which hid nothing
+   — the text still overflowed. The cell and its track go instead. */
+@media (max-width: 720px) {
+  .tb-inv {
+    grid-template-columns: minmax(0, 1fr) 88px 82px;
+  }
+  .tb-cell-date {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------- spend by course */
+
+.lp-cardbox.tb-spend {
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.tb-spend__head {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.tb-spend__line {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.tb-spend__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tb-spend__label {
+  font-size: 13px;
+  font-weight: 700;
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tb-spend__value {
+  font-size: 12.5px;
+}
+.lp-bar.tb-spend__bar {
+  block-size: 7px;
+}
+
+/* --------------------------------------------------------- billing details */
+
+.tb-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  border-block-end: 1px solid var(--border);
+}
+.tb-detail__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.tb-detail__k {
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 600;
+  flex: 1;
+  min-inline-size: 0;
+}
+.tb-detail__v {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: end;
+}
+.tb-detail__v--mono {
+  font-weight: 600;
+}
+
+.tb-edit {
+  inline-size: 100%;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-align: start;
+}

@@ -1,1 +1,474 @@
-/* screen-course.css — Course page. */
+/*
+ * screen-course.css — Course page.
+ *
+ * Breakpoints, both from the comp's JS: 1000 folds the price rail under the
+ * content (and only above it does the rail go sticky), 720 drops "What you'll
+ * learn" to a single column.
+ */
+
+/* The sticky enrol bar sits below the page, so the page keeps its tail short. */
+.scr-course.lp-page {
+  padding-block-end: 30px;
+}
+
+.scr-course__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-block: 4px 18px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.scr-course__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(20px, 3vw, 34px);
+  align-items: start;
+}
+.scr-course__main {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.scr-course__rail {
+  min-inline-size: 0;
+}
+
+@media (min-width: 1000px) {
+  .scr-course__grid {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+  .scr-course__rail {
+    position: sticky;
+    /* Clears the sticky header (38px control + padding) with room to breathe. */
+    inset-block-start: 96px;
+  }
+}
+
+/* ------------------------------------------------------------------ intro */
+
+.scr-course__cover {
+  block-size: clamp(190px, 26vw, 290px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+}
+
+.scr-course__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-end: 14px;
+}
+.scr-course__code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.scr-course__title {
+  margin: 0;
+  font-size: clamp(28px, 3.6vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: pretty;
+}
+.scr-course__blurb {
+  margin: 16px 0 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  max-inline-size: 640px;
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------- what you learn */
+
+.scr-course__panel {
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.scr-course__panelhead {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-course__learn {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 13px 24px;
+}
+@media (min-width: 720px) {
+  .scr-course__learn {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.scr-course__learnrow {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-muted);
+}
+.scr-course__tick {
+  color: var(--pos);
+  flex-shrink: 0;
+  margin-block-start: 2px;
+}
+
+/* ------------------------------------------------------------- curriculum */
+
+.scr-course__currhead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-block-end: 14px;
+}
+.scr-course__currtitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.scr-course__currmeta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+
+.scr-course__modules {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.scr-course__module {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.scr-course__modhead {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 18px;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  text-align: start;
+}
+.scr-course__modnum {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.scr-course__modnum.is-locked {
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.scr-course__modtext {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.scr-course__modtitle {
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-course__modsub {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+/*
+ * The registry has no chevron-up/down, so the one chevron it does have is
+ * rotated. Rotation is direction-agnostic, which a left/right glyph would not
+ * be — the arrow points down when closed and up when open in RTL too.
+ */
+.scr-course__chev {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+  transform: rotate(90deg);
+  transition: transform 0.18s ease;
+}
+.scr-course__chev.is-open {
+  transform: rotate(-90deg);
+}
+
+.scr-course__lessons {
+  border-block-start: 1px solid var(--border);
+  animation: lp-drop 0.18s ease;
+}
+.scr-course__lesson {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-block-start: 1px solid var(--border);
+}
+/*
+ * The comp drew a rule above every lesson row *and* around the open panel, so
+ * the first row carried a doubled hairline. The panel's rule wins.
+ */
+.scr-course__lesson:first-child {
+  border-block-start: none;
+}
+.scr-course__lesson.is-locked {
+  opacity: 0.62;
+}
+.scr-course__lessonico {
+  flex-shrink: 0;
+  color: var(--fg-muted);
+}
+.scr-course__lessonico.is-preview {
+  color: var(--accent);
+}
+.scr-course__lesson.is-locked .scr-course__lessonico {
+  color: var(--fg-subtle);
+}
+.scr-course__lessontitle {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scr-course__lessontag {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+  white-space: nowrap;
+}
+.scr-course__lessondur {
+  flex-shrink: 0;
+  min-inline-size: 52px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  text-align: end;
+}
+
+/* --------------------------------------------------------- the instructor */
+
+.scr-course__teacher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.scr-course__teachertext {
+  flex: 1;
+  min-inline-size: 220px;
+}
+.scr-course__teachername {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-course__teacherrole {
+  display: block;
+  margin-block-start: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.scr-course__teacherbio {
+  margin: 11px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------- the rail */
+
+.scr-course__buy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.scr-course__pricerow {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+.scr-course__price {
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.scr-course__pricenote {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+.scr-course__facts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface-2);
+}
+.scr-course__facts--self {
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.scr-course__factshead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--fg);
+}
+.scr-course__factsico {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.scr-course__fact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.scr-course__factk {
+  min-inline-size: 96px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.scr-course__factv {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.scr-course__seats {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--border);
+}
+.scr-course__seatbar {
+  flex: 1;
+}
+.scr-course__seatslabel {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--warn);
+  white-space: nowrap;
+}
+
+.scr-course__enrol {
+  block-size: 50px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+.scr-course__perks {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.scr-course__perk {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+.scr-course__perkico {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+
+/* ------------------------------------------------------ the sticky buy bar */
+
+.scr-course__sticky {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 200;
+  background: var(--surface-header);
+  backdrop-filter: blur(14px);
+  border-block-start: 1px solid var(--border);
+}
+.scr-course__stickyinner {
+  max-inline-size: 1240px;
+  margin-inline: auto;
+  padding: 12px clamp(16px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.scr-course__stickytext {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+}
+.scr-course__stickytitle {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scr-course__stickysub {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.scr-course__stickyprice {
+  margin-inline-start: auto;
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.scr-course__stickybtn {
+  block-size: 44px;
+  font-size: 14.5px;
+}

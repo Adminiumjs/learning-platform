@@ -1,1 +1,436 @@
-/* screen-peer.css — Peer review. */
+/*
+ * screen-peer.css — Peer review.
+ *
+ * The comp built its grid from `narrow = S.w < 900`; that is the media query
+ * below, and both columns render at every width. The 1000px cap sits on the
+ * screen's own class, after components.css in the cascade, so `lp-page` is
+ * left alone.
+ */
+
+.scr-peer {
+  max-inline-size: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ------------------------------------------------------------------- head */
+
+.scr-peer__head {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.scr-peer__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-peer__title {
+  margin: 9px 0 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-peer__lede {
+  margin: 9px 0 0;
+  font-size: 15px;
+  color: var(--fg-muted);
+}
+
+.scr-peer__tally {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.scr-peer__tallylabel {
+  font-size: 13px;
+  font-weight: 800;
+}
+.scr-peer__tallysub {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 2px;
+}
+
+/* ------------------------------------------------------------------- grid */
+
+.scr-peer__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .scr-peer__grid {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------- queue rail */
+
+.scr-peer__queue {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-inline-size: 0;
+}
+.scr-peer__queuehead {
+  padding: 14px 18px;
+  border-block-end: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+
+.scr-peer__qrow {
+  gap: 11px;
+  padding: 13px 16px;
+  cursor: pointer;
+}
+.scr-peer__qrow.is-active {
+  background: var(--accent-soft);
+}
+/* The shared row hover would otherwise wash the selected row back to grey. */
+.scr-peer__qrow.is-active:hover {
+  background: var(--accent-soft);
+}
+.scr-peer__qrow.is-done {
+  opacity: 0.65;
+}
+
+.scr-peer__qavatar {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--surface-3);
+  color: var(--fg-muted);
+}
+.scr-peer__qavatar.is-active {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.scr-peer__qavatar.is-done {
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+
+.scr-peer__qbody {
+  flex: 1;
+  min-inline-size: 0;
+  text-align: start;
+}
+.scr-peer__qwho {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.scr-peer__qsub {
+  display: block;
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+
+.scr-peer__tips {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  background: var(--surface-2);
+}
+.scr-peer__tipshead {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.scr-peer__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.scr-peer__bullet {
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  /* Aligns the dot to the first line's optical centre, not its box top. */
+  margin-block-start: 7px;
+}
+
+/* ------------------------------------------------------------- work pane */
+
+.scr-peer__work {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+}
+.scr-peer__workhead {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 18px 20px;
+  border-block-end: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.scr-peer__workavatar {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  background: var(--surface-3);
+  color: var(--fg-muted);
+}
+.scr-peer__workwho {
+  min-inline-size: 0;
+}
+.scr-peer__workname {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-peer__workmeta {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.scr-peer__workfile {
+  margin-inline-start: auto;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.scr-peer__cover {
+  block-size: 200px;
+}
+
+/* --------------------------------------------------------------- the form */
+
+.scr-peer__form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.scr-peer__criteria {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.scr-peer__crit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.scr-peer__critlabel {
+  flex: 1;
+  min-inline-size: 130px;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.scr-peer__dots {
+  display: flex;
+  gap: 5px;
+}
+.scr-peer__dot {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--fg-subtle);
+}
+.scr-peer__dot.is-on {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.scr-peer__note {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.scr-peer__notelabel {
+  display: flex;
+  align-items: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.scr-peer__words {
+  margin-inline-start: auto;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--fg-subtle);
+}
+.scr-peer__words.is-good {
+  color: var(--pos);
+}
+.scr-peer__notefld {
+  min-block-size: 130px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.scr-peer__send {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-wrap: wrap;
+}
+.scr-peer__anon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+}
+.scr-peer__anonbtn {
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.scr-peer__sendbtn {
+  margin-inline-start: auto;
+}
+
+/* ------------------------------------------------------- reviews received */
+
+.scr-peer__gothead {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-peer__gotsub {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+.scr-peer__gotrow {
+  display: flex;
+  gap: 13px;
+  padding: 18px 20px;
+  border-block-end: 1px solid var(--border);
+}
+/* The comp drew a hairline along the bottom edge of the rounded card. */
+.scr-peer__gotrow:last-child {
+  border-block-end: none;
+}
+.scr-peer__gotavatar {
+  inline-size: 38px;
+  block-size: 38px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  background: var(--surface-3);
+  color: var(--fg-muted);
+}
+.scr-peer__gotbody {
+  flex: 1;
+  min-inline-size: 0;
+}
+.scr-peer__gotmeta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.scr-peer__gotwho {
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-peer__gotat {
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+.scr-peer__gotscore {
+  margin-inline-start: auto;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--pos);
+}
+.scr-peer__gottext {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+.scr-peer__thank {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-block-start: 11px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fg-subtle);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.scr-peer__thank[aria-pressed="true"] {
+  color: var(--pos);
+}

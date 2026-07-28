@@ -1,1 +1,188 @@
-/* screen-compare.css — Compare. */
+/*
+ * screen-compare.css — Self-paced or cohort.
+ *
+ * The comp switched both grids at a JS width of 720; that number is one of the
+ * app's sanctioned thresholds, so it is a real media query here — the columns
+ * stack and the comparison table narrows its label column below it.
+ *
+ * Rules that override a shared component class are scoped with the screen
+ * class, so the cascade never depends on which sheet loaded last.
+ */
+
+/* The comp's compare page is 940px wide — a shade over --narrow (880). */
+.lp-page.scr-compare {
+  max-inline-size: 940px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.scr-compare .cp-intro {
+  max-inline-size: 560px;
+}
+.scr-compare .cp-intro__title {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-compare .cp-intro__lede {
+  margin: 9px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+/* ---------------------------------------------------------- the two cards */
+
+.scr-compare .cp-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 720px) {
+  .scr-compare .cp-cols {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.scr-compare .cp-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border-radius: 20px;
+  /* 1.5px in both states so picking a column cannot shift the layout. */
+  border: 1.5px solid var(--border);
+}
+.scr-compare .cp-col.is-picked {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.scr-compare .cp-col__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scr-compare .cp-col__ico {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.scr-compare .cp-col.is-picked .cp-col__ico {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.scr-compare .cp-col__title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.scr-compare .cp-pick {
+  margin-inline-start: auto;
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.scr-compare .cp-col__price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.scr-compare .cp-col__amount {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.scr-compare .cp-col__per {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+}
+.scr-compare .cp-col__blurb {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+/* Inverted while unpicked, accent once chosen — the comp's two-state CTA. */
+.scr-compare .cp-col__cta {
+  block-size: 46px;
+  border-radius: 13px;
+  border: none;
+  font-size: 14.5px;
+  font-weight: 800;
+  background: var(--fg);
+  color: var(--bg);
+}
+.scr-compare .cp-col__cta.is-picked {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* -------------------------------------------------------------- the table */
+
+.scr-compare .cp-table {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.scr-compare .cp-table__head,
+.scr-compare .cp-table__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 1fr 1fr;
+  gap: 12px;
+  padding-inline: 20px;
+  border-block-end: 1px solid var(--border);
+}
+@media (min-width: 720px) {
+  .scr-compare .cp-table__head,
+  .scr-compare .cp-table__row {
+    grid-template-columns: minmax(0, 1.4fr) 1fr 1fr;
+  }
+}
+.scr-compare .cp-table__head {
+  padding-block: 13px;
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+  text-align: center;
+}
+.scr-compare .cp-table__row {
+  padding-block: 14px;
+  align-items: center;
+}
+.scr-compare .cp-table__row:last-child {
+  border-block-end: none;
+}
+.scr-compare .cp-table__k {
+  font-size: 13.5px;
+  font-weight: 700;
+  min-inline-size: 0;
+}
+.scr-compare .cp-table__a,
+.scr-compare .cp-table__b {
+  font-size: 13px;
+  text-align: center;
+}
+.scr-compare .cp-table__a {
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+.scr-compare .cp-table__a.is-absent {
+  color: var(--fg-subtle);
+}
+.scr-compare .cp-table__b {
+  font-weight: 700;
+  color: var(--fg);
+}

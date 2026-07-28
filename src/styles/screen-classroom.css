@@ -1,1 +1,525 @@
-/* screen-classroom.css — Classroom. */
+/*
+ * screen-classroom.css — the lesson player, its rail and the tab panes.
+ *
+ * The comp built this layout in JS from `S.w < 1000`. Here 1000px is a real
+ * media query: below it the rail is a drawer the user opens, above it a
+ * sticky 298px column beside the player.
+ *
+ * Prefix is `scr-cl` — the classroom's screen-local namespace, shortened
+ * because it lands on sixty-odd elements.
+ */
+
+.scr-cl {
+  /*
+   * The sticky offset every fixed edge in here hangs off. The header is
+   * 12px padding + a 38px control + 12px padding + a 1px border, which is
+   * the 63px the comp hardcoded in five places.
+   */
+  --scr-cl-head: 63px;
+  min-block-size: calc(100vh - var(--scr-cl-head));
+  align-items: stretch;
+}
+
+@media (min-width: 1000px) {
+  .scr-cl {
+    display: grid;
+    grid-template-columns: 298px minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------ the drawer handle */
+
+.scr-cl__drawer {
+  position: sticky;
+  inset-block-start: var(--scr-cl-head);
+  z-index: 120;
+  background: var(--surface);
+  border-block-end: 1px solid var(--border);
+}
+@media (min-width: 1000px) {
+  .scr-cl__drawer {
+    display: none;
+  }
+}
+
+.scr-cl__drawerbtn {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px clamp(16px, 4vw, 24px);
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+}
+.scr-cl__drawerlead {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.scr-cl__drawerlabel {
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-cl__drawercount {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.scr-cl__drawerico {
+  margin-inline-start: auto;
+  display: flex;
+  color: var(--fg-subtle);
+  transform: rotate(90deg);
+  transition: transform 0.18s ease;
+}
+.scr-cl__drawerbtn[aria-expanded="true"] .scr-cl__drawerico {
+  transform: rotate(-90deg);
+}
+
+/* ----------------------------------------------------------------- the rail */
+
+.scr-cl__side {
+  display: none;
+  background: var(--surface);
+  border-block-end: 1px solid var(--border);
+  max-block-size: 52vh;
+  overflow-y: auto;
+}
+.scr-cl__side.is-open {
+  display: block;
+}
+@media (min-width: 1000px) {
+  /* Wide: always open, sticky beside the player, and its own scroll region. */
+  .scr-cl__side,
+  .scr-cl__side.is-open {
+    display: block;
+    position: sticky;
+    inset-block-start: var(--scr-cl-head);
+    block-size: calc(100vh - var(--scr-cl-head));
+    max-block-size: none;
+    border-block-end: none;
+    border-inline-end: 1px solid var(--border);
+  }
+}
+
+.scr-cl__sidehead {
+  padding: 18px 18px 12px;
+  border-block-end: 1px solid var(--border);
+}
+.scr-cl__sidetitle {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+.scr-cl__sideprog {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-block-start: 11px;
+}
+.scr-cl__sidebar {
+  flex: 1;
+  min-inline-size: 0;
+}
+.scr-cl__sidepct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+
+.scr-cl__mods {
+  padding: 10px;
+}
+.scr-cl__mod {
+  margin-block-end: 6px;
+}
+.scr-cl__modhead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 10px 7px;
+}
+.scr-cl__modnum {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.scr-cl__modtitle {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+.scr-cl__modlock {
+  margin-inline-start: auto;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+  background: var(--surface-3);
+  padding: 3px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.scr-cl__lesson {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  text-align: start;
+  font: inherit;
+}
+.scr-cl__lesson.is-current {
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+.scr-cl__lesson.is-locked {
+  color: var(--fg-subtle);
+  opacity: 0.65;
+}
+.scr-cl__lessonico {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+/* Source order is the comp's precedence: locked beats done beats current. */
+.scr-cl__lesson.is-current .scr-cl__lessonico {
+  color: var(--accent);
+}
+.scr-cl__lesson.is-done .scr-cl__lessonico {
+  color: var(--pos);
+}
+.scr-cl__lesson.is-locked .scr-cl__lessonico {
+  color: var(--fg-subtle);
+}
+.scr-cl__lessontitle {
+  flex: 1;
+  min-inline-size: 0;
+  text-align: start;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scr-cl__lesson.is-current .scr-cl__lessontitle {
+  font-weight: 800;
+}
+.scr-cl__lessondur {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------------------------------- the main */
+
+.scr-cl__main {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.scr-cl__head {
+  padding: 22px clamp(16px, 3vw, 28px) 0;
+}
+.scr-cl__headrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.scr-cl__headtext {
+  min-inline-size: 0;
+}
+.scr-cl__crumb {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+  flex-wrap: wrap;
+}
+.scr-cl__lessonno {
+  font-family: var(--font-mono);
+}
+.scr-cl__title {
+  margin: 7px 0 0;
+  font-size: clamp(22px, 2.6vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.scr-cl__donepill {
+  margin-inline-start: auto;
+}
+.scr-cl__tabs {
+  margin-block-start: 20px;
+}
+
+/* ------------------------------------------------------------- tab panes */
+
+.scr-cl__body {
+  padding: 22px clamp(16px, 3vw, 28px) 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.scr-cl__pane {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-inline-size: 760px;
+}
+
+.scr-cl__overview {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+.scr-cl__points {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.scr-cl__pointshead {
+  font-size: 14px;
+  font-weight: 800;
+}
+.scr-cl__point {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.scr-cl__dot {
+  inline-size: 5px;
+  block-size: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-block-start: 9px;
+}
+
+.scr-cl__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+/* A downloadable is a filename, so it wears the mono treatment. */
+.scr-cl__file {
+  block-size: 36px;
+  padding-inline: 13px;
+  border-radius: 10px;
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.scr-cl__transcript {
+  display: flex;
+  flex-direction: column;
+  max-inline-size: 760px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.scr-cl__cue {
+  display: flex;
+  gap: 14px;
+  padding: 13px 16px;
+  border: none;
+  border-block-end: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  text-align: start;
+  font: inherit;
+}
+/* The comp drew this rule on the last row too, hard against the rounded
+   bottom edge of the card. Dropped. */
+.scr-cl__cue:last-child {
+  border-block-end: none;
+}
+.scr-cl__cue.is-active {
+  background: var(--accent-soft);
+}
+.scr-cl__cuet {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--accent);
+  flex-shrink: 0;
+  padding-block-start: 2px;
+}
+.scr-cl__cues {
+  text-align: start;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+.scr-cl__notes {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-inline-size: 760px;
+}
+.scr-cl__notearea {
+  min-block-size: 150px;
+  padding: 15px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+.scr-cl__noterow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.scr-cl__notesaved {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+
+/* ----------------------------------------------------------- the Q&A tab */
+
+.scr-cl__ask {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+}
+.scr-cl__askinput {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 44px;
+  border-radius: 13px;
+}
+.scr-cl__askbtn {
+  block-size: 44px;
+  border-radius: 13px;
+  padding-inline: 17px;
+  font-weight: 700;
+}
+
+.scr-cl__q {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 15px 16px;
+  display: flex;
+  gap: 12px;
+}
+/* The student's own questions read as accent-on-soft, not solid accent. */
+.scr-cl__ava.is-mine {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.scr-cl__qbody {
+  min-inline-size: 0;
+  flex: 1;
+}
+.scr-cl__qmeta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.scr-cl__qwho {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.scr-cl__qat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+.scr-cl__qtext {
+  margin: 7px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.scr-cl__reply {
+  margin-block-start: 11px;
+  padding-inline-start: 13px;
+  border-inline-start: 2px solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.scr-cl__replymeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.scr-cl__replywho {
+  font-size: 13px;
+  font-weight: 800;
+}
+.scr-cl__replyat {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fg-subtle);
+}
+.scr-cl__replytext {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.scr-cl__allq {
+  align-self: flex-start;
+  block-size: 40px;
+  padding-inline: 16px;
+  font-size: 13.5px;
+}
+
+/* ------------------------------------------------------------ the foot bar */
+
+.scr-cl__foot {
+  position: sticky;
+  inset-block-end: 0;
+  margin-block-start: auto;
+  background: var(--surface-header);
+  backdrop-filter: blur(14px);
+  border-block-start: 1px solid var(--border);
+  padding: 12px clamp(16px, 3vw, 28px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.scr-cl__footprog {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-inline-size: 180px;
+  flex: 1;
+}
+.scr-cl__footbar {
+  flex: 1;
+  max-inline-size: 260px;
+}
+.scr-cl__footlabel {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  white-space: nowrap;
+}

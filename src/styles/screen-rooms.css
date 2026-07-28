@@ -1,1 +1,305 @@
-/* screen-rooms.css — Study rooms. */
+/*
+ * screen-rooms.css — Study rooms.
+ *
+ * The comp caps this page at 1080px; the cap goes on the screen's own class,
+ * which sits after components.css so it wins without redefining `lp-page`.
+ *
+ * No breakpoint here: `roomsV()` never reads the window. The card grid is
+ * auto-fill, so the column count is the browser's decision.
+ */
+
+.scr-rooms {
+  max-inline-size: 1080px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ------------------------------------------------------------------- head */
+
+.scr-rooms__head {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.scr-rooms__title {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-rooms__lede {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--fg-muted);
+}
+.scr-rooms__open {
+  margin-inline-start: auto;
+}
+
+/* --------------------------------------------------------- the live strip */
+
+.scr-rooms__live {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--pos) 28%, transparent);
+  background: var(--pos-soft);
+}
+.scr-rooms__livename {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.scr-rooms__livetitle {
+  font-size: 14.5px;
+  font-weight: 800;
+}
+.scr-rooms__timer {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+.scr-rooms__liveright {
+  display: flex;
+  margin-inline-start: auto;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.scr-rooms__dot {
+  inline-size: 9px;
+  block-size: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--fg-subtle);
+}
+.scr-rooms__dot.is-live {
+  background: var(--pos);
+  animation: lp-pulse 1.6s infinite;
+}
+
+.scr-rooms__mute {
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.scr-rooms__mute.is-muted {
+  color: var(--danger);
+}
+
+/* `--bg` is the app's on-strong-fill foreground (see the active filter chip);
+   there is no on-danger token and a hex is not allowed here. */
+.scr-rooms__leave {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 40px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  border: none;
+  background: var(--danger);
+  color: var(--bg);
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+/* ------------------------------------------------------------------ faces */
+
+.scr-rooms__faces {
+  display: flex;
+}
+.scr-rooms__face {
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 800;
+  background: var(--surface-3);
+  color: var(--fg-muted);
+  border: 2px solid var(--surface);
+}
+.scr-rooms__face.is-live {
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+/* Overlap everything but the first, so the stack reads as one group. */
+.scr-rooms__face + .scr-rooms__face {
+  margin-inline-start: -8px;
+}
+
+/* ------------------------------------------------------------- room cards */
+
+.scr-rooms__grid {
+  display: grid;
+  /* `min()` keeps the 320px track from overflowing a narrow phone. */
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 16px;
+}
+
+.scr-rooms__card {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.scr-rooms__card.is-in {
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: var(--accent-soft);
+}
+
+.scr-rooms__cardtop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scr-rooms__cardtitle {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.scr-rooms__status {
+  margin-inline-start: auto;
+}
+
+.scr-rooms__topic {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+
+.scr-rooms__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.scr-rooms__count {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+
+.scr-rooms__cardfoot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--border);
+}
+.scr-rooms__when {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+}
+
+.scr-rooms__cta {
+  margin-inline-start: auto;
+  block-size: 38px;
+  padding-inline: 16px;
+  border-radius: 11px;
+  font-size: 13px;
+}
+/* "You are in" is a state label, not a dimmed action — keep it fully opaque. */
+.scr-rooms__cta.is-in,
+.scr-rooms__cta.is-in:disabled {
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+  opacity: 1;
+}
+
+/* ------------------------------------------------------- standing sessions */
+
+.scr-rooms__standhead {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scr-rooms__standico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.scr-rooms__standtitle {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-rooms__standnote {
+  margin-inline-start: auto;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+}
+
+.scr-rooms__standrow {
+  padding-inline: 20px;
+  flex-wrap: wrap;
+}
+.scr-rooms__standicon {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.scr-rooms__standbody {
+  flex: 1;
+  min-inline-size: 160px;
+}
+.scr-rooms__standname {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.scr-rooms__standsub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.scr-rooms__standwhen {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.scr-rooms__rsvp {
+  block-size: 36px;
+  padding-inline: 14px;
+  border-radius: 11px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.scr-rooms__rsvp.is-on {
+  border-color: transparent;
+  background: var(--pos-soft);
+  color: var(--pos);
+}

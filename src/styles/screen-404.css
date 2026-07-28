@@ -1,1 +1,51 @@
-/* screen-404.css — 404. */
+/* screen-404.css — 404. A single centred column; no breakpoints needed. */
+
+.scr-404.lp-page {
+  padding-block: clamp(60px, 12vw, 120px);
+}
+
+.scr-404__inner {
+  max-inline-size: 560px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.scr-404__code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--fg-subtle);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 7px 13px;
+  border-radius: 999px;
+}
+.scr-404__title {
+  margin: 6px 0 0;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-404__body {
+  margin: 0;
+  max-inline-size: 420px;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+.scr-404__cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-block-start: 8px;
+}
+.scr-404__btn {
+  block-size: 46px;
+  border-radius: 13px;
+  font-size: 14.5px;
+}

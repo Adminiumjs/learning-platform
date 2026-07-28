@@ -1,12 +1,142 @@
-/* PORT-STUB: saved — replace with the ported screen. */
+/*
+ * Saved — the courses the student bookmarked but has not bought.
+ *
+ * Two of them, because a saved list of one is not a list. Removing a course is
+ * undoable from the toast, which is the whole reason `svRemoved` is a map of
+ * ids rather than a filtered array: nothing is really deleted.
+ */
 
-import { EmptyState } from "../components";
+import {
+  ButtonPrimary,
+  ButtonSecondary,
+  Card,
+  CoverChip,
+  EmptyState,
+  Icon,
+  IconButton,
+  PageHead,
+  Pill,
+} from "../components";
+import { dataSource } from "../data/source";
+import type { Course } from "../data/types";
+import { fmtDate } from "../lib/schedule";
+import { useAppStore } from "../state/store";
 import "../styles/screen-saved.css";
 
+/**
+ * The two saved courses, in the comp's order (Portfolio Studio, then Motion).
+ * Ids rather than array positions, so reordering the catalogue cannot silently
+ * change what is on this page.
+ */
+const SAVED_IDS = ["PF-310", "MO-220"];
+
+/**
+ * When the next cohort opens. It is deliberately *not* on the demo clock: the
+ * clock runs cohort 03, and this is the intake after it.
+ */
+const NEXT_COHORT_START = new Date(2026, 8, 7);
+
 export default function Saved() {
+  const svRemoved = useAppStore((s) => s.svRemoved);
+  const set = useAppStore((s) => s.set);
+  const go = useAppStore((s) => s.go);
+  const openCourse = useAppStore((s) => s.openCourse);
+  const showToast = useAppStore((s) => s.showToast);
+
+  const catalogue = dataSource.courses();
+  const list = SAVED_IDS.map((id) => catalogue.find((c) => c.id === id))
+    .filter((c): c is Course => Boolean(c))
+    .filter((c) => !svRemoved[c.id]);
+
+  const remove = (c: Course) => {
+    set({ svRemoved: { ...svRemoved, [c.id]: 1 } });
+    showToast("Removed from saved.", "bookmark-x", "Undo", () => {
+      /* Read the live map, not the closed-over one — other rows may have gone since. */
+      const current = { ...useAppStore.getState().svRemoved };
+      delete current[c.id];
+      set({ svRemoved: current });
+    });
+  };
+
   return (
     <div className="lp-page scr-saved">
-      <EmptyState icon="box" title="Saved courses" body="Not ported yet." />
+      <PageHead
+        title="Saved"
+        lede={
+          list.length
+            ? `${list.length} saved · we will tell you when a cohort opens`
+            : "Nothing saved right now."
+        }
+        action={
+          <ButtonSecondary className="sv-head__cta" onClick={() => go("catalog")}>
+            Browse courses
+          </ButtonSecondary>
+        }
+      />
+
+      {list.length ? (
+        <div className="sv-list">
+          {list.map((c) => {
+            const cohort = c.kind === "cohort";
+            return (
+              <Card key={c.id} className="sv-row" interactive>
+                <CoverChip tint={c.tint} icon={c.icon} size="lg" iconSize={24} />
+
+                <div className="sv-row__body">
+                  <div className="sv-row__head">
+                    <span className="sv-row__title">{c.title}</span>
+                    <Pill tone={cohort ? "accent" : "neutral"}>
+                      {cohort ? `Cohort · starts ${fmtDate(NEXT_COHORT_START)}` : "Self-paced"}
+                    </Pill>
+                  </div>
+                  <p className="sv-row__sub">{c.blurb}</p>
+                  {cohort ? (
+                    <p className="sv-row__notify">
+                      <Icon name="bell" size={14} />
+                      You will be emailed when seats open
+                    </p>
+                  ) : null}
+                </div>
+
+                <span className="sv-row__price lp-mono">${c.price}</span>
+
+                <div className="sv-row__acts">
+                  <ButtonPrimary className="sv-row__cta" onClick={() => openCourse(c.id)}>
+                    {cohort ? "Join the waitlist" : "Enrol now"}
+                  </ButtonPrimary>
+                  <IconButton
+                    icon="bookmark-x"
+                    className="sv-row__remove"
+                    title={`Remove ${c.title} from saved`}
+                    onClick={() => remove(c)}
+                  />
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      ) : (
+        /* The comp's empty state carried a filled CTA; the shared one is
+           bordered, which is the house treatment for a secondary route out. */
+        <EmptyState
+          className="sv-empty"
+          icon="bookmark"
+          title="Nothing saved yet."
+          body="Save a course from the catalog and we'll tell you when the next cohort opens."
+          action={{ label: "Browse courses", onClick: () => go("catalog") }}
+        />
+      )}
+
+      <div className="sv-compare">
+        <Icon name="git-compare" size={18} className="sv-compare__ico" />
+        <span className="sv-compare__text">
+          Not sure between self-paced and a cohort? They teach the same thing at very
+          different speeds.
+        </span>
+        <ButtonSecondary className="sv-compare__cta" onClick={() => go("compare")}>
+          Compare them
+        </ButtonSecondary>
+      </div>
     </div>
   );
 }

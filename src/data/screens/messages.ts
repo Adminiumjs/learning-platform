@@ -1,0 +1,135 @@
+/*
+ * Messages — page-local seed.
+ *
+ * Four private threads between Yara and four of her students. This is not the
+ * public Q&A (`dataSource.seedQuestions()`): nobody but the two people in a
+ * thread ever sees it, so it stays out of the shared contract data.
+ *
+ * The names are roster names on purpose. Tomás and Marcus both appear in
+ * `dataSource.students()`, and Marcus is the one sitting at 27% that the
+ * roster flags as behind — the two screens are describing the same person.
+ */
+
+export interface ChatMessage {
+  /** True when Yara wrote it — her bubbles sit on the end side, in accent. */
+  me: boolean;
+  text: string;
+  at: string;
+}
+
+export interface Conversation {
+  id: string;
+  who: string;
+  /** Two-letter monogram. The app renders no avatar images. */
+  ini: string;
+  /** Age of the last message, for the list column. */
+  at: string;
+  unread: boolean;
+  /**
+   * The standing line under the name in the thread header.
+   *
+   * The comp built this with an inline `id === 'm2'` test; carrying it as a
+   * field keeps the special case out of the render and lets a fifth thread say
+   * something else without touching the screen.
+   */
+  standing: string;
+  msgs: ChatMessage[];
+}
+
+export const CONVERSATIONS: Conversation[] = [
+  {
+    id: "m1",
+    who: "Tomás Lindqvist",
+    ini: "TL",
+    at: "2h",
+    unread: true,
+    standing: "on track",
+    msgs: [
+      {
+        me: false,
+        text: "Quick one — I'm going to miss Thursday, my daughter has a school thing. Is the recording up the same night?",
+        at: "Today 08:14",
+      },
+      {
+        me: true,
+        text: "It is, usually by 21:00. Watch it and send me your specimen anyway — I'll write notes on it so you're not behind.",
+        at: "Today 08:31",
+      },
+      {
+        me: false,
+        text: "That's very kind. I'll have it with you Friday morning.",
+        at: "Today 09:02",
+      },
+    ],
+  },
+  {
+    id: "m2",
+    who: "Marcus Feld",
+    ini: "MF",
+    at: "3d",
+    unread: true,
+    standing: "27% through · behind",
+    msgs: [
+      {
+        me: true,
+        text: "Marcus — you've been quiet since week 1 and I'd rather ask than assume. Anything I can do?",
+        at: "Fri 17:20",
+      },
+      {
+        me: false,
+        text: "Work exploded. I want to keep going, I just can't do three hours right now.",
+        at: "Sat 10:05",
+      },
+    ],
+  },
+  {
+    id: "m3",
+    who: "Priya Raman",
+    ini: "PR",
+    at: "1w",
+    unread: false,
+    standing: "on track",
+    msgs: [
+      {
+        me: false,
+        text: "Thank you for the note on my token sheet. The bit about naming by job finally clicked.",
+        at: "Mon 12:40",
+      },
+      {
+        me: true,
+        text: "That's the whole course in one sentence. Nicely done.",
+        at: "Mon 13:02",
+      },
+    ],
+  },
+  {
+    id: "m4",
+    who: "Freya Nilsen",
+    ini: "FN",
+    at: "2w",
+    unread: false,
+    standing: "on track",
+    msgs: [
+      {
+        me: false,
+        text: "Is it alright if I share the audit template with my team? They are not enrolled.",
+        at: "14 Jul",
+      },
+      {
+        me: true,
+        text: "Please do. It only works if people use it.",
+        at: "14 Jul",
+      },
+    ],
+  },
+];
+
+/**
+ * Which thread belongs to a student, or -1 when there is none.
+ *
+ * The student-detail screen uses it to open the right conversation instead of
+ * guessing an index — see the note on its "Message" button.
+ */
+export function conversationIndexFor(name: string): number {
+  return CONVERSATIONS.findIndex((c) => c.who === name);
+}

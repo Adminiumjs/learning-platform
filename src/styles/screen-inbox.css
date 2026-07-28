@@ -1,1 +1,128 @@
-/* screen-inbox.css — Q&A inbox. */
+/*
+ * screen-inbox.css — Q&A inbox.
+ *
+ * No breakpoint: one column at every size, which is what the comp did too.
+ * The metadata row wraps, so a long lesson title pushes the status pill to the
+ * next line rather than squeezing the name.
+ */
+
+.qi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.qi-card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+/* An answered card stays in place, dimmed — the receipt, not the task. */
+.qi-card.is-done {
+  opacity: 0.6;
+}
+
+.qi-top {
+  display: flex;
+  gap: 13px;
+}
+.qi-body {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.qi-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.qi-who {
+  font-size: 14px;
+  font-weight: 800;
+}
+.qi-at {
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+.qi-lesson {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.qi-state {
+  margin-inline-start: auto;
+}
+
+.qi-text {
+  margin: 9px 0 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- the reply */
+
+.qi-reply {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-block-start: 14px;
+}
+.qi-draft {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 82px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.qi-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-block-start: 11px;
+  /* Line the buttons up under the textarea, past the avatar gutter. */
+  padding-inline-start: 43px;
+}
+.qi-post {
+  block-size: 40px;
+  padding-inline: 17px;
+  border-radius: 11px;
+  font-size: 13.5px;
+}
+.qi-suggest {
+  block-size: 40px;
+  padding-inline: 14px;
+  border-radius: 11px;
+  font-size: 13.5px;
+  color: var(--fg-muted);
+}
+
+/* ------------------------------------------------------- posted answer */
+
+.qi-answer {
+  display: flex;
+  gap: 11px;
+  margin-block-start: 13px;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+.qi-answer__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+/* --------------------------------------------------------------- empty */
+
+.qi-empty {
+  border: 1px dashed var(--border-strong);
+  border-radius: 20px;
+}

@@ -1,1 +1,263 @@
-/* screen-teach.css — Teach dashboard. */
+/*
+ * screen-teach.css — Teach dashboard.
+ *
+ * The comp split this layout on `S.w < 1000`; here that is the one media query
+ * below. Everything else is a plain grid or flex row, so the markup renders in
+ * full at every size and CSS decides the shape.
+ */
+
+/* ------------------------------------------------------------------- head */
+
+.td-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  /* The shared eyebrow is uppercase accent; the dashboard's is quiet metadata. */
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+}
+
+.td-clock {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ stats */
+
+.td-stats {
+  margin-block-end: 22px;
+}
+
+/* The tinted count on a tile that wants acting on. Zero stays body-coloured. */
+.td-hot--warn {
+  color: var(--warn);
+}
+.td-hot--info {
+  color: var(--info);
+}
+
+/* ------------------------------------------------------------------- grid */
+
+.td-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 2.5vw, 22px);
+  align-items: start;
+}
+@media (min-width: 1000px) {
+  .td-grid {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+}
+
+/* ------------------------------------------------------- needs-you-now */
+
+.td-panel {
+  min-inline-size: 0;
+}
+
+.td-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.td-panel__ico {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.td-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.td-panel__count {
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+
+.td-need {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 20px;
+  border: none;
+  border-block-end: 1px solid var(--border);
+  background: transparent;
+  text-align: start;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+.td-need:last-child {
+  border-block-end: none;
+}
+
+.td-need__ico {
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.td-need__ico--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.td-need__ico--info {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.td-need__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.td-need__title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.td-need__sub {
+  display: block;
+  margin-block-start: 3px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.td-need__go {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+
+/* -------------------------------------------------------------- side rail */
+
+.td-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+
+.td-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.td-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block-end: 6px;
+}
+.td-card__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.td-card__ico--accent {
+  color: var(--accent);
+}
+.td-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.td-card__sub {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+/* ------------------------------------------------------------- the chart */
+
+.td-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  block-size: 132px;
+  margin-block-start: 18px;
+}
+.td-bar {
+  flex: 1;
+  block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-inline-size: 0;
+}
+.td-bar__n {
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+/* `block-size` is the one dynamic value and arrives as an inline style. */
+.td-bar__fill {
+  inline-size: 100%;
+  border-radius: 9px 9px 4px 4px;
+  background: var(--accent);
+}
+.td-bar__fill--warn {
+  background: var(--warn);
+  opacity: 0.85;
+}
+.td-bar__label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------- next live session */
+
+.td-live__title {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+.td-live__when {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--fg-muted);
+}
+
+.td-count {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-block-start: 12px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.td-count__ico {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.td-count__clock {
+  font-size: 14.5px;
+  font-weight: 600;
+}

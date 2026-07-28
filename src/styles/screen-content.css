@@ -1,1 +1,149 @@
-/* screen-content.css — Course content. */
+/*
+ * screen-content.css — Course content.
+ *
+ * No breakpoint: the comp measured nothing on this screen. Both the module
+ * header and the lesson row are wrapping flex rows, so a lesson's release
+ * controls drop under its title on a phone without a media query.
+ */
+
+/* The comp caps this screen at 1080 — narrower than the default page so a
+   lesson row stays scannable, wider than `--narrow` so the release switch and
+   the date fit on one line. */
+.scr-content.lp-page {
+  max-inline-size: 1080px;
+}
+
+.cc-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------------------------------------------------------------- module */
+
+.cc-mod {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.cc-mod__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 18px;
+  background: var(--surface-2);
+  border-block-end: 1px solid var(--border);
+}
+.cc-mod__num {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.cc-mod__title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.cc-mod__sub {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+/* Affordance without a behaviour — see the note in Content.tsx. */
+.cc-grip {
+  color: var(--fg-subtle);
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.cc-draft {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  block-size: 30px;
+  padding-inline: 12px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: var(--pos-soft);
+  color: var(--pos);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cc-draft.is-draft {
+  border-color: var(--border-strong);
+  background: var(--surface);
+  color: var(--fg-muted);
+}
+
+/* ---------------------------------------------------------------- lesson */
+
+.cc-lesson {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 13px 18px;
+  border-block-end: 1px solid var(--border);
+}
+
+/* The kind tag is a squared-off pill — a label, not a status. */
+.cc-kind {
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 800;
+}
+
+.cc-lesson__title {
+  flex: 1;
+  min-inline-size: 150px;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-lesson__dur {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+
+.cc-seg {
+  flex-shrink: 0;
+}
+
+.cc-release {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--fg-subtle);
+}
+.cc-release--live {
+  color: var(--pos);
+}
+
+/* ------------------------------------------------------------ add lesson */
+
+.cc-add {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 18px;
+  border: none;
+  background: transparent;
+  color: var(--fg-subtle);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+}

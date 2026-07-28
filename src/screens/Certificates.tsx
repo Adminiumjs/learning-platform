@@ -1,12 +1,126 @@
-/* PORT-STUB: certificates — replace with the ported screen. */
+/*
+ * Certificates — the instructor side.
+ *
+ * Five awarded, and the one thing an instructor actually wants control over:
+ * the sentence printed under the student's name. Editing it re-renders the
+ * preview live, which is the entire argument for putting the two side by side.
+ *
+ * "View" crosses the persona line into the student's certificate screen — the
+ * same artefact, seen from the other end.
+ */
 
-import { EmptyState } from "../components";
+import {
+  Avatar,
+  ButtonPrimary,
+  ButtonSecondary,
+  Field,
+  Icon,
+  PageHead,
+  TextArea,
+  Toggle,
+} from "../components";
+import { AWARDED, VERIFY_URL } from "../data/screens/certificates";
+import { useAppStore } from "../state/store";
 import "../styles/screen-certificates.css";
 
+function initials(name: string): string {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2);
+}
+
 export default function Certificates() {
+  const ctWording = useAppStore((s) => s.ctWording);
+  const ctExam = useAppStore((s) => s.ctExam);
+  const set = useAppStore((s) => s.set);
+  const go = useAppStore((s) => s.go);
+  const showToast = useAppStore((s) => s.showToast);
+
+  /* The comp hardcoded the preview name; reading the first award keeps the
+     specimen and the list from drifting apart. */
+  const specimen = AWARDED[0]?.who ?? "";
+
   return (
     <div className="lp-page scr-certificates">
-      <EmptyState icon="box" title="Certificates" body="Not ported yet." />
+      <PageHead
+        className="ct-head"
+        title="Certificates"
+        lede={`${AWARDED.length} awarded across two cohorts · the wording is yours to change`}
+      />
+
+      <div className="ct-grid">
+        <div className="lp-list ct-awarded">
+          <div className="ct-awarded__head">
+            <span className="ct-card__title">Awarded</span>
+            <span className="lp-mono ct-awarded__count">{AWARDED.length} total</span>
+          </div>
+
+          {AWARDED.map((c) => (
+            <div className="lp-list__row ct-row" key={c.id}>
+              <Avatar initials={initials(c.who)} size="sm" className="ct-ava" />
+              <span className="ct-row__text">
+                <span className="ct-row__who">{c.who}</span>
+                <span className="lp-mono ct-row__id">{c.id}</span>
+              </span>
+              <span className="ct-row__at">{c.at}</span>
+              <ButtonSecondary className="ct-row__view" onClick={() => go("certificate")}>
+                View
+              </ButtonSecondary>
+            </div>
+          ))}
+        </div>
+
+        <div className="ct-side">
+          <div className="ct-card">
+            <div className="ct-card__title">Wording</div>
+
+            <Field label="Line under the name" htmlFor="ct-wording">
+              <TextArea
+                id="ct-wording"
+                value={ctWording}
+                onChange={(v) => set({ ctWording: v })}
+                className="ct-wording"
+              />
+            </Field>
+
+            <div className="ct-preview">
+              <span className="ct-preview__eyebrow">Preview</span>
+              <span className="ct-preview__name">{specimen}</span>
+              <span className="ct-preview__line">{ctWording}</span>
+            </div>
+
+            <div className="ct-examrow">
+              <span className="ct-examrow__label">Require the exam to pass</span>
+              <Toggle
+                checked={ctExam}
+                onChange={(next) => set({ ctExam: next })}
+                label="Require the exam to pass"
+                hideLabel
+              />
+            </div>
+
+            <ButtonPrimary
+              className="ct-save"
+              onClick={() => showToast("Certificate template saved.", "check")}
+            >
+              Save template
+            </ButtonPrimary>
+          </div>
+
+          <div className="ct-verify">
+            <div className="ct-verify__head">
+              <Icon name="shield-check" size={16} className="ct-verify__ico" />
+              <span className="ct-verify__title">Verification</span>
+            </div>
+            <p className="ct-verify__body">
+              Every certificate carries a code anyone can check at
+            </p>
+            <span className="lp-mono ct-verify__url">{VERIFY_URL}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,1 +1,163 @@
 /* screen-offline.css — Offline. */
+
+.lp-page.scr-offline {
+  max-inline-size: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* --------------------------------------------------------- the warn strip */
+
+/*
+ * Close kin to `lp-callout--warn`, but the callout stacks its body; this one
+ * keeps the retry button on the same line, so it is built here rather than
+ * bending the shared component out of shape.
+ */
+.of-strip {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 18px;
+  border-radius: 16px;
+  background: var(--warn-soft);
+  border: 1px solid color-mix(in srgb, var(--warn) 24%, transparent);
+}
+.of-strip__ico {
+  color: var(--warn);
+  flex-shrink: 0;
+}
+.of-strip__text {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+/* The comp hard coded white on the warn fill; --bg is the theme-aware form. */
+.lp-btn.of-retry {
+  block-size: 38px;
+  padding-inline: 15px;
+  border-radius: 11px;
+  background: var(--warn);
+  color: var(--bg);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- the hero */
+
+.of-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-block: clamp(20px, 5vw, 44px);
+}
+.of-hero__ico {
+  inline-size: 64px;
+  block-size: 64px;
+  border-radius: 20px;
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.of-hero__title {
+  margin: 4px 0 0;
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.of-hero__body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  max-inline-size: 420px;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------ what still plays */
+
+.of-list__head {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.of-list__ico {
+  color: var(--pos);
+  flex-shrink: 0;
+}
+.of-list__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.of-list__count {
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+.lp-list__row.of-row {
+  padding: 14px 20px;
+  gap: 13px;
+  cursor: pointer;
+}
+.of-row__play {
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+.of-row__title {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+.of-row__size {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.of-manage {
+  inline-size: 100%;
+  padding: 14px 20px;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------ the outbox */
+
+.of-queue {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.of-queue__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.of-queue__text {
+  font-size: 13.5px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}

@@ -1,1 +1,585 @@
-/* screen-mobile.css — Mobile app. */
+/*
+ * screen-mobile.css — The app.
+ *
+ * The device is drawn here rather than imported: the comp pulled in an
+ * `IOSDevice` component this app does not have, so the frame is a bezel, an
+ * island and a home indicator in tokens — no bitmap, no external anything.
+ *
+ * The phone is a fixed 402px column, so nothing inside it branches on the
+ * viewport; the only responsive rules are the frame's own inline-size and the
+ * block-size cap that keeps an 874px device on a laptop screen. The app's
+ * scroller absorbs the difference.
+ *
+ * Rules that override a shared component class are scoped with the screen
+ * class, so the cascade never depends on which sheet loaded last.
+ */
+
+.scr-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* ------------------------------------------------------------------ intro */
+
+.scr-mobile .mb-intro {
+  max-inline-size: 560px;
+  text-align: center;
+}
+.scr-mobile .mb-intro__title {
+  margin: 0;
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-mobile .mb-intro__body {
+  margin: 9px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+.scr-mobile .mb-chips {
+  justify-content: center;
+}
+
+/* ----------------------------------------------------------------- device */
+
+/*
+ * `inline-size: 402px` with a max, not `min(402px, 100%)`: the page is a
+ * shrink-to-fit column, so a percentage inline-size would resolve against an
+ * indefinite width and collapse the device to its padding.
+ */
+.scr-mobile .mb-device {
+  position: relative;
+  flex-shrink: 0;
+  inline-size: 402px;
+  max-inline-size: 100%;
+  block-size: min(874px, calc(100svh - 120px));
+  min-block-size: 560px;
+  padding: 10px;
+  border-radius: 54px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+}
+/* The sensor housing. Centred without a transform so RTL costs nothing. */
+.scr-mobile .mb-device__island {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 22px;
+  inset-inline: 0;
+  margin-inline: auto;
+  inline-size: 104px;
+  block-size: 28px;
+  border-radius: 999px;
+  background: var(--border-strong);
+}
+
+.scr-mobile .mb-app {
+  block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 44px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* ------------------------------------------------------------- app header */
+
+.scr-mobile .mb-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding-block: 56px 12px;
+  padding-inline: 20px;
+}
+.scr-mobile .mb-head__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.scr-mobile .mb-head__kicker {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+}
+.scr-mobile .mb-head__title {
+  margin-block-start: 3px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+.scr-mobile .mb-head__me {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 38px;
+  block-size: 38px;
+  border-radius: 13px;
+  background: var(--surface-3);
+  color: var(--fg-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.scr-mobile .mb-body {
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 6px 18px;
+  padding-inline: 20px;
+}
+
+/* --------------------------------------------------------------- the hero */
+
+/* The classroom's player, shrunk to a phone card. */
+.scr-mobile .mb-herowrap {
+  position: relative;
+  flex: 0 0 190px;
+}
+.scr-mobile .mb-hero {
+  block-size: 190px;
+  aspect-ratio: auto;
+  max-block-size: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+/* Same chip as a cover's, in the corner the comp drew it in. */
+.scr-mobile .mb-herowrap__file {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg-subtle);
+  font-size: 10px;
+  font-weight: 500;
+}
+.scr-mobile .mb-hero .lp-player__glyph {
+  inline-size: 74px;
+  block-size: 74px;
+}
+.scr-mobile .mb-hero .lp-player__play {
+  inline-size: 58px;
+  block-size: 58px;
+}
+/* The player's own filename would double the corner chip and crush the
+   scrubber; the shared rule already hides it under 720px, this makes it
+   unconditional inside the device. */
+.scr-mobile .mb-hero .lp-player__file {
+  display: none;
+}
+.scr-mobile .mb-hero .lp-player__bar {
+  gap: 9px;
+  padding: 11px 13px;
+}
+.scr-mobile .mb-hero .lp-player__time {
+  font-size: 10.5px;
+}
+
+/* ------------------------------------------------------------- continue */
+
+.scr-mobile .mb-continue,
+.scr-mobile .mb-week {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.scr-mobile .mb-continue {
+  gap: 9px;
+}
+.scr-mobile .mb-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-continue__title {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+.scr-mobile .mb-continue__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.scr-mobile .mb-continue__bar {
+  flex: 1;
+  block-size: 7px;
+}
+.scr-mobile .mb-continue__pct {
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+
+/* ------------------------------------------------------------- this week */
+
+.scr-mobile .mb-week {
+  gap: 10px;
+}
+.scr-mobile .mb-week__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.scr-mobile .mb-week__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-mobile .mb-week__date {
+  margin-inline-start: auto;
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+
+.scr-mobile .mb-lesson {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--fg);
+  text-align: start;
+}
+.scr-mobile .mb-lesson.is-current {
+  border-color: color-mix(in srgb, var(--accent) 26%, transparent);
+  background: var(--accent-soft);
+}
+.scr-mobile .mb-lesson__tile {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 12px;
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-lesson.is-done .mb-lesson__tile {
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+/* The comp tinted the current row and its tile both `accent-soft`, which left
+   the tile invisible on the row it sits on. One step stronger fixes it. */
+.scr-mobile .mb-lesson.is-current .mb-lesson__tile {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+.scr-mobile .mb-lesson__text {
+  flex: 1;
+  min-inline-size: 0;
+  text-align: start;
+}
+.scr-mobile .mb-lesson__title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scr-mobile .mb-lesson__sub {
+  display: block;
+  margin-block-start: 3px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-lesson.is-current .mb-lesson__sub {
+  color: var(--accent);
+}
+.scr-mobile .mb-lesson__go {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+
+/* ------------------------------------------------------------ live strip */
+
+.scr-mobile .mb-live {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 16px;
+  border-radius: 18px;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.scr-mobile .mb-live__ico {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.scr-mobile .mb-live__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.scr-mobile .mb-live__title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.scr-mobile .mb-live__count {
+  display: block;
+  margin-block-start: 3px;
+  font-size: 11.5px;
+  color: var(--fg-muted);
+}
+.scr-mobile .mb-live__cta {
+  flex-shrink: 0;
+  block-size: 34px;
+  padding-inline: 13px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+/* ---------------------------------------------------------------- threads */
+
+.scr-mobile .mb-thread {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 15px 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--fg);
+  text-align: start;
+}
+.scr-mobile .mb-thread__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.scr-mobile .mb-thread__at {
+  font-size: 10.5px;
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-thread__title {
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+.scr-mobile .mb-thread__foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-thread__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.scr-mobile .mb-thread__by {
+  margin-inline-start: auto;
+}
+
+/* ------------------------------------------------------------- you tab */
+
+.scr-mobile .mb-you {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.scr-mobile .mb-you__text {
+  min-inline-size: 0;
+}
+.scr-mobile .mb-you__name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.scr-mobile .mb-you__sub {
+  margin-block-start: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+.scr-mobile .mb-stats {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.scr-mobile .mb-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.scr-mobile .mb-stat__value {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.scr-mobile .mb-stat__label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+
+.scr-mobile .mb-rows {
+  flex-shrink: 0;
+}
+.scr-mobile .mb-row {
+  gap: 12px;
+  padding: 14px 16px;
+}
+.scr-mobile .mb-row__ico {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-row__label {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+.scr-mobile .mb-row__value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ now playing */
+
+.scr-mobile .mb-mini {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-inline: 12px;
+  margin-block-end: 6px;
+  padding: 9px 12px;
+  border-radius: 16px;
+  background: var(--surface-3);
+}
+.scr-mobile .mb-mini__tile {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+}
+.scr-mobile .mb-mini__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.scr-mobile .mb-mini__title {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scr-mobile .mb-mini__time {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 10.5px;
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-mini__btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border: none;
+  border-radius: 10px;
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ---------------------------------------------------------------- tab bar */
+
+.scr-mobile .mb-tabs {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  padding-block: 8px 26px;
+  padding-inline: 12px;
+  border-block-start: 1px solid var(--border);
+  background: var(--surface);
+}
+/* The home indicator, which is also why the bar carries 26px of bottom pad. */
+.scr-mobile .mb-tabs::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 9px;
+  inset-inline: 0;
+  margin-inline: auto;
+  inline-size: 128px;
+  block-size: 5px;
+  border-radius: 999px;
+  background: var(--border-strong);
+}
+.scr-mobile .mb-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-block: 8px;
+  border: none;
+  background: transparent;
+  color: var(--fg-subtle);
+}
+.scr-mobile .mb-tab.is-active {
+  color: var(--accent);
+}
+.scr-mobile .mb-tab__label {
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------------- footer */
+
+.scr-mobile .mb-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}

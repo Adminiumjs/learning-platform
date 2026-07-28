@@ -1,1 +1,167 @@
 /* screen-waitlist.css — Waitlist. */
+
+.lp-page.scr-waitlist {
+  max-inline-size: 960px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+/* The page is a flex column with its own gap; the head's margin would double it. */
+.lp-pagehead.wl-head {
+  margin-block-end: 0;
+}
+.lp-btn.wl-all {
+  block-size: 42px;
+  padding-inline: 18px;
+  border-radius: 12px;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------- stats */
+
+.wl-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+}
+.wl-stat {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.wl-stat__value {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.wl-stat__label {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------- table */
+
+.lp-list.wl-table {
+  border-radius: 20px;
+}
+
+/*
+ * Narrow: name and the invite button only.
+ *
+ * The comp collapsed "Joined" and "Why" to 0px columns, which clipped their
+ * text rather than removing it; here the cells drop out of the grid entirely.
+ * The comp measured at 820px — 720 is the app's shared "dense tables shed
+ * their secondary columns" breakpoint, which is the same intent.
+ */
+.wl-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 14px;
+  align-items: center;
+  padding: 13px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.wl-row:last-child {
+  border-block-end: none;
+}
+.wl-col--soft {
+  display: none;
+}
+@media (min-width: 720px) {
+  .wl-row {
+    grid-template-columns: minmax(0, 1.3fr) 110px minmax(0, 1fr) 108px;
+  }
+  .wl-col--soft {
+    display: block;
+  }
+}
+
+.wl-row--head {
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+.wl-row__end {
+  display: flex;
+  justify-content: flex-end;
+  text-align: end;
+}
+
+.wl-who {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-inline-size: 0;
+}
+.lp-avatar.wl-ava {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+/* An invited row goes green all the way to its avatar. */
+.lp-avatar.wl-ava--done {
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+.wl-who__text {
+  min-inline-size: 0;
+}
+.wl-who__name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wl-who__email {
+  display: block;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+
+.wl-at {
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+.wl-why {
+  font-size: 12.5px;
+  color: var(--fg-muted);
+  font-weight: 600;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-btn--secondary.wl-invite {
+  block-size: 34px;
+  padding-inline: 13px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+/*
+ * Invited is a state, not an action — it stops offering to be pressed, and the
+ * `:hover` pair is needed because `lp-gi:hover` would otherwise repaint the
+ * green back to a plain surface.
+ */
+.lp-btn--secondary.wl-invite--done,
+.lp-btn--secondary.wl-invite--done:hover {
+  border-color: transparent;
+  background: var(--pos-soft);
+  color: var(--pos);
+  cursor: default;
+}

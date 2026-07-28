@@ -1,1 +1,239 @@
-/* screen-assignment.css — Assignment. */
+/*
+ * screen-assignment.css — the student's own graded work.
+ *
+ * Three cards stacked in one narrow column; nothing here reflows, so the
+ * screen carries no media query. The comp's inline styles map one-to-one onto
+ * these rules, with its hex literals swapped for the tokens they came from.
+ */
+
+.scr-as {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ------------------------------------------------------------------ head */
+
+.scr-as__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+
+.scr-as__title {
+  margin: 9px 0 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.scr-as__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+/* ------------------------------------------------------------- the cards */
+
+.scr-as__card {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.scr-as__cardtitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-as__cardtitle--sm {
+  font-size: 14px;
+}
+
+.scr-as__brief {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+.scr-as__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.scr-as__files--brief {
+  padding-block-start: 6px;
+}
+
+/* ------------------------------------------------------------- the draft */
+
+.scr-as__text {
+  min-block-size: 170px;
+}
+
+/** The dashed "add" affordance — deliberately not a real file picker. */
+.scr-as__attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  block-size: 34px;
+  padding-inline: 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--fg-subtle);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.scr-as__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.scr-as__note {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+}
+
+/* ----------------------------------------------------------- the receipt */
+
+.scr-as__receipt {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid color-mix(in srgb, var(--pos) 30%, transparent);
+  border-radius: 20px;
+  background: var(--pos-soft);
+  animation: lp-pop 0.24s ease;
+}
+
+.scr-as__receiptico {
+  flex-shrink: 0;
+  color: var(--pos);
+}
+
+.scr-as__receiptbody {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.scr-as__receipttitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--fg);
+}
+
+.scr-as__receiptat {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+/** `pre-line` so the seeded two-paragraph answer keeps its break. */
+.scr-as__receipttext {
+  margin: 11px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  white-space: pre-line;
+}
+
+.scr-as__receipt .scr-as__files {
+  margin-block-start: 12px;
+}
+
+.scr-as__edit {
+  margin-block-start: 14px;
+}
+
+/* ------------------------------------------------------------- the grade */
+
+.scr-as__graded {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: lp-pop 0.24s ease;
+}
+
+.scr-as__gradehead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px;
+  border-block-end: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.scr-as__gradeby {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+}
+
+.scr-as__gradeat {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+
+.scr-as__score {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
+  margin-inline-start: auto;
+}
+
+.scr-as__scorenum {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--pos);
+}
+
+.scr-as__scoremax {
+  font-size: 17px;
+  color: var(--fg-subtle);
+}
+
+.scr-as__gradebody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+}
+
+.scr-as__feedback {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+.scr-as__rubric {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-block-start: 4px;
+}

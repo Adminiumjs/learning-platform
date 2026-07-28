@@ -1,1 +1,137 @@
 /* screen-roster.css — Roster. */
+
+.lp-page.scr-roster {
+  max-inline-size: 1080px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.scr-roster .lp-pagehead {
+  margin-block-end: 0;
+}
+.lp-filterchip.ro-chip {
+  block-size: 34px;
+  padding-inline: 13px;
+  font-size: 12.5px;
+}
+
+/* ---------------------------------------------------------------- table */
+
+.lp-list.ro-table {
+  border-radius: 20px;
+}
+
+/*
+ * Narrow: the student, the bar and the average.
+ *
+ * The comp collapsed "Last active" to a 0px column, which clipped the text
+ * instead of removing it; here the cell leaves the grid altogether. It
+ * measured the window at 820px — 720 is this app's shared "dense tables shed
+ * their secondary columns" breakpoint and carries the same intent, in CSS.
+ */
+.ro-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px 62px;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.ro-row:last-child {
+  border-block-end: none;
+}
+.ro-col--soft {
+  display: none;
+}
+@media (min-width: 720px) {
+  .ro-row {
+    grid-template-columns: minmax(0, 1.4fr) minmax(140px, 1fr) 110px 80px;
+  }
+  .ro-col--soft {
+    display: block;
+  }
+}
+
+.ro-row--head {
+  padding-block: 13px;
+  background: var(--surface-2);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+}
+.ro-row__end {
+  text-align: end;
+}
+
+/* --------------------------------------------------------------- student */
+
+.ro-who {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-inline-size: 0;
+}
+.lp-avatar.ro-ava {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+/* A student who has fallen behind is amber from the avatar out. */
+.lp-avatar.ro-ava--behind {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.ro-who__text {
+  min-inline-size: 0;
+}
+.ro-who__name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-pill.ro-behind {
+  margin-block-start: 4px;
+  font-size: 11px;
+  gap: 5px;
+  padding: 3px 8px;
+}
+
+/* -------------------------------------------------------------- progress */
+
+.ro-prog {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-inline-size: 0;
+}
+.lp-bar.ro-bar {
+  flex: 1;
+  block-size: 7px;
+  min-inline-size: 50px;
+}
+.ro-pct {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  inline-size: 38px;
+  text-align: end;
+}
+
+.ro-last {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+}
+.ro-avg {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: end;
+}
+.ro-avg--strong {
+  color: var(--pos);
+}

@@ -1,1 +1,353 @@
 /* screen-streaks.css — Study streaks. */
+
+.lp-page.scr-streaks {
+  max-inline-size: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------------------------------------------------------------- the hero */
+
+.st-hero {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+  padding: clamp(22px, 3.4vw, 32px);
+  border-radius: 24px;
+  border: 1px solid color-mix(in srgb, var(--warn) 26%, transparent);
+  background: var(--warn-soft);
+}
+.st-hero__main {
+  flex: 1;
+  min-inline-size: 220px;
+}
+.st-hero__count {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.st-hero__flame {
+  color: var(--warn);
+  flex-shrink: 0;
+}
+.st-hero__days {
+  font-size: clamp(40px, 6vw, 58px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.st-hero__unit {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  align-self: flex-end;
+  padding-block-end: 8px;
+}
+.st-hero__blurb {
+  margin: 14px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  max-inline-size: 420px;
+  text-wrap: pretty;
+}
+.st-hero__side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+/* The freeze count reads as a card on the warm hero, not another warn chip. */
+.lp-pill.st-freeze {
+  background: var(--surface);
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+}
+
+/*
+ * "Log today" is deliberately the darkest thing on the screen. The comp hard
+ * coded white on the fill; --bg says the same thing and inverts with the theme.
+ */
+.lp-btn.st-log {
+  block-size: 46px;
+  padding-inline: 20px;
+  border-radius: 13px;
+  font-size: 14.5px;
+  background: var(--fg);
+  color: var(--bg);
+}
+.lp-btn.st-log--done {
+  background: var(--pos);
+  color: var(--bg);
+}
+
+/* ------------------------------------------------------------- the heat map */
+
+.st-heat {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.st-heat__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.st-heat__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.st-legend {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+}
+.st-heat__scroll {
+  overflow-x: auto;
+  padding-block-end: 4px;
+}
+.st-grid {
+  display: flex;
+  gap: 5px;
+  min-inline-size: max-content;
+}
+.st-grid__week {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.st-cell {
+  display: block;
+  inline-size: 15px;
+  block-size: 15px;
+  border-radius: 4px;
+  background: var(--surface-3);
+}
+.st-cell--l1 {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.st-cell--l2 {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.st-cell--l3 {
+  background: var(--accent);
+}
+.st-cell--legend {
+  inline-size: 11px;
+  block-size: 11px;
+  border-radius: 3px;
+}
+
+.st-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-block-start: 6px;
+  border-block-start: 1px solid var(--border);
+}
+.st-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.st-stat__value {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.st-stat__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+
+/* ------------------------------------------------------------ bottom half */
+
+/* The comp measured the window at 900 and swapped a JS flag; this is that. */
+.st-bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .st-bottom {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
+.st-badges {
+  min-inline-size: 0;
+}
+.st-badges__head {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.lp-list__row.st-badge {
+  padding: 15px 20px;
+  gap: 13px;
+}
+.st-badge--locked {
+  opacity: 0.6;
+}
+.st-badge__ico {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.st-badge__ico--locked {
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.st-badge__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.st-badge__title {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+}
+.st-badge__sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+
+.st-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+
+.st-board {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.st-board__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.st-board__ico {
+  color: var(--fg-subtle);
+}
+.st-board__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.st-board__row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.st-ava {
+  inline-size: 30px;
+  block-size: 30px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--surface-3);
+  color: var(--fg-muted);
+}
+.st-ava--me {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.st-board__name {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-board__name--me {
+  font-weight: 800;
+}
+.st-board__days {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+.st-board__days--me {
+  color: var(--warn);
+}
+
+.st-honest {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.st-honest__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.st-honest__ico {
+  color: var(--accent);
+}
+.st-honest__title {
+  font-size: 14px;
+  font-weight: 800;
+}
+.st-honest__body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+.lp-btn--secondary.st-honest__btn {
+  align-self: flex-start;
+  block-size: 38px;
+  padding-inline: 14px;
+  border-radius: 11px;
+  font-size: 13px;
+}

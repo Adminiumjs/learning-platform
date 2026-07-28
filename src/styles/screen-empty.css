@@ -1,1 +1,116 @@
 /* screen-empty.css — Empty states. */
+
+.lp-page.scr-empty {
+  max-inline-size: 1080px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.scr-empty .es-head {
+  margin-block-end: 0;
+}
+
+/*
+ * The comp measured the window and picked a 260px or 300px track. auto-fit
+ * already handles the wrapping; the media query only relaxes the minimum on
+ * small screens, which is all the measurement was ever for.
+ */
+.es-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+@media (min-width: 720px) {
+  .es-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+.es-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The label strip that says which screen this state was lifted out of. */
+.es-card__head {
+  padding: 11px 16px;
+  border-block-end: 1px solid var(--border);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.es-card__where {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+
+.es-card__body {
+  flex: 1;
+  padding: 38px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+.es-card__ico {
+  inline-size: 52px;
+  block-size: 52px;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.es-card__ico--accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.es-card__ico--pos {
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+.es-card__ico--info {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.es-card__ico--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.es-card__ico--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.es-card__ico--neutral {
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.es-card__title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.es-card__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  max-inline-size: 280px;
+  text-wrap: pretty;
+}
+.lp-btn.es-card__cta {
+  margin-block-start: 4px;
+  block-size: 42px;
+  padding-inline: 17px;
+  border-radius: 12px;
+  font-size: 13.5px;
+}

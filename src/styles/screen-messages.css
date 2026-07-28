@@ -1,1 +1,226 @@
 /* screen-messages.css — Messages. */
+
+.lp-page.scr-messages {
+  max-inline-size: 1180px;
+}
+.scr-messages .lp-pagehead {
+  margin-block-end: 18px;
+}
+
+/*
+ * One column until there is room for the list beside the thread. The comp
+ * measured the window at 900px; this is that decision as a media query.
+ */
+.ms-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .ms-grid {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------ thread list */
+
+.lp-list.ms-list {
+  border-radius: 20px;
+  min-inline-size: 0;
+}
+.lp-row.ms-conv {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 16px;
+  border: none;
+  border-block-end: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: start;
+}
+.lp-row.ms-conv:last-child {
+  border-block-end: none;
+}
+.lp-row.ms-conv.is-active {
+  background: var(--accent-soft);
+}
+.lp-avatar.ms-conv__ava {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 12px;
+  font-size: 12.5px;
+}
+.ms-conv__text {
+  flex: 1;
+  min-inline-size: 0;
+  text-align: start;
+}
+.ms-conv__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ms-conv__who {
+  font-size: 14px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ms-conv__at {
+  margin-inline-start: auto;
+  font-size: 10.5px;
+  color: var(--fg-subtle);
+}
+.ms-conv__preview {
+  display: block;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ms-conv__dot {
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------ pane */
+
+.ms-pane {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ms-pane__head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.lp-avatar.ms-pane__ava {
+  inline-size: 42px;
+  block-size: 42px;
+  border-radius: 13px;
+  font-size: 14px;
+}
+.ms-pane__who {
+  min-inline-size: 0;
+}
+.ms-pane__name {
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ms-pane__meta {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.lp-gi.ms-progress {
+  margin-inline-start: auto;
+  block-size: 36px;
+  padding-inline: 13px;
+  border-radius: 11px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- thread */
+
+.ms-thread {
+  flex: 1;
+  min-block-size: 260px;
+  max-block-size: 52vh;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ms-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-inline-size: 78%;
+}
+.ms-msg--me {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.ms-msg--them {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+.ms-bubble {
+  padding: 12px 15px;
+  font-size: 14px;
+  line-height: 1.6;
+  /* Anything typed into the composer ends up here — never let it push wide. */
+  overflow-wrap: anywhere;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--fg);
+  /* Logical radii, so the tucked corner follows the writing direction. */
+  border-start-start-radius: 16px;
+  border-start-end-radius: 16px;
+  border-end-end-radius: 16px;
+  border-end-start-radius: 5px;
+}
+.ms-msg--me .ms-bubble {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-end-end-radius: 5px;
+  border-end-start-radius: 16px;
+}
+.ms-msg__at {
+  font-size: 10.5px;
+  color: var(--fg-subtle);
+}
+
+/* -------------------------------------------------------------- composer */
+
+.ms-compose {
+  padding: 14px 16px;
+  border-block-start: 1px solid var(--border);
+  background: var(--surface-2);
+  display: flex;
+  gap: 11px;
+  align-items: flex-end;
+}
+.lp-textarea.ms-compose__field {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 46px;
+  max-block-size: 120px;
+  padding: 12px 14px;
+  border-radius: 13px;
+  line-height: 1.55;
+}
+.lp-btn.ms-send {
+  block-size: 46px;
+  padding-inline: 17px;
+  border-radius: 13px;
+  gap: 8px;
+}

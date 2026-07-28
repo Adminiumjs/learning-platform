@@ -1,1 +1,234 @@
-/* screen-signin.css — Sign in. */
+/*
+ * screen-signin.css — Sign in.
+ *
+ * The comp branched on `S.w < 900` to drop the left panel and collapse the
+ * grid to one column; that is the single media query at the foot of this
+ * sheet. The screen renders bare (no header, no footer), so it claims the
+ * viewport height itself.
+ */
+
+.lp-page.scr-signin {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-block-size: 100vh;
+}
+
+/* ------------------------------------------------------------- the panel */
+
+.scr-signin .si-aside {
+  position: relative;
+  display: flex;
+  min-block-size: 520px;
+  padding: clamp(28px, 4vw, 48px);
+  border-inline-end: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* <Cover> as a backdrop rather than a card: the tint arrives through the
+   shared cover recipe, and the course glyph sits far behind the words. */
+.scr-signin .si-aside__bg {
+  position: absolute;
+  inset: 0;
+  block-size: 100%;
+  border-block-end: none;
+}
+.scr-signin .si-aside__bg .lp-cover__glyph {
+  opacity: 0.22;
+}
+
+.scr-signin .si-aside__inner {
+  position: relative;
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.scr-signin .si-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.scr-signin .si-brand__mark {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 800;
+}
+.scr-signin .si-brand__name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Pushed to the bottom of the panel, whatever height it ends up. */
+.scr-signin .si-quote {
+  margin: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.scr-signin .si-quote__text {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-wrap: pretty;
+}
+.scr-signin .si-quote__who {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.scr-signin .si-quote__ini {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.scr-signin .si-quote__name {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.scr-signin .si-quote__cohort {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+
+/* -------------------------------------------------------------- the form */
+
+.scr-signin .si-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(28px, 6vw, 70px) clamp(16px, 4vw, 32px);
+}
+.scr-signin .si-form {
+  inline-size: min(400px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scr-signin .si-intro__title {
+  margin: 0;
+  font-size: clamp(26px, 3.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-signin .si-intro__lede {
+  margin: 9px 0 0;
+  font-size: 14.5px;
+  color: var(--fg-muted);
+}
+
+/* Sign-in fields are a size up from the app's forms — this page has four
+   controls and nothing else competing for the eye. */
+.scr-signin .si-input {
+  block-size: 48px;
+  padding-inline: 15px;
+  border-radius: 13px;
+  font-size: 15px;
+}
+
+.scr-signin .si-passline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.scr-signin .si-forgot {
+  margin-inline-start: auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.scr-signin .si-submit {
+  inline-size: 100%;
+  block-size: 50px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+.scr-signin .si-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--fg-subtle);
+  font-size: 12px;
+  font-weight: 700;
+}
+.scr-signin .si-or__rule {
+  flex: 1;
+  block-size: 1px;
+  background: var(--border);
+}
+
+.scr-signin .si-providers {
+  display: flex;
+  gap: 10px;
+}
+.scr-signin .si-provider {
+  flex: 1;
+  block-size: 46px;
+  padding-inline: 12px;
+  border-radius: 13px;
+  font-size: 13.5px;
+}
+
+.scr-signin .si-note {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.scr-signin .si-create {
+  margin: 0;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--fg-muted);
+}
+.scr-signin .si-create__btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--accent);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------- breakpoint */
+
+/* 900: the comp's `S.w < 900` — the panel goes, the form becomes the page. */
+@media (max-width: 900px) {
+  .lp-page.scr-signin {
+    grid-template-columns: 1fr;
+  }
+  .scr-signin .si-aside {
+    display: none;
+  }
+}

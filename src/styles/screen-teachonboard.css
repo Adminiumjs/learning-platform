@@ -1,1 +1,284 @@
 /* screen-teachonboard.css — Instructor onboarding. */
+
+.lp-page.scr-teachonboard {
+  max-inline-size: 940px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------------------------------------------------------------- head */
+
+.io-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.io-head__text {
+  min-inline-size: 0;
+}
+.io-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.io-title {
+  margin: 9px 0 0;
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.io-sub {
+  margin: 9px 0 0;
+  font-size: 15px;
+  color: var(--fg-muted);
+}
+
+.io-score {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.io-score__label {
+  font-size: 13px;
+  font-weight: 800;
+}
+.io-score__count {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 2px;
+}
+
+/* --------------------------------------------------------------- steps */
+
+.lp-list.io-steps {
+  border-radius: 20px;
+}
+.lp-list__row.io-step {
+  align-items: flex-start;
+  padding: 18px 20px;
+}
+.lp-list__row.io-step--done {
+  background: var(--surface-2);
+}
+
+.io-check {
+  inline-size: 26px;
+  block-size: 26px;
+  padding: 0;
+  border-radius: 9px;
+  flex-shrink: 0;
+  margin-block-start: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  /* Off state: the tick is there for layout, invisible until it is ticked. */
+  color: transparent;
+}
+/*
+ * The comp filled the ticked box with white on `--pos`. In the dark palette
+ * `--pos` is a light mint, so white all but disappears — `--surface` is white
+ * in light and near-black in dark, which is the same result and legible in
+ * both.
+ */
+.io-check.is-on {
+  border-color: transparent;
+  background: var(--pos);
+  color: var(--surface);
+}
+
+.io-step__body {
+  flex: 1;
+  min-inline-size: 0;
+}
+.io-step__title {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.io-step--done .io-step__title {
+  color: var(--fg-subtle);
+  text-decoration: line-through;
+}
+.io-step__text {
+  display: block;
+  font-size: 13px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+  margin-block-start: 5px;
+}
+.io-step__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-block-start: 9px;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+.lp-btn--secondary.io-step__cta {
+  block-size: 38px;
+  padding-inline: 14px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  gap: 7px;
+  font-size: 13px;
+}
+
+/* -------------------------------------------------------------- bottom */
+
+/*
+ * The comp measured the window at 820px to fold these two cards. 900 is the
+ * app's shared "two columns become one" breakpoint and behaves the same.
+ */
+.io-bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .io-bottom {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.io-card__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.io-pay {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-inline-size: 0;
+}
+.io-payrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.io-payrow__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.io-payrow__k {
+  font-size: 13.5px;
+  color: var(--fg-muted);
+  font-weight: 600;
+  flex: 1;
+  min-inline-size: 0;
+}
+.io-payrow__v {
+  font-size: 13px;
+  font-weight: 800;
+}
+.io-payrow__v--mono {
+  font-weight: 600;
+}
+.lp-btn--secondary.io-pay__cta {
+  block-size: 40px;
+  border-radius: 11px;
+  font-size: 13.5px;
+}
+
+.io-rules {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-inline-size: 0;
+}
+.io-rules__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.io-rules__ico {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.io-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.io-rule__dot {
+  inline-size: 5px;
+  block-size: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-block-start: 8px;
+}
+
+/* --------------------------------------------------------------- ready */
+
+.io-ready {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 22px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.io-ready--on {
+  border-color: color-mix(in srgb, var(--pos) 30%, transparent);
+  background: var(--pos-soft);
+}
+.io-ready__ico {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+.io-ready--on .io-ready__ico {
+  color: var(--pos);
+}
+.io-ready__text {
+  flex: 1;
+  min-inline-size: 200px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+.lp-btn.io-ready__cta {
+  block-size: 44px;
+  padding-inline: 20px;
+}
+/* Still clickable — it answers with a toast that says what is missing. */
+.lp-btn.io-ready__cta--off {
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+  cursor: not-allowed;
+}

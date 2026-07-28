@@ -1,1 +1,129 @@
 /* screen-announce.css — Announcements. */
+
+.lp-page.scr-announce {
+  max-inline-size: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.scr-announce .lp-pagehead {
+  margin-block-end: 0;
+}
+
+/* -------------------------------------------------------------- composer */
+
+.an-compose {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+/* Inset fields: the card is the paper, the fields are the holes in it. */
+.lp-input.an-title {
+  block-size: 46px;
+  padding-inline: 15px;
+  border-radius: 13px;
+  background: var(--surface-2);
+  font-size: 15.5px;
+  font-weight: 700;
+}
+.lp-textarea.an-body {
+  min-block-size: 110px;
+  padding: 14px 15px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.an-compose__foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.an-pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  block-size: 36px;
+  padding-inline: 13px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--fg-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.an-pin.is-on {
+  border-color: transparent;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.an-audience {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+}
+.lp-btn.an-post {
+  margin-inline-start: auto;
+}
+
+/* ------------------------------------------------------------------ feed */
+
+.lp-cardbox.an-card {
+  padding: 20px;
+}
+.an-card__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+/* Solid on the tinted card — the soft accent pill would disappear into it. */
+.lp-pill.an-pinpill {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.an-card__title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.an-card__at {
+  margin-inline-start: auto;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.an-card__body {
+  margin: 10px 0 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+.an-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-block-start: 12px;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+}
+.an-card__sent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.lp-nav.an-card__pin {
+  margin-inline-start: auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}

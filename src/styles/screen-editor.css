@@ -1,1 +1,312 @@
-/* screen-editor.css — Course editor. */
+/*
+ * screen-editor.css — Course editor.
+ *
+ * Two of the comp's JS width branches become media queries at the bottom of
+ * this sheet: `S.w < 900` folds the 300px cover rail under the form, and
+ * `S.w < 560` drops the price/code pair to one column. 560 is not one of the
+ * app's usual thresholds, but it is the number the comp used here and the pair
+ * genuinely survives down to it.
+ *
+ * Nothing measures anything; the screen renders all of its markup and lets the
+ * cascade decide the shape.
+ */
+
+.lp-page.scr-editor {
+  /* The comp's editor column is 1000px, and the sticky bar below takes over
+     the page's tail padding. */
+  max-inline-size: 1000px;
+  padding-block: clamp(28px, 4vw, 44px) 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ----------------------------------------------------------------- head */
+
+.scr-editor .ed-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.scr-editor .ed-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-editor .ed-title {
+  margin: 9px 0 0;
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scr-editor .ed-state {
+  margin-inline-start: auto;
+}
+
+/* ----------------------------------------------------------------- grid */
+
+.scr-editor .ed-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+.scr-editor .ed-col {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.scr-editor .ed-card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-inline-size: 0;
+}
+.scr-editor .ed-card--rail {
+  padding: 20px;
+  gap: 14px;
+}
+.scr-editor .ed-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scr-editor .ed-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scr-editor .ed-addline {
+  margin-inline-start: auto;
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: var(--fg-muted);
+}
+
+/* --------------------------------------------------------------- fields */
+
+/* The form sits on `--surface`, so its inputs step down to `--surface-2` —
+   the comp's contrast, kept without touching the shared input class. */
+.scr-editor .ed-input {
+  block-size: 46px;
+  background: var(--surface-2);
+  font-size: 15px;
+}
+.scr-editor .ed-input--title {
+  font-weight: 700;
+}
+.scr-editor .ed-summary {
+  min-block-size: 96px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.scr-editor .ed-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.scr-editor .ed-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.scr-editor .ed-group__label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+.scr-editor .ed-group__seg {
+  align-self: flex-start;
+}
+
+/* ------------------------------------------------------ what you'll learn */
+
+.scr-editor .ed-learn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scr-editor .ed-learn__grip {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+  cursor: grab;
+}
+.scr-editor .ed-learn__field {
+  block-size: 42px;
+  padding-inline: 13px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 14px;
+  flex: 1;
+  min-inline-size: 0;
+}
+.scr-editor .ed-learn__x {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+.scr-editor .ed-learn__none {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fg-subtle);
+}
+
+/* ---------------------------------------------------------------- cover */
+
+.scr-editor .ed-cover {
+  block-size: 130px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.scr-editor .ed-tints {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+/* `--tint` arrives from the record; a swatch is the one place the raw value is
+   meant to be seen, so it paints itself with it. */
+.scr-editor .ed-tint {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 11px;
+  background: var(--tint);
+  border: 2px solid transparent;
+  /* An inset ring keeps the colour off its own border in both themes. */
+  box-shadow: 0 0 0 2px var(--surface) inset;
+}
+.scr-editor .ed-tint.is-on {
+  border-color: var(--fg);
+}
+
+.scr-editor .ed-icons {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface-2);
+}
+.scr-editor .ed-icon {
+  inline-size: 38px;
+  block-size: 32px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--fg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scr-editor .ed-icon.is-on {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* ----------------------------------------------------------------- meta */
+
+.scr-editor .ed-meta {
+  border-radius: 20px;
+}
+.scr-editor .ed-meta__row {
+  gap: 12px;
+  padding: 15px 18px;
+}
+.scr-editor .ed-meta__ico {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
+.scr-editor .ed-meta__k {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+.scr-editor .ed-meta__v {
+  font-size: 13px;
+  font-weight: 700;
+}
+.scr-editor .ed-meta__v.lp-mono {
+  font-weight: 600;
+}
+.scr-editor .ed-meta__go {
+  inline-size: 100%;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13.5px;
+  font-weight: 800;
+  text-align: start;
+}
+
+/* ----------------------------------------------------------- sticky bar */
+
+/* Sits outside `.lp-page` so it spans the viewport, the way the comp's does. */
+.ed-bar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 200;
+  background: var(--surface-header);
+  backdrop-filter: blur(14px);
+  border-block-start: 1px solid var(--border);
+}
+.ed-bar__inner {
+  max-inline-size: 1000px;
+  margin-inline: auto;
+  padding: 12px clamp(16px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ed-bar__at {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-subtle);
+}
+.ed-bar__preview {
+  margin-inline-start: auto;
+  padding-inline: 16px;
+}
+
+/* ---------------------------------------------------------- breakpoints */
+
+/* 900: the comp's `S.w < 900` — the cover rail folds under the form. */
+@media (max-width: 900px) {
+  .scr-editor .ed-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 560: the comp's `S.w < 560` — price and course code stack. */
+@media (max-width: 560px) {
+  .scr-editor .ed-pair {
+    grid-template-columns: 1fr;
+  }
+}

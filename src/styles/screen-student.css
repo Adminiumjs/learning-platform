@@ -1,1 +1,294 @@
 /* screen-student.css — Student detail. */
+
+.lp-page.scr-student {
+  max-inline-size: 1040px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lp-nav.sd-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fg-muted);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.sd-head {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.lp-avatar.sd-ava {
+  inline-size: 72px;
+  block-size: 72px;
+  border-radius: 22px;
+  font-size: 24px;
+}
+.sd-head__text {
+  flex: 1;
+  min-inline-size: 200px;
+}
+.sd-head__name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sd-name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.sd-meta {
+  font-size: 13px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 6px;
+}
+.sd-actions {
+  display: flex;
+  gap: 10px;
+  margin-block-start: 14px;
+  flex-wrap: wrap;
+}
+.lp-btn.sd-msg,
+.lp-btn--secondary.sd-nudge {
+  block-size: 40px;
+  border-radius: 12px;
+  font-size: 13.5px;
+}
+.lp-btn.sd-msg {
+  padding-inline: 16px;
+}
+.lp-btn--secondary.sd-nudge {
+  padding-inline: 15px;
+}
+
+/* The comp's 86px ring sits between the shared sm and md sizes. */
+.lp-ring.sd-ring {
+  inline-size: 86px;
+  block-size: 86px;
+}
+.lp-ring.sd-ring .lp-ring__inner {
+  inline-size: 68px;
+  block-size: 68px;
+}
+.sd-ring__pct {
+  font-size: 17px;
+}
+.sd-ring__cap {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--fg-subtle);
+}
+
+/* ----------------------------------------------------------------- stats */
+
+.sd-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+.sd-stat {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.sd-stat__value {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.sd-stat__value--strong {
+  color: var(--pos);
+}
+.sd-stat__label {
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ two panels */
+
+/*
+ * The comp measured the window at 900px to decide one column or two; this is
+ * the same threshold as a media query, so nothing measures anything.
+ */
+.sd-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .sd-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.lp-list.sd-panel {
+  border-radius: 20px;
+  min-inline-size: 0;
+}
+.sd-panel__head {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.sd-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+
+/* ----------------------------------------------------------- submissions */
+
+.lp-row.sd-sub {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 20px;
+  border: none;
+  border-block-end: 1px solid var(--border);
+  background: transparent;
+  text-align: start;
+  color: var(--fg);
+  font: inherit;
+}
+.lp-row.sd-sub:last-child {
+  border-block-end: none;
+}
+.sd-sub__tile {
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sd-sub__tile--info {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.sd-sub__tile--pos {
+  background: var(--pos-soft);
+  color: var(--pos);
+}
+.sd-sub__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.sd-sub__item {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.sd-sub__at {
+  display: block;
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.sd-sub__score {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sd-sub__score--info {
+  color: var(--info);
+}
+.sd-sub__score--pos {
+  color: var(--pos);
+}
+
+/* -------------------------------------------------------------- activity */
+
+.sd-act {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 20px;
+  border-block-end: 1px solid var(--border);
+}
+.sd-act:last-child {
+  border-block-end: none;
+}
+.sd-act__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+  margin-block-start: 2px;
+}
+.sd-act__text {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--fg-muted);
+}
+.sd-act__at {
+  font-size: 11px;
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------- private note */
+
+.sd-note {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.sd-note__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 800;
+}
+.sd-note__ico {
+  color: var(--fg-subtle);
+}
+.lp-textarea.sd-note__field {
+  min-block-size: 88px;
+  border-radius: 13px;
+  padding: 13px;
+  line-height: 1.65;
+}
+.lp-btn.sd-note__save {
+  align-self: flex-start;
+  block-size: 38px;
+  padding-inline: 15px;
+  border-radius: 11px;
+  font-size: 13px;
+}

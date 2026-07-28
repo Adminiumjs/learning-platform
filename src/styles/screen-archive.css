@@ -1,1 +1,178 @@
 /* screen-archive.css — Course archive. */
+
+.lp-page.scr-archive {
+  max-inline-size: 1080px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.scr-archive .ar-head {
+  margin-block-end: 0;
+}
+.lp-filterchip.ar-filter {
+  block-size: 34px;
+  padding-inline: 14px;
+  font-size: 12.5px;
+}
+
+/* --------------------------------------------------------------- the shelf */
+
+.ar-shelf {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/*
+ * The card wraps rather than measuring the window: cover, body and the button
+ * column each carry a min-inline-size, so a narrow viewport folds them without
+ * any JS deciding when.
+ */
+.lp-cardbox.ar-card {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 20px;
+  border-radius: 20px;
+}
+.ar-card--retired {
+  opacity: 0.86;
+}
+
+.ar-card__main {
+  flex: 1;
+  min-inline-size: 200px;
+}
+.ar-card__titlerow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.ar-card__title {
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.ar-card__meta {
+  font-size: 13px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 6px;
+}
+.ar-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-block-start: 12px;
+  max-inline-size: 320px;
+}
+.lp-bar.ar-card__bar {
+  block-size: 7px;
+  flex: 1;
+  min-inline-size: 0;
+}
+.ar-card__pct {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+
+.ar-card__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+}
+.ar-card__line {
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+.ar-card__buttons {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.lp-btn--secondary.ar-cert {
+  block-size: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  gap: 7px;
+}
+/* Not disabled — it still explains, in a toast, what would earn one. */
+.lp-btn--secondary.ar-cert--off {
+  color: var(--fg-subtle);
+  cursor: not-allowed;
+}
+.lp-btn.ar-cta {
+  block-size: 40px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  font-size: 13.5px;
+}
+
+/* ------------------------------------------------------- kept from courses */
+
+.ar-kept__head {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ar-kept__ico {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+.ar-kept__title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ar-kept__note {
+  margin-inline-start: auto;
+  font-size: 12.5px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+}
+.lp-list__row.ar-keep {
+  padding: 14px 20px;
+  gap: 13px;
+  cursor: pointer;
+}
+.ar-keep__ico {
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  color: var(--fg-subtle);
+}
+.ar-keep__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ar-keep__title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.ar-keep__sub {
+  display: block;
+  font-size: 12px;
+  color: var(--fg-subtle);
+  font-weight: 600;
+  margin-block-start: 3px;
+}
+.ar-keep__meta {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.ar-keep__chev {
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
