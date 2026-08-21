@@ -126,9 +126,10 @@ deploy the course platform on its own, running on the bundled demo data. No
 database, no dashboard — a fully static preview.
 
 **Tier 2 — the whole stack, one command.**
-[`docker-compose.yml`](docker-compose.yml) stands up Postgres (seeded with the
-*same* courses, lessons, cohort, students and submissions), an auto-generated
-Adminium dashboard that runs that real database, and the course platform:
+[`docker-compose.yml`](docker-compose.yml) stands up Postgres (seeded by
+default with the *same* courses, lessons, cohort, students and submissions),
+an auto-generated Adminium dashboard that runs that real database, and the
+course platform:
 
 ```bash
 cp .env.example .env      # then set ADMINIUM_SECRET — e.g. openssl rand -hex 32
@@ -138,12 +139,40 @@ docker compose up
 - **Course platform** → http://localhost:8080
 - **Adminium dashboard** → http://localhost:4600
 
-On first boot, `lms-db` applies [`db/schema.sql`](db/schema.sql) then
-[`db/seed.sql`](db/seed.sql), and Adminium imports the academy database as its
-first source connection, introspects the schema, and generates the back
-office. Finish the ~1-minute first-run wizard at `:4600` — it's pre-pointed at
-the seeded academy DB. The install spec Adminium reads to configure itself is
-[`manifest.json`](manifest.json).
+On first boot, `lms-db` applies [`db/schema.sql`](db/schema.sql), installs the
+demo bookkeeping in [`db/demo-toolkit.sql`](db/demo-toolkit.sql), and then runs
+a hook that loads [`db/seed.sql`](db/seed.sql) unless you asked for an empty
+database — recording as it goes which rows the seed put there. Adminium imports
+the academy database as its first source connection, introspects the schema,
+and generates the back office. Finish the ~1-minute first-run wizard at `:4600`
+— it's pre-pointed at the academy DB. The install spec Adminium reads to
+configure itself is [`manifest.json`](manifest.json).
+
+### Demo data
+
+The academy arrives full: the courses, the cohort, its students, their
+questions and their submissions are already in Postgres when the stack comes
+up. To start with the tables and none of the rows, set `DEMO_DATA=0` in `.env`
+before the first `docker compose up` — the full schema, nothing in it. Neither
+choice is permanent.
+
+| Command | What it does |
+| --- | --- |
+| `npm run demo:status` | What is loaded right now, table by table. |
+| `npm run demo:import` | Load [`db/seed.sql`](db/seed.sql). |
+| `npm run demo:wipe` | Remove the demo rows — the schema and your own rows stay. |
+| `npm run demo:reset` | Wipe, then import a fresh copy. |
+
+A wipe removes only the rows the seed put there, and a demo row your own data
+still depends on is kept rather than force-deleted — reported under `kept`.
+`ON DELETE CASCADE` still applies, though: this schema has 19 cascading
+foreign keys, so a lesson you added to a demo module, or a comment you left
+on a demo lesson, goes with its parent, counted separately under `cascaded`.
+`wipe` and `reset` ask before they do anything; `npm run demo:wipe -- --yes`
+skips the question, which a script needs — with no terminal to answer, the
+command stops rather than guessing. Set `DATABASE_URL` to run any of them
+against a Postgres somewhere else — Neon, Supabase, RDS — instead of the
+container. [`db/README.md`](db/README.md) has the rest.
 
 ### The split: the classroom and the back office
 
@@ -199,7 +228,7 @@ src/
   components/  header, demo dock, footer, covers, player shell, primitives
   styles/      tokens.css (design tokens + accent), base.css, components.css,
                screen-<view>.css
-db/            schema.sql + seed.sql for the full self-host stack
+db/            schema.sql, seed.sql + the demo-data toolkit (db/README.md)
 public/fonts/  self-hosted Manrope + JetBrains Mono (woff2)
 manifest.json  the Adminium install spec (17 tables, 9 pages, 2 roles)
 ```
