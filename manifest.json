@@ -13,736 +13,915 @@
     "key": "mft.lms.desc",
     "fallback": "A course platform with enrollments, lessons that unlock week by week, exams and student questions — backed by your own database."
   },
-  "categories": ["commerce"],
-
+  "categories": [
+    "commerce"
+  ],
   "compatibility": {
     "minAdminiumVersion": "1.0.0",
-    "engines": ["postgres", "mysql", "sqlite"],
-    "requires": ["realtime"]
+    "engines": [
+      "postgres",
+      "mysql",
+      "sqlite"
+    ],
+    "requires": [
+      "realtime"
+    ]
   },
-
   "requiredSchema": {
     "tables": [
       {
         "ref": "instructors",
-        "table": "instructors",
-        "label": { "key": "mft.lms.tbl.instructors", "fallback": "Instructors" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "name", "type": "text", "required": true, "display": "title" },
-          { "name": "email", "type": "email", "required": true, "unique": true },
-          { "name": "initials", "type": "text", "required": true },
-          { "name": "avatar", "type": "image" },
-          { "name": "tint", "type": "text", "required": true },
-          { "name": "bio", "type": "text" },
-          { "name": "created_at", "type": "timestamp", "default": "now", "role": "created" }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "name",
+            "type": "text"
+          },
+          {
+            "ref": "email",
+            "type": "text",
+            "semantic": "email"
+          },
+          {
+            "ref": "initials",
+            "type": "text"
+          },
+          {
+            "ref": "avatar",
+            "type": "text",
+            "semantic": "image"
+          },
+          {
+            "ref": "tint",
+            "type": "text"
+          },
+          {
+            "ref": "bio",
+            "type": "text"
+          },
+          {
+            "ref": "created_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "students",
-        "table": "students",
-        "label": { "key": "mft.lms.tbl.students", "fallback": "Students" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "name", "type": "text", "required": true, "display": "title" },
-          { "name": "email", "type": "email", "required": true, "unique": true },
-          { "name": "initials", "type": "text", "required": true },
-          { "name": "avatar", "type": "image" },
-          { "name": "created_at", "type": "timestamp", "default": "now", "role": "created" }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "name",
+            "type": "text"
+          },
+          {
+            "ref": "email",
+            "type": "text",
+            "semantic": "email"
+          },
+          {
+            "ref": "initials",
+            "type": "text"
+          },
+          {
+            "ref": "avatar",
+            "type": "text",
+            "semantic": "image"
+          },
+          {
+            "ref": "created_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "courses",
-        "table": "courses",
-        "label": { "key": "mft.lms.tbl.courses", "fallback": "Courses" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "code", "type": "text", "required": true, "unique": true },
-          { "name": "title", "type": "text", "required": true, "display": "title" },
-          { "name": "slug", "type": "text", "required": true, "unique": true },
-          { "name": "summary", "type": "text" },
-          { "name": "description", "type": "richtext" },
-          { "name": "cover", "type": "image" },
-          { "name": "tint", "type": "text" },
-          { "name": "icon", "type": "text" },
-          { "name": "price", "type": "money", "required": true },
           {
-            "name": "level",
-            "type": "enum",
-            "required": true,
-            "values": ["beginner", "intermediate", "advanced"]
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
           },
           {
-            "name": "mode",
-            "type": "enum",
-            "required": true,
-            "values": ["self_paced", "cohort"]
+            "ref": "code",
+            "type": "text"
           },
           {
-            "name": "status",
-            "type": "enum",
-            "required": true,
-            "values": ["draft", "published", "archived"],
-            "default": "draft"
+            "ref": "title",
+            "type": "text"
           },
-          { "name": "category", "type": "text" },
-          { "name": "instructor_id", "type": "fk", "references": "instructors", "required": true },
-          { "name": "created_at", "type": "timestamp", "default": "now", "role": "created" }
+          {
+            "ref": "slug",
+            "type": "text"
+          },
+          {
+            "ref": "summary",
+            "type": "text"
+          },
+          {
+            "ref": "description",
+            "type": "text"
+          },
+          {
+            "ref": "cover",
+            "type": "text",
+            "semantic": "image"
+          },
+          {
+            "ref": "tint",
+            "type": "text"
+          },
+          {
+            "ref": "icon",
+            "type": "text"
+          },
+          {
+            "ref": "price",
+            "type": "money"
+          },
+          {
+            "ref": "level",
+            "type": "enum",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          },
+          {
+            "ref": "mode",
+            "type": "enum",
+            "enum": [
+              "self_paced",
+              "cohort"
+            ]
+          },
+          {
+            "ref": "status",
+            "type": "enum",
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          },
+          {
+            "ref": "category",
+            "type": "text"
+          },
+          {
+            "ref": "instructor_id",
+            "type": "fk",
+            "references": "instructors"
+          },
+          {
+            "ref": "created_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "modules",
-        "table": "modules",
-        "label": { "key": "mft.lms.tbl.modules", "fallback": "Modules" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "course_id", "type": "fk", "references": "courses", "required": true },
-          { "name": "title", "type": "text", "required": true, "display": "title" },
-          { "name": "position", "type": "int", "default": 0 },
-          { "name": "week", "type": "int" }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "course_id",
+            "type": "fk",
+            "references": "courses"
+          },
+          {
+            "ref": "title",
+            "type": "text"
+          },
+          {
+            "ref": "position",
+            "type": "int"
+          },
+          {
+            "ref": "week",
+            "type": "int"
+          }
         ]
       },
       {
         "ref": "lessons",
-        "table": "lessons",
-        "label": { "key": "mft.lms.tbl.lessons", "fallback": "Lessons" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "module_id", "type": "fk", "references": "modules", "required": true },
-          { "name": "title", "type": "text", "required": true, "display": "title" },
           {
-            "name": "kind",
-            "type": "enum",
-            "required": true,
-            "values": ["video", "reading", "assignment", "exam", "live"]
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
           },
-          { "name": "duration_min", "type": "int", "default": 0 },
-          { "name": "content", "type": "richtext" },
-          { "name": "media_url", "type": "url" },
-          { "name": "position", "type": "int", "default": 0 },
-          { "name": "publish_at", "type": "timestamp" },
-          { "name": "preview", "type": "boolean", "default": false }
+          {
+            "ref": "module_id",
+            "type": "fk",
+            "references": "modules"
+          },
+          {
+            "ref": "title",
+            "type": "text"
+          },
+          {
+            "ref": "kind",
+            "type": "enum",
+            "enum": [
+              "video",
+              "reading",
+              "assignment",
+              "exam",
+              "live"
+            ]
+          },
+          {
+            "ref": "duration_min",
+            "type": "int"
+          },
+          {
+            "ref": "content",
+            "type": "text"
+          },
+          {
+            "ref": "media_url",
+            "type": "text"
+          },
+          {
+            "ref": "position",
+            "type": "int"
+          },
+          {
+            "ref": "publish_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "preview",
+            "type": "bool"
+          }
         ]
       },
       {
         "ref": "cohorts",
-        "table": "cohorts",
-        "label": { "key": "mft.lms.tbl.cohorts", "fallback": "Cohorts" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "course_id", "type": "fk", "references": "courses", "required": true },
-          { "name": "name", "type": "text", "required": true, "display": "title" },
-          { "name": "starts_on", "type": "date", "required": true },
-          { "name": "ends_on", "type": "date", "required": true },
-          { "name": "capacity", "type": "int", "default": 30 },
           {
-            "name": "status",
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "course_id",
+            "type": "fk",
+            "references": "courses"
+          },
+          {
+            "ref": "name",
+            "type": "text"
+          },
+          {
+            "ref": "starts_on",
+            "type": "date"
+          },
+          {
+            "ref": "ends_on",
+            "type": "date"
+          },
+          {
+            "ref": "capacity",
+            "type": "int"
+          },
+          {
+            "ref": "status",
             "type": "enum",
-            "required": true,
-            "values": ["upcoming", "active", "completed"],
-            "default": "upcoming"
+            "enum": [
+              "upcoming",
+              "active",
+              "completed"
+            ]
           }
         ]
       },
       {
         "ref": "enrollments",
-        "table": "enrollments",
-        "label": { "key": "mft.lms.tbl.enrollments", "fallback": "Enrollments" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "student_id", "type": "fk", "references": "students", "required": true },
-          { "name": "course_id", "type": "fk", "references": "courses", "required": true },
-          { "name": "cohort_id", "type": "fk", "references": "cohorts" },
           {
-            "name": "status",
-            "type": "enum",
-            "required": true,
-            "values": ["active", "completed", "refunded", "cancelled"],
-            "default": "active"
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
           },
-          { "name": "progress_pct", "type": "int", "default": 0 },
-          { "name": "enrolled_at", "type": "timestamp", "default": "now", "role": "created" }
+          {
+            "ref": "student_id",
+            "type": "fk",
+            "references": "students"
+          },
+          {
+            "ref": "course_id",
+            "type": "fk",
+            "references": "courses"
+          },
+          {
+            "ref": "cohort_id",
+            "type": "fk",
+            "references": "cohorts"
+          },
+          {
+            "ref": "status",
+            "type": "enum",
+            "enum": [
+              "active",
+              "completed",
+              "refunded",
+              "cancelled"
+            ]
+          },
+          {
+            "ref": "progress_pct",
+            "type": "int"
+          },
+          {
+            "ref": "enrolled_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "orders",
-        "table": "orders",
-        "label": { "key": "mft.lms.tbl.orders", "fallback": "Orders" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "number", "type": "text", "required": true, "unique": true, "display": "title" },
-          { "name": "student_id", "type": "fk", "references": "students", "required": true },
-          { "name": "course_id", "type": "fk", "references": "courses", "required": true },
-          { "name": "amount", "type": "money", "required": true },
           {
-            "name": "status",
-            "type": "enum",
-            "required": true,
-            "values": ["pending", "paid", "refunded"],
-            "default": "pending"
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
           },
-          { "name": "placed_at", "type": "timestamp", "default": "now", "role": "created" }
+          {
+            "ref": "number",
+            "type": "text"
+          },
+          {
+            "ref": "student_id",
+            "type": "fk",
+            "references": "students"
+          },
+          {
+            "ref": "course_id",
+            "type": "fk",
+            "references": "courses"
+          },
+          {
+            "ref": "amount",
+            "type": "money"
+          },
+          {
+            "ref": "status",
+            "type": "enum",
+            "enum": [
+              "pending",
+              "paid",
+              "refunded"
+            ]
+          },
+          {
+            "ref": "placed_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "lesson_progress",
-        "table": "lesson_progress",
-        "label": { "key": "mft.lms.tbl.lesson_progress", "fallback": "Lesson progress" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "enrollment_id", "type": "fk", "references": "enrollments", "required": true },
-          { "name": "lesson_id", "type": "fk", "references": "lessons", "required": true },
-          { "name": "completed", "type": "boolean", "default": false },
-          { "name": "seconds", "type": "int", "default": 0 },
-          { "name": "completed_at", "type": "timestamp" }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "enrollment_id",
+            "type": "fk",
+            "references": "enrollments"
+          },
+          {
+            "ref": "lesson_id",
+            "type": "fk",
+            "references": "lessons"
+          },
+          {
+            "ref": "completed",
+            "type": "bool"
+          },
+          {
+            "ref": "seconds",
+            "type": "int"
+          },
+          {
+            "ref": "completed_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "assignments",
-        "table": "assignments",
-        "label": { "key": "mft.lms.tbl.assignments", "fallback": "Assignments" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "lesson_id", "type": "fk", "references": "lessons", "required": true },
-          { "name": "title", "type": "text", "required": true, "display": "title" },
-          { "name": "instructions", "type": "richtext" },
-          { "name": "due_at", "type": "timestamp" },
-          { "name": "points", "type": "int", "default": 20 }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "lesson_id",
+            "type": "fk",
+            "references": "lessons"
+          },
+          {
+            "ref": "title",
+            "type": "text"
+          },
+          {
+            "ref": "instructions",
+            "type": "text"
+          },
+          {
+            "ref": "due_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "points",
+            "type": "int"
+          }
         ]
       },
       {
         "ref": "submissions",
-        "table": "submissions",
-        "label": { "key": "mft.lms.tbl.submissions", "fallback": "Submissions" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "assignment_id", "type": "fk", "references": "assignments", "required": true },
-          { "name": "enrollment_id", "type": "fk", "references": "enrollments", "required": true },
-          { "name": "body", "type": "text" },
-          { "name": "attachment", "type": "file" },
-          { "name": "submitted_at", "type": "timestamp", "default": "now", "role": "created" },
-          { "name": "score", "type": "decimal" },
-          { "name": "feedback", "type": "text" },
-          { "name": "graded_at", "type": "timestamp" },
-          { "name": "graded_by", "type": "fk", "references": "instructors" }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "assignment_id",
+            "type": "fk",
+            "references": "assignments"
+          },
+          {
+            "ref": "enrollment_id",
+            "type": "fk",
+            "references": "enrollments"
+          },
+          {
+            "ref": "body",
+            "type": "text"
+          },
+          {
+            "ref": "attachment",
+            "type": "blob"
+          },
+          {
+            "ref": "submitted_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "score",
+            "type": "decimal"
+          },
+          {
+            "ref": "feedback",
+            "type": "text"
+          },
+          {
+            "ref": "graded_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "graded_by",
+            "type": "fk",
+            "references": "instructors"
+          }
         ]
       },
       {
         "ref": "exams",
-        "table": "exams",
-        "label": { "key": "mft.lms.tbl.exams", "fallback": "Exams" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "course_id", "type": "fk", "references": "courses", "required": true },
-          { "name": "cohort_id", "type": "fk", "references": "cohorts" },
-          { "name": "title", "type": "text", "required": true, "display": "title" },
-          { "name": "opens_at", "type": "timestamp" },
-          { "name": "closes_at", "type": "timestamp" },
-          { "name": "duration_min", "type": "int", "default": 45 },
-          { "name": "attempts_allowed", "type": "int", "default": 1 },
-          { "name": "pass_score", "type": "int", "default": 70 }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "course_id",
+            "type": "fk",
+            "references": "courses"
+          },
+          {
+            "ref": "cohort_id",
+            "type": "fk",
+            "references": "cohorts"
+          },
+          {
+            "ref": "title",
+            "type": "text"
+          },
+          {
+            "ref": "opens_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "closes_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "duration_min",
+            "type": "int"
+          },
+          {
+            "ref": "attempts_allowed",
+            "type": "int"
+          },
+          {
+            "ref": "pass_score",
+            "type": "int"
+          }
         ]
       },
       {
         "ref": "exam_questions",
-        "table": "exam_questions",
-        "label": { "key": "mft.lms.tbl.exam_questions", "fallback": "Exam questions" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "exam_id", "type": "fk", "references": "exams", "required": true },
-          { "name": "prompt", "type": "text", "required": true, "display": "title" },
           {
-            "name": "kind",
-            "type": "enum",
-            "required": true,
-            "values": ["single", "multi", "short", "essay"]
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
           },
-          { "name": "section", "type": "text" },
-          { "name": "options", "type": "json" },
-          { "name": "answer", "type": "json" },
-          { "name": "points", "type": "int", "default": 1 },
-          { "name": "position", "type": "int", "default": 0 }
+          {
+            "ref": "exam_id",
+            "type": "fk",
+            "references": "exams"
+          },
+          {
+            "ref": "prompt",
+            "type": "text"
+          },
+          {
+            "ref": "kind",
+            "type": "enum",
+            "enum": [
+              "single",
+              "multi",
+              "short",
+              "essay"
+            ]
+          },
+          {
+            "ref": "section",
+            "type": "text"
+          },
+          {
+            "ref": "options",
+            "type": "json"
+          },
+          {
+            "ref": "answer",
+            "type": "json"
+          },
+          {
+            "ref": "points",
+            "type": "int"
+          },
+          {
+            "ref": "position",
+            "type": "int"
+          }
         ]
       },
       {
         "ref": "exam_attempts",
-        "table": "exam_attempts",
-        "label": { "key": "mft.lms.tbl.exam_attempts", "fallback": "Exam attempts" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "exam_id", "type": "fk", "references": "exams", "required": true },
-          { "name": "enrollment_id", "type": "fk", "references": "enrollments", "required": true },
-          { "name": "started_at", "type": "timestamp", "default": "now", "role": "created" },
-          { "name": "submitted_at", "type": "timestamp" },
-          { "name": "answers", "type": "json" },
-          { "name": "score", "type": "decimal" },
           {
-            "name": "status",
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "exam_id",
+            "type": "fk",
+            "references": "exams"
+          },
+          {
+            "ref": "enrollment_id",
+            "type": "fk",
+            "references": "enrollments"
+          },
+          {
+            "ref": "started_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "submitted_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "answers",
+            "type": "json"
+          },
+          {
+            "ref": "score",
+            "type": "decimal"
+          },
+          {
+            "ref": "status",
             "type": "enum",
-            "required": true,
-            "values": ["in_progress", "submitted", "graded"],
-            "default": "in_progress"
+            "enum": [
+              "in_progress",
+              "submitted",
+              "graded"
+            ]
           }
         ]
       },
       {
         "ref": "announcements",
-        "table": "announcements",
-        "label": { "key": "mft.lms.tbl.announcements", "fallback": "Announcements" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "cohort_id", "type": "fk", "references": "cohorts", "required": true },
-          { "name": "instructor_id", "type": "fk", "references": "instructors", "required": true },
-          { "name": "title", "type": "text", "required": true, "display": "title" },
-          { "name": "body", "type": "richtext" },
-          { "name": "pinned", "type": "boolean", "default": false },
-          { "name": "created_at", "type": "timestamp", "default": "now", "role": "created" }
+          {
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "cohort_id",
+            "type": "fk",
+            "references": "cohorts"
+          },
+          {
+            "ref": "instructor_id",
+            "type": "fk",
+            "references": "instructors"
+          },
+          {
+            "ref": "title",
+            "type": "text"
+          },
+          {
+            "ref": "body",
+            "type": "text"
+          },
+          {
+            "ref": "pinned",
+            "type": "bool"
+          },
+          {
+            "ref": "created_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "comments",
-        "table": "comments",
-        "label": { "key": "mft.lms.tbl.comments", "fallback": "Questions & comments" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "lesson_id", "type": "fk", "references": "lessons" },
-          { "name": "cohort_id", "type": "fk", "references": "cohorts" },
-          { "name": "enrollment_id", "type": "fk", "references": "enrollments" },
-          { "name": "instructor_id", "type": "fk", "references": "instructors" },
           {
-            "name": "author_kind",
-            "type": "enum",
-            "required": true,
-            "values": ["student", "instructor"]
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
           },
-          { "name": "body", "type": "text", "required": true, "display": "title" },
-          { "name": "parent_id", "type": "fk", "references": "comments" },
-          { "name": "answered", "type": "boolean", "default": false },
-          { "name": "created_at", "type": "timestamp", "default": "now", "role": "created" }
+          {
+            "ref": "lesson_id",
+            "type": "fk",
+            "references": "lessons"
+          },
+          {
+            "ref": "cohort_id",
+            "type": "fk",
+            "references": "cohorts"
+          },
+          {
+            "ref": "enrollment_id",
+            "type": "fk",
+            "references": "enrollments"
+          },
+          {
+            "ref": "instructor_id",
+            "type": "fk",
+            "references": "instructors"
+          },
+          {
+            "ref": "author_kind",
+            "type": "enum",
+            "enum": [
+              "student",
+              "instructor"
+            ]
+          },
+          {
+            "ref": "body",
+            "type": "text"
+          },
+          {
+            "ref": "parent_id",
+            "type": "fk",
+            "references": "comments"
+          },
+          {
+            "ref": "answered",
+            "type": "bool"
+          },
+          {
+            "ref": "created_at",
+            "type": "timestamptz"
+          }
         ]
       },
       {
         "ref": "live_sessions",
-        "table": "live_sessions",
-        "label": { "key": "mft.lms.tbl.live_sessions", "fallback": "Live sessions" },
-        "primaryKey": ["id"],
         "columns": [
-          { "name": "id", "type": "int", "role": "pk" },
-          { "name": "cohort_id", "type": "fk", "references": "cohorts", "required": true },
-          { "name": "title", "type": "text", "required": true, "display": "title" },
-          { "name": "starts_at", "type": "timestamp", "required": true },
-          { "name": "duration_min", "type": "int", "default": 60 },
-          { "name": "join_url", "type": "url" },
-          { "name": "recording_url", "type": "url" },
           {
-            "name": "status",
+            "ref": "id",
+            "type": "int",
+            "role": "pk"
+          },
+          {
+            "ref": "cohort_id",
+            "type": "fk",
+            "references": "cohorts"
+          },
+          {
+            "ref": "title",
+            "type": "text"
+          },
+          {
+            "ref": "starts_at",
+            "type": "timestamptz"
+          },
+          {
+            "ref": "duration_min",
+            "type": "int"
+          },
+          {
+            "ref": "join_url",
+            "type": "text"
+          },
+          {
+            "ref": "recording_url",
+            "type": "text"
+          },
+          {
+            "ref": "status",
             "type": "enum",
-            "required": true,
-            "values": ["scheduled", "live", "ended"],
-            "default": "scheduled"
+            "enum": [
+              "scheduled",
+              "live",
+              "ended"
+            ]
           }
         ]
       }
     ]
   },
-
   "pages": [
     {
-      "key": "lms-dashboard",
-      "title": { "key": "mft.lms.page.dashboard", "fallback": "Dashboard" },
-      "path": "/",
-      "type": "page-dashboard",
-      "icon": "layout-dashboard",
-      "nav": { "group": "manifest:lms", "order": 1 },
-      "blocks": [
-        {
-          "kind": "kpi-stat-card",
-          "key": "active-enrollments",
-          "label": { "key": "mft.lms.kpi.enrolled", "fallback": "Active enrollments" },
-          "source": "enrollments",
-          "metric": "count",
-          "format": "number",
-          "filter": { "status": ["active"] }
-        },
-        {
-          "kind": "kpi-stat-card",
-          "key": "awaiting-grade",
-          "label": { "key": "mft.lms.kpi.grading", "fallback": "Awaiting grade" },
-          "source": "submissions",
-          "metric": "count",
-          "format": "number",
-          "filter": { "graded_at": null }
-        },
-        {
-          "kind": "kpi-stat-card",
-          "key": "open-questions",
-          "label": { "key": "mft.lms.kpi.questions", "fallback": "Unanswered questions" },
-          "source": "comments",
-          "metric": "count",
-          "format": "number",
-          "filter": { "author_kind": ["student"], "answered": false }
-        },
-        {
-          "kind": "chart-line-area",
-          "key": "revenue",
-          "label": { "key": "mft.lms.chart.revenue", "fallback": "Revenue" },
-          "source": "orders",
-          "chart": "line-area",
-          "x": { "field": "placed_at", "bucket": "week" },
-          "y": { "agg": "sum", "field": "amount" },
-          "format": "money",
-          "filter": { "status": ["paid"] }
-        },
-        {
-          "kind": "chart-cohort-matrix",
-          "key": "cohort-completion",
-          "label": { "key": "mft.lms.chart.completion", "fallback": "Cohort completion" },
-          "source": "enrollments",
-          "cohort": { "field": "cohort_id" },
-          "metric": { "agg": "avg", "field": "progress_pct" },
-          "format": "percent"
-        },
-        {
-          "kind": "mini-table",
-          "key": "recent-orders",
-          "label": { "key": "mft.lms.block.orders", "fallback": "Recent orders" },
-          "source": "orders",
-          "limit": 8,
-          "orderBy": { "field": "placed_at", "dir": "desc" },
-          "columns": ["number", "student_id", "course_id", "amount", "status", "placed_at"]
-        },
-        {
-          "kind": "activity-feed",
-          "key": "class-activity",
-          "label": { "key": "mft.lms.block.activity", "fallback": "Class activity" },
-          "source": "submissions",
-          "timestamp": "submitted_at",
-          "limit": 10
-        }
-      ]
-    },
-    {
-      "key": "lms-courses",
-      "title": { "key": "mft.lms.page.courses", "fallback": "Courses" },
-      "path": "/courses",
-      "type": "page-crud",
-      "icon": "book-open",
-      "source": "courses",
-      "nav": { "group": "manifest:lms", "order": 2 },
-      "view": "card-gallery",
-      "gallery": { "title": "title", "subtitle": "summary", "image": "cover", "badge": "status" },
-      "columns": ["code", "title", "level", "mode", "price", "status", "instructor_id"],
-      "search": ["code", "title", "summary"],
-      "filters": ["status", "level", "mode", "instructor_id"],
-      "children": [
-        {
-          "key": "modules",
-          "label": { "key": "mft.lms.tab.modules", "fallback": "Modules" },
-          "source": "modules",
-          "foreignKey": "course_id",
-          "columns": ["position", "title", "week"],
-          "orderBy": { "field": "position", "dir": "asc" }
-        },
-        {
-          "key": "lessons",
-          "label": { "key": "mft.lms.tab.lessons", "fallback": "Lessons" },
-          "source": "lessons",
-          "through": { "table": "modules", "foreignKey": "course_id", "localKey": "module_id" },
-          "columns": ["position", "title", "kind", "duration_min", "publish_at", "preview"],
-          "orderBy": { "field": "position", "dir": "asc" }
-        }
-      ]
-    },
-    {
-      "key": "lms-cohorts",
-      "title": { "key": "mft.lms.page.cohorts", "fallback": "Cohorts" },
-      "path": "/cohorts",
-      "type": "page-calendar",
-      "icon": "calendar-days",
-      "source": "cohorts",
-      "nav": { "group": "manifest:lms", "order": 3 },
-      "blocks": [
-        {
-          "kind": "calendar-month",
-          "key": "session-calendar",
-          "label": { "key": "mft.lms.block.calendar", "fallback": "Sessions and due dates" },
-          "sources": [
-            { "source": "live_sessions", "start": "starts_at", "title": "title", "tone": "accent" },
-            { "source": "assignments", "start": "due_at", "title": "title", "tone": "warn" }
-          ]
-        },
-        {
-          "kind": "upcoming-events-list",
-          "key": "upcoming",
-          "label": { "key": "mft.lms.block.upcoming", "fallback": "Coming up" },
-          "sources": [
-            { "source": "live_sessions", "start": "starts_at", "title": "title" },
-            { "source": "assignments", "start": "due_at", "title": "title" }
-          ],
-          "limit": 8
-        }
-      ],
-      "columns": ["name", "course_id", "starts_on", "ends_on", "capacity", "status"]
-    },
-    {
-      "key": "lms-grading",
-      "title": { "key": "mft.lms.page.grading", "fallback": "Grading" },
-      "path": "/grading",
-      "type": "page-queue-inbox",
-      "icon": "clipboard-check",
-      "source": "submissions",
-      "nav": { "group": "manifest:lms", "order": 4 },
-      "tabs": {
-        "field": "graded_at",
-        "values": ["awaiting", "graded"],
-        "default": "awaiting",
-        "control": "segmented-control"
+      "ref": "lms-dashboard",
+      "template": "page-dashboard",
+      "title": {
+        "key": "mft.lms.page.dashboard",
+        "fallback": "Dashboard"
       },
-      "list": {
-        "title": "assignment_id",
-        "subtitle": "enrollment_id",
-        "timestamp": "submitted_at"
-      },
-      "detail": {
-        "title": "assignment_id",
-        "fields": ["enrollment_id", "body", "attachment", "submitted_at", "score", "feedback"],
-        "edit": ["score", "feedback"],
-        "actions": [
-          { "key": "save-next", "label": "Save and next", "set": { "graded_at": "now" }, "undo": true }
-        ],
-        "undo": { "view": "toast-stack" }
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "layout-dashboard",
+        "order": 1
       }
     },
     {
-      "key": "lms-questions",
-      "title": { "key": "mft.lms.page.questions", "fallback": "Questions" },
-      "path": "/questions",
-      "type": "page-master-detail",
-      "icon": "messages-square",
-      "source": "comments",
-      "nav": { "group": "manifest:lms", "order": 5 },
-      "filters": ["answered", "lesson_id", "cohort_id"],
-      "filterControl": "filter-chip-bar",
-      "list": {
-        "view": "master-list",
-        "title": "body",
-        "subtitle": "lesson_id",
-        "timestamp": "created_at",
-        "badge": "answered"
+      "ref": "lms-courses",
+      "template": "page-crud",
+      "title": {
+        "key": "mft.lms.page.courses",
+        "fallback": "Courses"
       },
-      "detail": {
-        "title": "body",
-        "thread": {
-          "view": "chat-thread",
-          "source": "comments",
-          "foreignKey": "parent_id",
-          "author": "author_kind",
-          "body": "body",
-          "timestamp": "created_at",
-          "reply": true
-        }
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "book-open",
+        "order": 2
       }
     },
     {
-      "key": "lms-exams",
-      "title": { "key": "mft.lms.page.exams", "fallback": "Exams" },
-      "path": "/exams",
-      "type": "page-builder",
-      "icon": "file-check",
-      "source": "exams",
-      "nav": { "group": "manifest:lms", "order": 6 },
-      "builder": {
-        "view": "question-builder",
-        "source": "exam_questions",
-        "foreignKey": "exam_id",
-        "orderBy": "position",
-        "kindField": "kind",
-        "kinds": ["single", "multi", "short", "essay"],
-        "promptField": "prompt",
-        "optionsField": "options",
-        "answerField": "answer",
-        "pointsField": "points"
+      "ref": "lms-cohorts",
+      "template": "page-calendar",
+      "title": {
+        "key": "mft.lms.page.cohorts",
+        "fallback": "Cohorts"
       },
-      "inspector": ["title", "opens_at", "closes_at", "duration_min", "attempts_allowed", "pass_score"],
-      "autosave": { "view": "autosave-indicator" }
-    },
-    {
-      "key": "lms-students",
-      "title": { "key": "mft.lms.page.students", "fallback": "Students" },
-      "path": "/students",
-      "type": "page-directory",
-      "icon": "users",
-      "source": "students",
-      "nav": { "group": "manifest:lms", "order": 7 },
-      "directory": { "title": "name", "subtitle": "email", "avatar": "avatar", "initials": "initials" },
-      "search": ["name", "email"],
-      "children": [
-        {
-          "key": "enrollments",
-          "label": { "key": "mft.lms.tab.enrollments", "fallback": "Enrollments" },
-          "source": "enrollments",
-          "foreignKey": "student_id",
-          "columns": ["course_id", "cohort_id", "status", "progress_pct", "enrolled_at"]
-        }
-      ]
-    },
-    {
-      "key": "lms-media",
-      "title": { "key": "mft.lms.page.media", "fallback": "Media" },
-      "path": "/media",
-      "type": "page-files",
-      "icon": "folder",
-      "nav": { "group": "manifest:lms", "order": 8 },
-      "blocks": [
-        { "kind": "file-browser", "key": "library", "sources": ["lessons.media_url", "submissions.attachment"] },
-        { "kind": "upload-dropzone", "key": "upload" },
-        { "kind": "usage-meter", "key": "usage" }
-      ]
-    },
-    {
-      "key": "lms-orders",
-      "title": { "key": "mft.lms.page.orders", "fallback": "Orders" },
-      "path": "/orders",
-      "type": "page-crud",
-      "icon": "receipt",
-      "source": "orders",
-      "nav": { "group": "manifest:lms", "order": 9 },
-      "columns": ["number", "student_id", "course_id", "amount", "status", "placed_at"],
-      "search": ["number"],
-      "filters": ["status", "course_id"],
-      "orderBy": { "field": "placed_at", "dir": "desc" }
-    }
-  ],
-
-  "roles": [
-    {
-      "key": "instructor",
-      "name": { "key": "mft.lms.role.instructor", "fallback": "Instructor" },
-      "description": {
-        "key": "mft.lms.role.instructor.desc",
-        "fallback": "Read and write their own courses, lessons, cohorts and announcements; grade submissions and answer questions. No access to settings or roles."
-      },
-      "permissions": [
-        { "resource": "courses", "actions": ["read", "create", "update"] },
-        { "resource": "modules", "actions": ["read", "create", "update", "delete"] },
-        { "resource": "lessons", "actions": ["read", "create", "update", "delete"] },
-        { "resource": "cohorts", "actions": ["read", "create", "update"] },
-        { "resource": "announcements", "actions": ["read", "create", "update", "delete"] },
-        { "resource": "live_sessions", "actions": ["read", "create", "update"] },
-        { "resource": "assignments", "actions": ["read", "create", "update"] },
-        { "resource": "submissions", "actions": ["read", "update"] },
-        { "resource": "exams", "actions": ["read", "create", "update"] },
-        { "resource": "exam_questions", "actions": ["read", "create", "update", "delete"] },
-        { "resource": "exam_attempts", "actions": ["read", "update"] },
-        { "resource": "comments", "actions": ["read", "create", "update"] },
-        { "resource": "enrollments", "actions": ["read"] },
-        { "resource": "students", "actions": ["read"] },
-        { "resource": "orders", "actions": ["read"] }
-      ]
-    },
-    {
-      "key": "teaching-assistant",
-      "name": { "key": "mft.lms.role.ta", "fallback": "Teaching assistant" },
-      "description": {
-        "key": "mft.lms.role.ta.desc",
-        "fallback": "Grade submissions and answer questions. Read-only on course content — cannot publish."
-      },
-      "permissions": [
-        { "resource": "submissions", "actions": ["read", "update"] },
-        { "resource": "exam_attempts", "actions": ["read", "update"] },
-        { "resource": "comments", "actions": ["read", "create"] },
-        { "resource": "courses", "actions": ["read"] },
-        { "resource": "modules", "actions": ["read"] },
-        { "resource": "lessons", "actions": ["read"] },
-        { "resource": "assignments", "actions": ["read"] },
-        { "resource": "exams", "actions": ["read"] },
-        { "resource": "exam_questions", "actions": ["read"] },
-        { "resource": "cohorts", "actions": ["read"] },
-        { "resource": "enrollments", "actions": ["read"] },
-        { "resource": "students", "actions": ["read"] }
-      ]
-    }
-  ],
-
-  "settings": [
-    {
-      "key": "academy_name",
-      "type": "text",
-      "label": { "key": "mft.lms.set.academy_name", "fallback": "Academy name" },
-      "required": true
-    },
-    {
-      "key": "currency",
-      "type": "enum",
-      "label": { "key": "mft.lms.set.currency", "fallback": "Currency" },
-      "values": ["USD", "EUR", "GBP", "AUD", "CAD"],
-      "default": "USD",
-      "required": true
-    },
-    {
-      "key": "time_zone",
-      "type": "text",
-      "label": { "key": "mft.lms.set.time_zone", "fallback": "Time zone" },
-      "default": "Europe/Rome",
-      "required": true,
-      "help": {
-        "key": "mft.lms.set.time_zone.help",
-        "fallback": "Due dates and live sessions resolve against this zone. There are no per-student zones."
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "calendar-days",
+        "order": 3
       }
     },
     {
-      "key": "default_cohort_capacity",
-      "type": "int",
-      "label": { "key": "mft.lms.set.capacity", "fallback": "Default cohort capacity" },
-      "default": 30
+      "ref": "lms-grading",
+      "template": "page-queue-inbox",
+      "title": {
+        "key": "mft.lms.page.grading",
+        "fallback": "Grading"
+      },
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "clipboard-check",
+        "order": 4
+      }
     },
     {
-      "key": "certificate_enabled",
-      "type": "boolean",
-      "label": { "key": "mft.lms.set.certificate", "fallback": "Issue completion certificates" },
-      "default": true
+      "ref": "lms-questions",
+      "template": "page-master-detail",
+      "title": {
+        "key": "mft.lms.page.questions",
+        "fallback": "Questions"
+      },
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "messages-square",
+        "order": 5
+      }
     },
     {
-      "key": "reply_to_email",
-      "type": "text",
-      "label": { "key": "mft.lms.set.reply_to", "fallback": "Reply-to address" },
-      "required": true
+      "ref": "lms-exams",
+      "template": "page-builder",
+      "title": {
+        "key": "mft.lms.page.exams",
+        "fallback": "Exams"
+      },
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "file-check",
+        "order": 6
+      }
     },
     {
-      "key": "payment_keys",
-      "type": "secret",
-      "label": { "key": "mft.lms.set.payment_keys", "fallback": "Payment provider keys" }
+      "ref": "lms-students",
+      "template": "page-directory",
+      "title": {
+        "key": "mft.lms.page.students",
+        "fallback": "Students"
+      },
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "users",
+        "order": 7
+      }
+    },
+    {
+      "ref": "lms-media",
+      "template": "page-files",
+      "title": {
+        "key": "mft.lms.page.media",
+        "fallback": "Media"
+      },
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "folder",
+        "order": 8
+      }
+    },
+    {
+      "ref": "lms-orders",
+      "template": "page-crud",
+      "title": {
+        "key": "mft.lms.page.orders",
+        "fallback": "Orders"
+      },
+      "nav": {
+        "group": "manifest:lms",
+        "icon": "receipt",
+        "order": 9
+      }
     }
   ],
-
-  "capabilities": ["payments", "file-storage", "email-delivery", "realtime"],
-
-  "frontend": {
-    "kind": "spa",
-    "root": ".",
-    "buildCommand": "npm run build",
-    "buildOutput": "dist",
-    "entry": "index.html",
-    "routes": {
-      "catalog": "/",
-      "classroom": "/",
-      "teach": "/"
+  "capabilities": [
+    "payments",
+    "file-storage",
+    "email-delivery",
+    "realtime"
+  ],
+  "kind": "app",
+  "frontends": [
+    {
+      "side": "staff",
+      "kind": "spa",
+      "entry": "index.html",
+      "routes": {
+        "teach": "/"
+      }
+    },
+    {
+      "side": "customer",
+      "kind": "spa",
+      "entry": "index.html",
+      "routes": {
+        "catalog": "/",
+        "classroom": "/"
+      }
     }
-  }
+  ]
 }
