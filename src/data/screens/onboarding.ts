@@ -11,7 +11,14 @@
  * are replaced with names that carry the same meaning and are already there —
  * "radio" is the app's live-session glyph, which is exactly what the Thursday
  * option is about, and "x-circle" is the plainest "no".
+ *
+ * Translation. The quiz is a form: its questions, its options and the plan it
+ * prints are interface, so they are getters. `GOAL_COURSE` and the plan's
+ * `goal` fallback are course titles and stay English with the rest of the
+ * catalogue.
  */
+
+import { number, t } from "../../i18n/ambient";
 
 export interface QuizOption {
   /** Stored in `obA[question.key]`. */
@@ -33,60 +40,142 @@ export interface QuizQuestion {
 export const QUIZ: QuizQuestion[] = [
   {
     key: "goal",
-    title: "What are you trying to build?",
-    sub: "It changes what we put in front of you first.",
+    get title() {
+      return t("data.onboarding.goal.title");
+    },
+    get sub() {
+      return t("data.onboarding.goal.sub");
+    },
     opts: [
       {
         k: "system",
-        label: "A design system",
-        sub: "For a product team that keeps re-inventing buttons",
+        get label() {
+          return t("data.onboarding.goal.system");
+        },
+        get sub() {
+          return t("data.onboarding.goal.systemSub");
+        },
         icon: "layout-grid",
       },
-      { k: "type", label: "Better typography", sub: "Scales, measure, rhythm, restraint", icon: "type" },
+      {
+        k: "type",
+        get label() {
+          return t("data.onboarding.goal.type");
+        },
+        get sub() {
+          return t("data.onboarding.goal.typeSub");
+        },
+        icon: "type",
+      },
       {
         k: "motion",
-        label: "Motion that means something",
-        sub: "Easing and choreography, not fireworks",
+        get label() {
+          return t("data.onboarding.goal.motion");
+        },
+        get sub() {
+          return t("data.onboarding.goal.motionSub");
+        },
         icon: "orbit",
       },
       {
         k: "portfolio",
-        label: "A portfolio that lands",
-        sub: "Three case studies that say what you did",
+        get label() {
+          return t("data.onboarding.goal.portfolio");
+        },
+        get sub() {
+          return t("data.onboarding.goal.portfolioSub");
+        },
         icon: "briefcase",
       },
     ],
   },
   {
     key: "hours",
-    title: "How much time have you got each week?",
-    sub: "Be honest. We will pace the reminders around it.",
+    get title() {
+      return t("data.onboarding.hours.title");
+    },
+    get sub() {
+      return t("data.onboarding.hours.sub");
+    },
     opts: [
-      { k: "1", label: "About an hour", sub: "A lesson a week, no assignments", icon: "clock" },
+      {
+        k: "1",
+        get label() {
+          return t("data.onboarding.hours.one");
+        },
+        get sub() {
+          return t("data.onboarding.hours.oneSub");
+        },
+        icon: "clock",
+      },
       {
         k: "3",
-        label: "Three hours",
-        sub: "The cohort pace — lessons plus the assignment",
+        get label() {
+          return t("data.onboarding.hours.three");
+        },
+        get sub() {
+          return t("data.onboarding.hours.threeSub");
+        },
         icon: "calendar-days",
       },
-      { k: "6", label: "Six or more", sub: "You will finish early and you know it", icon: "flame" },
+      {
+        k: "6",
+        get label() {
+          return t("data.onboarding.hours.six");
+        },
+        get sub() {
+          return t("data.onboarding.hours.sixSub");
+        },
+        icon: "flame",
+      },
     ],
   },
   {
     key: "remind",
-    title: "When should we nudge you?",
-    sub: "One message a week. You can turn it off later.",
+    get title() {
+      return t("data.onboarding.remind.title");
+    },
+    get sub() {
+      return t("data.onboarding.remind.sub");
+    },
     opts: [
-      { k: "mon", label: "Monday morning", sub: "When the week opens", icon: "sunrise" },
-      { k: "thu", label: "Thursday evening", sub: "Just before the live session", icon: "radio" },
-      { k: "none", label: "Do not nudge me", sub: "You will remember. Probably.", icon: "x-circle" },
+      {
+        k: "mon",
+        get label() {
+          return t("data.onboarding.remind.mon");
+        },
+        get sub() {
+          return t("data.onboarding.remind.monSub");
+        },
+        icon: "sunrise",
+      },
+      {
+        k: "thu",
+        get label() {
+          return t("data.onboarding.remind.thu");
+        },
+        get sub() {
+          return t("data.onboarding.remind.thuSub");
+        },
+        icon: "radio",
+      },
+      {
+        k: "none",
+        get label() {
+          return t("data.onboarding.remind.none");
+        },
+        get sub() {
+          return t("data.onboarding.remind.noneSub");
+        },
+        icon: "x-circle",
+      },
     ],
   },
 ];
 
 /* ------------------------------------------------------------- the plan */
 
-/** Answer → the course the plan opens with. */
+/** Answer → the course the plan opens with. Course titles are fiction. */
 export const GOAL_COURSE: Record<string, string> = {
   system: "Design Systems from Scratch",
   type: "Type & Layout Fundamentals",
@@ -94,16 +183,37 @@ export const GOAL_COURSE: Record<string, string> = {
   portfolio: "Portfolio Studio",
 };
 
+/** "3 hours a week" — the plural belongs to the message, not to the key. */
+function paceLabel(hours: number, plus = false): string {
+  return t(
+    plus ? "data.onboarding.pacePlus" : "data.onboarding.pace",
+    { count: number(hours) },
+    hours,
+  );
+}
+
 export const PACE_LABEL: Record<string, string> = {
-  "1": "1 hour a week",
-  "3": "3 hours a week",
-  "6": "6+ hours a week",
+  get "1"() {
+    return paceLabel(1);
+  },
+  get "3"() {
+    return paceLabel(3);
+  },
+  get "6"() {
+    return paceLabel(6, true);
+  },
 };
 
 export const NUDGE_LABEL: Record<string, string> = {
-  mon: "Monday mornings",
-  thu: "Thursday evenings",
-  none: "No reminders",
+  get mon() {
+    return t("data.onboarding.nudge.mon");
+  },
+  get thu() {
+    return t("data.onboarding.nudge.thu");
+  },
+  get none() {
+    return t("data.onboarding.nudge.none");
+  },
 };
 
 /**
@@ -113,9 +223,13 @@ export const NUDGE_LABEL: Record<string, string> = {
  */
 export const PLAN_FALLBACK = {
   goal: "Design Systems from Scratch",
-  pace: "3 hours a week",
-  nudge: "Monday mornings",
-} as const;
+  get pace() {
+    return paceLabel(3);
+  },
+  get nudge() {
+    return t("data.onboarding.nudge.mon");
+  },
+};
 
 /** Days after "now" the first milestone lands on. */
 export const MILESTONE_DAYS = 5;

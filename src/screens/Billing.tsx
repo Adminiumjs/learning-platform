@@ -11,27 +11,28 @@
 import { ButtonSecondary, CoverChip, Icon, PageHead, Pill } from "../components";
 import { dataSource } from "../data/source";
 import type { EnrolledCourse } from "../data/types";
+import { useI18n, type MessageKey } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-billing.css";
+
+/** The card on file. Brand and masked digits — nothing to translate. */
+const CARD_NUMBER = "Visa ···· 4242";
+const CARD_EXPIRY = "04 / 29";
 
 /**
  * The line under a course title.
  *
  * The cohort course names its cohort, a retired one admits it is retired, and
- * everything else is self-paced — then all three get the same enrolled/order
- * tail.
+ * everything else is self-paced. Each is a whole sentence rather than a stem
+ * plus a tail, so a translator owns the word order.
  */
-function enrolmentLine(c: EnrolledCourse): string {
-  const how =
-    c.id === "DS-101"
-      ? "Cohort 03"
-      : c.state === "retired"
-        ? "Cohort 01 · retired course"
-        : "Self-paced";
-  return `${how} · enrolled ${c.date} · order ${c.order}`;
+function enrolmentKey(c: EnrolledCourse): MessageKey {
+  if (c.id === "DS-101") return "screensA.billing.lineCohort";
+  return c.state === "retired" ? "screensA.billing.lineRetired" : "screensA.billing.lineSelf";
 }
 
 export default function Billing() {
+  const { t, money } = useI18n();
   const go = useAppStore((s) => s.go);
   const showToast = useAppStore((s) => s.showToast);
 
@@ -41,11 +42,11 @@ export default function Billing() {
     <div className="lp-page scr-billing">
       <PageHead
         className="bl-head"
-        title="Billing"
-        lede="Four enrolments since September last year. Receipts stay here forever."
+        title={t("screensA.billing.title")}
+        lede={t("screensA.billing.lede")}
         action={
           <ButtonSecondary className="bl-topbtn" onClick={() => go("refund")}>
-            Request a refund
+            {t("screensA.billing.requestRefund")}
           </ButtonSecondary>
         }
       />
@@ -53,7 +54,7 @@ export default function Billing() {
       <div className="bl-grid">
         <div className="bl-col">
           <section className="lp-list bl-panel">
-            <h2 className="bl-panel__head">Your enrolments</h2>
+            <h2 className="bl-panel__head">{t("screensA.billing.enrolments")}</h2>
             {enrolled.map((c) => (
               <div className="bl-enrol" key={c.id}>
                 <CoverChip
@@ -65,35 +66,39 @@ export default function Billing() {
                 />
                 <span className="bl-enrol__text">
                   <span className="bl-enrol__title">{c.title}</span>
-                  <span className="bl-enrol__sub">{enrolmentLine(c)}</span>
+                  <span className="bl-enrol__sub">
+                    {t(enrolmentKey(c), { date: c.date, order: c.order })}
+                  </span>
                 </span>
-                <span className="lp-mono bl-enrol__amount">${c.price}</span>
+                <span className="lp-mono bl-enrol__amount">{money(c.price)}</span>
                 {/* The retired course was a free place, so it never had a price. */}
-                <Pill tone={c.price ? "pos" : "info"}>{c.price ? "Paid" : "Free place"}</Pill>
+                <Pill tone={c.price ? "pos" : "info"}>
+                  {c.price ? t("screensA.billing.paid") : t("screensA.billing.freePlace")}
+                </Pill>
               </div>
             ))}
           </section>
 
           <section className="lp-list bl-panel">
-            <h2 className="bl-panel__head">Receipts</h2>
+            <h2 className="bl-panel__head">{t("screensA.billing.receipts")}</h2>
             <div className="bl-rcpt bl-rcpt--head">
-              <span>Receipt</span>
-              <span className="bl-rcpt__date">Date</span>
-              <span className="bl-rcpt__amount">Amount</span>
+              <span>{t("screensA.billing.colReceipt")}</span>
+              <span className="bl-rcpt__date">{t("screensA.billing.colDate")}</span>
+              <span className="bl-rcpt__amount">{t("screensA.billing.colAmount")}</span>
               <span />
             </div>
             {enrolled.map((r) => (
               <div className="lp-row bl-rcpt" key={r.order}>
                 <span className="lp-mono bl-rcpt__no">{r.order}</span>
                 <span className="bl-rcpt__date">{r.date}</span>
-                <span className="lp-mono bl-rcpt__amount">${r.price.toFixed(2)}</span>
+                <span className="lp-mono bl-rcpt__amount">{money(r.price)}</span>
                 <span className="bl-rcpt__act">
                   <ButtonSecondary
                     className="bl-pdf"
                     icon="download"
                     iconSize={13}
                     onClick={() =>
-                      showToast(`${r.order} — demo receipt, nothing downloads.`, "receipt")
+                      showToast(t("screensA.billing.receiptDemo", { order: r.order }), "receipt")
                     }
                   >
                     PDF
@@ -106,33 +111,32 @@ export default function Billing() {
 
         <div className="bl-col">
           <section className="lp-cardbox bl-card">
-            <h2 className="bl-card__head">Payment method</h2>
+            <h2 className="bl-card__head">{t("screensA.billing.paymentMethod")}</h2>
             <div className="bl-card__row">
               <span className="bl-card__ico">
                 <Icon name="credit-card" size={18} />
               </span>
               <span className="bl-card__text">
-                <span className="lp-mono bl-card__no">Visa ···· 4242</span>
-                <span className="bl-card__exp">Expires 04 / 29</span>
+                <span className="lp-mono bl-card__no">{CARD_NUMBER}</span>
+                <span className="bl-card__exp">
+                  {t("screensA.billing.expires", { date: CARD_EXPIRY })}
+                </span>
               </span>
             </div>
             <ButtonSecondary
               className="bl-change"
-              onClick={() => showToast("Demo — the card is fixed here.", "credit-card")}
+              onClick={() => showToast(t("screensA.billing.cardFixed"), "credit-card")}
             >
-              Change card
+              {t("screensA.billing.changeCard")}
             </ButtonSecondary>
           </section>
 
           <section className="bl-promise">
             <div className="bl-promise__head">
               <Icon name="shield-check" size={16} className="bl-promise__ico" />
-              <span className="bl-promise__title">14-day promise</span>
+              <span className="bl-promise__title">{t("screensA.billing.promiseTitle")}</span>
             </div>
-            <p className="bl-promise__body">
-              If a course is not for you, say so within fourteen days and the money comes back. No
-              forms, no interrogation.
-            </p>
+            <p className="bl-promise__body">{t("screensA.billing.promiseBody")}</p>
           </section>
         </div>
       </div>

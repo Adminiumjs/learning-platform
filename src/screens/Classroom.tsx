@@ -30,6 +30,7 @@ import {
 } from "../components";
 import { dataSource } from "../data/source";
 import type { Question } from "../data/types";
+import { useI18n, type MessageKey } from "../i18n";
 import {
   demoNow,
   doneCount,
@@ -48,11 +49,12 @@ import "../styles/screen-classroom.css";
 /** The comp's four tabs, as a union so `<Tabs>` stays type-safe. */
 type ClassroomTab = "overview" | "transcript" | "notes" | "qa";
 
-const TABS: { id: ClassroomTab; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "transcript", label: "Transcript" },
-  { id: "notes", label: "Notes" },
-  { id: "qa", label: "Q&A" },
+/** Tab labels are keys: this table is module scope, where no hook can run. */
+const TABS: { id: ClassroomTab; key: MessageKey }[] = [
+  { id: "overview", key: "screensA.classroom.tabOverview" },
+  { id: "transcript", key: "screensA.classroom.tabTranscript" },
+  { id: "notes", key: "screensA.classroom.tabNotes" },
+  { id: "qa", key: "screensA.classroom.tabQa" },
 ];
 
 /** "mm:ss" cue → seconds. The transcript's only arithmetic. */
@@ -62,6 +64,7 @@ function cueSeconds(cue: string): number {
 }
 
 export default function Classroom() {
+  const { t, number } = useI18n();
   const week = useAppStore((s) => s.week);
   const mode = useAppStore((s) => s.mode);
   const done = useAppStore((s) => s.done);
@@ -98,7 +101,11 @@ export default function Classroom() {
   const index = lessons.findIndex((l) => l.id === lesson.id);
   const next = lessons[index + 1];
   const pct = progressPct(done);
-  const progressLabel = `${doneCount(done)} of ${total} lessons`;
+  const progressLabel = t(
+    "screensA.classroom.lessonsDone",
+    { count: number(doneCount(done)), total: number(total) },
+    doneCount(done),
+  );
   const isDone = Boolean(done[lesson.id]);
 
   const duration = lessonSeconds(lesson.id);
@@ -114,21 +121,26 @@ export default function Classroom() {
 
   const completeLabel = isDone
     ? next
-      ? "Next lesson"
-      : "Course finished"
-    : "Mark complete → next lesson";
+      ? t("screensA.classroom.nextLesson")
+      : t("screensA.classroom.courseFinished")
+    : t("screensA.classroom.markComplete");
 
   function goPrevious() {
     const previous = lessons[index - 1];
     if (previous) openLesson(previous.id);
-    else showToast("This is the first lesson.", "info");
+    else showToast(t("screensA.classroom.firstLesson"), "info");
   }
 
   /* The stamp is the playhead plus the demo clock's "now" — a saved note has
    * to date itself against the cohort week, not the wall clock. */
   function saveNote() {
-    set({ noteSaved: `Saved ${mmss(headSeconds)} · ${fmtDate(demoNow(week))}` });
-    showToast("Note saved to this lesson.", "notebook-pen");
+    set({
+      noteSaved: t("screensA.classroom.noteStamp", {
+        time: mmss(headSeconds),
+        date: fmtDate(demoNow(week)),
+      }),
+    });
+    showToast(t("screensA.classroom.noteSaved"), "notebook-pen");
   }
 
   return (
@@ -142,7 +154,7 @@ export default function Classroom() {
           onClick={() => set({ clDrawer: !drawer })}
         >
           <Icon name="list-tree" size={17} className="scr-cl__drawerlead" />
-          <span className="scr-cl__drawerlabel">Lessons</span>
+          <span className="scr-cl__drawerlabel">{t("screensA.classroom.lessons")}</span>
           <span className="scr-cl__drawercount">{progressLabel}</span>
           {/* The shared icon registry carries no chevron-up/down, so the open
               and closed states rotate chevron-right in CSS instead. */}
@@ -156,8 +168,14 @@ export default function Classroom() {
         <div className="scr-cl__sidehead">
           <div className="scr-cl__sidetitle">{course.title}</div>
           <div className="scr-cl__sideprog">
-            <ProgressBar pct={pct} label="Course progress" className="scr-cl__sidebar" />
-            <span className="scr-cl__sidepct">{pct}%</span>
+            <ProgressBar
+              pct={pct}
+              label={t("screensA.classroom.courseProgress")}
+              className="scr-cl__sidebar"
+            />
+            <span className="scr-cl__sidepct">
+              {number(pct / 100, { style: "percent", maximumFractionDigits: 0 })}
+            </span>
           </div>
         </div>
 
@@ -217,7 +235,10 @@ export default function Classroom() {
           onTogglePlay={togglePlay}
           pos={head}
           onScrub={scrubTo}
-          time={`${mmss(headSeconds)} / ${mmss(duration)}`}
+          time={t("screensA.classroom.playerTime", {
+            now: mmss(headSeconds),
+            total: mmss(duration),
+          })}
         />
 
         <div className="scr-cl__head">
@@ -225,30 +246,37 @@ export default function Classroom() {
             <div className="scr-cl__headtext">
               <div className="scr-cl__crumb">
                 <span>
-                  Module {lesson.mod.num} · {lesson.mod.title}
+                  {t("screensA.classroom.moduleCrumb", {
+                    num: lesson.mod.num,
+                    title: lesson.mod.title,
+                  })}
                 </span>
                 <span>·</span>
                 <span className="scr-cl__lessonno">
-                  Lesson {index + 1} / {total}
+                  {t("screensA.classroom.lessonNo", {
+                    n: number(index + 1),
+                    total: number(total),
+                  })}
                 </span>
               </div>
               <h1 className="scr-cl__title">{lesson.title}</h1>
             </div>
             {isDone ? (
               <Pill tone="pos" icon="check" iconSize={14} className="scr-cl__donepill">
-                Completed
+                {t("screensA.classroom.completed")}
               </Pill>
             ) : null}
           </div>
 
           <Tabs
             className="scr-cl__tabs"
-            label="Lesson content"
+            label={t("screensA.classroom.tabsLabel")}
             value={tab}
             onChange={(id) => set({ tab: id })}
-            options={TABS.map((t) => ({
-              ...t,
-              count: t.id === "qa" ? questions.length : undefined,
+            options={TABS.map((entry) => ({
+              id: entry.id,
+              label: t(entry.key),
+              count: entry.id === "qa" ? questions.length : undefined,
             }))}
           />
         </div>
@@ -258,7 +286,7 @@ export default function Classroom() {
             <div className="scr-cl__pane">
               <p className="scr-cl__overview">{meta.overview}</p>
               <div className="scr-cl__points">
-                <div className="scr-cl__pointshead">In this lesson</div>
+                <div className="scr-cl__pointshead">{t("screensA.classroom.inThisLesson")}</div>
                 {meta.points.map((p) => (
                   <div key={p.t} className="scr-cl__point">
                     <span className="scr-cl__dot" />
@@ -273,7 +301,7 @@ export default function Classroom() {
                     icon="download"
                     iconSize={14}
                     className="scr-cl__file"
-                    onClick={() => showToast("Demo file — nothing downloads here.", "download")}
+                    onClick={() => showToast(t("screensA.classroom.fileDemo"), "download")}
                   >
                     {f.n}
                   </ButtonSecondary>
@@ -309,12 +337,14 @@ export default function Classroom() {
               <TextArea
                 value={notes}
                 onChange={(v) => set({ notes: v })}
-                placeholder="Type a note. It stays with this lesson."
-                ariaLabel="Lesson note"
+                placeholder={t("screensA.classroom.notePlaceholder")}
+                ariaLabel={t("screensA.classroom.noteLabel")}
                 className="scr-cl__notearea"
               />
               <div className="scr-cl__noterow">
-                <ButtonPrimary onClick={saveNote}>Save note</ButtonPrimary>
+                <ButtonPrimary onClick={saveNote}>
+                  {t("screensA.classroom.saveNote")}
+                </ButtonPrimary>
                 <span className="scr-cl__notesaved">{noteSaved}</span>
               </div>
             </div>
@@ -327,12 +357,12 @@ export default function Classroom() {
                 <TextInput
                   value={qaText}
                   onChange={(v) => set({ qaText: v })}
-                  placeholder="Ask about this lesson…"
-                  ariaLabel="Ask about this lesson"
+                  placeholder={t("screensA.classroom.askPlaceholder")}
+                  ariaLabel={t("screensA.classroom.askLabel")}
                   className="scr-cl__askinput"
                 />
                 <ButtonPrimary className="scr-cl__askbtn" onClick={askQuestion}>
-                  Ask
+                  {t("screensA.classroom.ask")}
                 </ButtonPrimary>
               </div>
 
@@ -347,7 +377,7 @@ export default function Classroom() {
                 iconEnd
                 onClick={() => go("qa")}
               >
-                All questions
+                {t("screensA.classroom.allQuestions")}
               </ButtonSecondary>
             </div>
           ) : null}
@@ -355,11 +385,15 @@ export default function Classroom() {
 
         <div className="scr-cl__foot">
           <div className="scr-cl__footprog">
-            <ProgressBar pct={pct} label="Course progress" className="scr-cl__footbar" />
+            <ProgressBar
+              pct={pct}
+              label={t("screensA.classroom.courseProgress")}
+              className="scr-cl__footbar"
+            />
             <span className="scr-cl__footlabel">{progressLabel}</span>
           </div>
           <ButtonSecondary icon="arrow-left" iconSize={15} onClick={goPrevious}>
-            Previous
+            {t("screensA.classroom.previous")}
           </ButtonSecondary>
           <ButtonPrimary icon="arrow-right" iconEnd onClick={markComplete}>
             {completeLabel}
@@ -381,6 +415,7 @@ export default function Classroom() {
  * flag, which is what the comp's shared `qaCard()` builder forced on it.
  */
 function LessonQuestion({ question }: { question: Question }) {
+  const t = useI18n().t;
   const reply = question.reply;
 
   return (
@@ -394,14 +429,18 @@ function LessonQuestion({ question }: { question: Question }) {
         <div className="scr-cl__qmeta">
           <span className="scr-cl__qwho">{question.who}</span>
           <span className="scr-cl__qat">{question.at}</span>
-          <Pill tone={reply ? "pos" : "neutral"}>{reply ? "Answered" : "Awaiting answer"}</Pill>
+          <Pill tone={reply ? "pos" : "neutral"}>
+            {reply
+              ? t("screensA.classroom.answered")
+              : t("screensA.classroom.awaitingAnswer")}
+          </Pill>
         </div>
         <p className="scr-cl__qtext">{question.text}</p>
         {reply ? (
           <div className="scr-cl__reply">
             <div className="scr-cl__replymeta">
               <span className="scr-cl__replywho">{reply.who}</span>
-              <Pill tone="accent">Instructor</Pill>
+              <Pill tone="accent">{t("screensA.classroom.instructor")}</Pill>
               <span className="scr-cl__replyat">{reply.at}</span>
             </div>
             <p className="scr-cl__replytext">{reply.text}</p>

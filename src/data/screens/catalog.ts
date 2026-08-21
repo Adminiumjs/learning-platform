@@ -6,6 +6,7 @@
  * beside the screen rather than behind the `dataSource` seam (see source.ts).
  */
 
+import { t } from "../../i18n/ambient";
 import type { CourseCategory } from "../types";
 
 export interface CatalogFilter {
@@ -13,13 +14,43 @@ export interface CatalogFilter {
   label: string;
 }
 
-/** The filter row above the grid. "All" is the seeded default. */
+/**
+ * The filter row above the grid. "All" is the seeded default.
+ *
+ * `id` is the machine token a course record carries; `label` is what a person
+ * reads, so it is a getter and moves with the locale.
+ */
 export const CATEGORIES: CatalogFilter[] = [
-  { id: "all", label: "All" },
-  { id: "design", label: "Design" },
-  { id: "typography", label: "Typography" },
-  { id: "motion", label: "Motion" },
-  { id: "portfolio", label: "Portfolio" },
+  {
+    id: "all",
+    get label() {
+      return t("data.category.all");
+    },
+  },
+  {
+    id: "design",
+    get label() {
+      return t("data.category.design");
+    },
+  },
+  {
+    id: "typography",
+    get label() {
+      return t("data.category.typography");
+    },
+  },
+  {
+    id: "motion",
+    get label() {
+      return t("data.category.motion");
+    },
+  },
+  {
+    id: "portfolio",
+    get label() {
+      return t("data.category.portfolio");
+    },
+  },
 ];
 
 /**

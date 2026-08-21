@@ -5,8 +5,13 @@
  * places they belong to, shown side by side so the tone can be judged as a
  * set. Each one names where it comes from and every one offers a way out —
  * an empty state without a next step is just a dead end with better type.
+ *
+ * All of it is interface, so all of it is translated. Judging the tone of a
+ * set of empty states is exactly the job this screen exists for, and it is
+ * only worth doing in the language the reader will meet them in.
  */
 
+import { t } from "../../i18n/ambient";
 import type { Tone } from "../../components/Primitives";
 import type { ViewId } from "../types";
 
@@ -24,43 +29,83 @@ export interface EmptyCard {
 
 export const EMPTY_CARDS: EmptyCard[] = [
   {
-    where: "My learning",
-    tag: "Day one",
+    get where() {
+      return t("data.empty.learning.where");
+    },
+    get tag() {
+      return t("data.empty.learning.tag");
+    },
     tone: "accent",
     icon: "sprout",
-    title: "Nothing on the go yet",
-    body: "Pick a course and the first lesson opens straight away. You can change your mind within fourteen days.",
-    cta: "Browse courses",
+    get title() {
+      return t("data.empty.learning.title");
+    },
+    get body() {
+      return t("data.empty.learning.body");
+    },
+    get cta() {
+      return t("data.empty.learning.cta");
+    },
     go: "catalog",
   },
   {
-    where: "Grading queue",
-    tag: "Instructor",
+    get where() {
+      return t("data.empty.grading.where");
+    },
+    get tag() {
+      return t("data.empty.grading.tag");
+    },
     tone: "pos",
     icon: "check-check",
-    title: "Queue clear",
-    body: "Every submission is graded. Thirty students will see your feedback next time they open the course.",
-    cta: "Back to teaching",
+    get title() {
+      return t("data.empty.grading.title");
+    },
+    get body() {
+      return t("data.empty.grading.body");
+    },
+    get cta() {
+      return t("data.empty.grading.cta");
+    },
     go: "teach",
   },
   {
-    where: "Discussion",
-    tag: "Quiet week",
+    get where() {
+      return t("data.empty.board.where");
+    },
+    get tag() {
+      return t("data.empty.board.tag");
+    },
     tone: "info",
     icon: "message-square-dashed",
-    title: "No threads here yet",
-    body: "Somebody has to go first. A half-formed question is worth more than a polished one nobody asks.",
-    cta: "Start a thread",
+    get title() {
+      return t("data.empty.board.title");
+    },
+    get body() {
+      return t("data.empty.board.body");
+    },
+    get cta() {
+      return t("data.empty.board.cta");
+    },
     go: "board",
   },
   {
-    where: "Search",
-    tag: "No matches",
+    get where() {
+      return t("data.empty.search.where");
+    },
+    get tag() {
+      return t("data.empty.search.tag");
+    },
     tone: "warn",
     icon: "search-x",
-    title: "Nothing for that word",
-    body: "Try something shorter, or ask it as a question — Yara answers most within a day.",
-    cta: "Ask a question",
+    get title() {
+      return t("data.empty.search.title");
+    },
+    get body() {
+      return t("data.empty.search.body");
+    },
+    get cta() {
+      return t("data.empty.search.cta");
+    },
     go: "qa",
   },
 ];

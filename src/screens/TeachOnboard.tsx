@@ -16,19 +16,27 @@ import {
   Icon,
   ProgressRing,
 } from "../components";
+import { ASSISTANT } from "../data/demo";
 import { ONBOARD_PAY, ONBOARD_RULES, ONBOARD_STEPS } from "../data/screens/teachonboard";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-teachonboard.css";
 
+/** The course this instructor is getting ready — in-fiction catalogue title. */
+const SUBJECT_COURSE = "Portfolio Studio";
+
 export default function TeachOnboard() {
+  const { t, number } = useI18n();
   const ioDone = useAppStore((s) => s.ioDone);
   const set = useAppStore((s) => s.set);
   const go = useAppStore((s) => s.go);
   const showToast = useAppStore((s) => s.showToast);
 
   const doneCount = ONBOARD_STEPS.filter((s) => ioDone[s.k]).length;
-  const pct = Math.round((doneCount / ONBOARD_STEPS.length) * 100);
-  const ready = doneCount === ONBOARD_STEPS.length;
+  const total = ONBOARD_STEPS.length;
+  const pct = Math.round((doneCount / total) * 100);
+  const ready = doneCount === total;
+  const reviewer = ASSISTANT.name.split(" ")[0];
 
   function toggle(k: string, on: boolean): void {
     set({ ioDone: { ...ioDone, [k]: !on } });
@@ -36,10 +44,10 @@ export default function TeachOnboard() {
 
   function submit(): void {
     if (!ready) {
-      showToast("Six things first — tick them off as you go.", "info");
+      showToast(t("screensB.teachOnboard.notYet", { total: number(total) }, total), "info");
       return;
     }
-    showToast("Sent to Nadia. Expect notes within two days.", "send");
+    showToast(t("screensB.teachOnboard.sentToast", { name: reviewer }), "send");
   }
 
   return (
@@ -48,21 +56,30 @@ export default function TeachOnboard() {
         <div className="io-head__text">
           <div className="io-eyebrow">
             <Icon name="sparkles" size={15} />
-            Welcome to teaching here
+            {t("screensB.teachOnboard.eyebrow")}
           </div>
-          <h1 className="io-title">Get Portfolio Studio ready</h1>
+          <h1 className="io-title">
+            {t("screensB.teachOnboard.title", { course: SUBJECT_COURSE })}
+          </h1>
           <p className="io-sub">
             {ready
-              ? "Everything is ready. Send it to Nadia when you are happy."
-              : "Six things and Portfolio Studio is ready to teach. Nothing here is permanent."}
+              ? t("screensB.teachOnboard.subReady", { name: reviewer })
+              : t(
+                  "screensB.teachOnboard.subTodo",
+                  { course: SUBJECT_COURSE, total: number(total) },
+                  total,
+                )}
           </p>
         </div>
         <div className="io-score">
-          <ProgressRing pct={pct} size="sm" label="Setup progress" />
+          <ProgressRing pct={pct} size="sm" label={t("screensB.teachOnboard.setupAria")} />
           <div>
-            <div className="io-score__label">Setup</div>
+            <div className="io-score__label">{t("screensB.teachOnboard.setup")}</div>
             <div className="io-score__count">
-              {doneCount} of {ONBOARD_STEPS.length} done
+              {t("screensB.teachOnboard.doneOf", {
+                done: number(doneCount),
+                total: number(total),
+              })}
             </div>
           </div>
         </div>
@@ -115,7 +132,7 @@ export default function TeachOnboard() {
 
       <div className="io-bottom">
         <div className="io-pay">
-          <div className="io-card__title">How you get paid</div>
+          <div className="io-card__title">{t("screensB.teachOnboard.payTitle")}</div>
           {ONBOARD_PAY.map((row) => (
             <div className="io-payrow" key={row.label}>
               <Icon name={row.icon} size={16} className="io-payrow__ico" />
@@ -126,14 +143,14 @@ export default function TeachOnboard() {
             </div>
           ))}
           <ButtonSecondary className="io-pay__cta" onClick={() => go("payouts")}>
-            Set up payouts
+            {t("screensB.teachOnboard.setUpPayouts")}
           </ButtonSecondary>
         </div>
 
         <div className="io-rules">
           <div className="io-rules__head">
             <Icon name="book-open" size={16} className="io-rules__ico" />
-            <span className="io-card__title">House rules, briefly</span>
+            <span className="io-card__title">{t("screensB.teachOnboard.rulesTitle")}</span>
           </div>
           {ONBOARD_RULES.map((rule) => (
             <div className="io-rule" key={rule}>
@@ -152,14 +169,20 @@ export default function TeachOnboard() {
         />
         <span className="io-ready__text">
           {ready
-            ? "All six done. Nadia usually comes back within two working days."
-            : "Finish the list and the review button wakes up. Tick items as you go."}
+            ? t(
+                "screensB.teachOnboard.readyText",
+                { name: reviewer, total: number(total) },
+                total,
+              )
+            : t("screensB.teachOnboard.notReadyText")}
         </span>
         <ButtonPrimary
           className={`io-ready__cta${ready ? "" : " io-ready__cta--off"}`}
           onClick={submit}
         >
-          {ready ? "Send for review" : "Not ready yet"}
+          {ready
+            ? t("screensB.teachOnboard.sendForReview")
+            : t("screensB.teachOnboard.notReadyCta")}
         </ButtonPrimary>
       </div>
     </div>

@@ -10,9 +10,17 @@
  * capacity — is read from it in the screen and is deliberately absent here.
  */
 
+import { t } from "../../i18n/ambient";
 import type { CourseLevel } from "../types";
 
-/** The three levels the segmented control offers, in the comp's order. */
+/**
+ * The three levels the segmented control offers, in the comp's order.
+ *
+ * These stay as the English tokens because a `CourseLevel` is what a course
+ * record stores — it is an id that happens to look like a word. The reader's
+ * names for them are `data.level.beginner` / `.intermediate` / `.advanced`,
+ * resolved wherever a level is drawn.
+ */
 export const LEVELS: CourseLevel[] = ["Beginner", "Intermediate", "Advanced"];
 
 export interface TintChoice {
@@ -24,11 +32,36 @@ export interface TintChoice {
 }
 
 export const TINTS: TintChoice[] = [
-  { hex: "#7c3aed", name: "Violet" },
-  { hex: "#2563eb", name: "Blue" },
-  { hex: "#0d9488", name: "Teal" },
-  { hex: "#e11d48", name: "Rose" },
-  { hex: "#a95800", name: "Amber" },
+  {
+    hex: "#7c3aed",
+    get name() {
+      return t("data.editor.tint.violet");
+    },
+  },
+  {
+    hex: "#2563eb",
+    get name() {
+      return t("data.editor.tint.blue");
+    },
+  },
+  {
+    hex: "#0d9488",
+    get name() {
+      return t("data.editor.tint.teal");
+    },
+  },
+  {
+    hex: "#e11d48",
+    get name() {
+      return t("data.editor.tint.rose");
+    },
+  },
+  {
+    hex: "#a95800",
+    get name() {
+      return t("data.editor.tint.amber");
+    },
+  },
 ];
 
 export interface IconChoice {
@@ -38,14 +71,45 @@ export interface IconChoice {
 }
 
 export const COVER_ICONS: IconChoice[] = [
-  { name: "layout-grid", label: "Grid" },
-  { name: "type", label: "Type" },
-  { name: "orbit", label: "Orbit" },
-  { name: "briefcase", label: "Briefcase" },
-  { name: "pen-tool", label: "Pen" },
+  {
+    name: "layout-grid",
+    get label() {
+      return t("data.editor.icon.grid");
+    },
+  },
+  {
+    name: "type",
+    get label() {
+      return t("data.editor.icon.type");
+    },
+  },
+  {
+    name: "orbit",
+    get label() {
+      return t("data.editor.icon.orbit");
+    },
+  },
+  {
+    name: "briefcase",
+    get label() {
+      return t("data.editor.icon.briefcase");
+    },
+  },
+  {
+    name: "pen-tool",
+    get label() {
+      return t("data.editor.icon.pen");
+    },
+  },
 ];
 
-/** Reviews live on the reviews screen; the course record carries no rating. */
+/**
+ * Reviews live on the reviews screen; the course record carries no rating.
+ *
+ * English here (module-level `const`); `data.editor.ratingLine` takes the
+ * rating and the review count as `{rating}` and `{count}`.
+ */
+export const RATING_COUNT = 6;
 export const RATING_LINE = "4.8 · 6 reviews";
 
 /** The intake this course is currently running. */

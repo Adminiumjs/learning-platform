@@ -21,10 +21,12 @@ import {
 } from "../components";
 import { SIGNIN_MS, SIGNIN_PROVIDERS, TESTIMONIAL } from "../data/screens/signin";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-signin.css";
 
 export default function SignIn() {
+  const { t, number } = useI18n();
   const siEmail = useAppStore((s) => s.siEmail);
   const siPass = useAppStore((s) => s.siPass);
   const siBusy = useAppStore((s) => s.siBusy);
@@ -34,6 +36,7 @@ export default function SignIn() {
   const showToast = useAppStore((s) => s.showToast);
 
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firstName = dataSource.student().name.split(" ")[0];
 
   /* Leaving mid-request (the dock can jump anywhere) must not strand the
      button on "Signing in…" for whenever the screen is opened again. */
@@ -52,7 +55,7 @@ export default function SignIn() {
       timer.current = null;
       set({ siBusy: false });
       go("learning");
-      showToast("Welcome back, Rosa.", "check");
+      showToast(t("screensB.signIn.welcomeToast", { name: firstName }), "check");
     }, SIGNIN_MS);
   };
 
@@ -102,16 +105,19 @@ export default function SignIn() {
           }}
         >
           <div className="si-intro">
-            <h1 className="si-intro__title">Welcome back</h1>
-            <p className="si-intro__lede">Pick up where you left off — week {week} is open.</p>
+            <h1 className="si-intro__title">{t("screensB.signIn.title")}</h1>
+            <p className="si-intro__lede">
+              {t("screensB.signIn.lede", { week: number(week) })}
+            </p>
           </div>
 
-          <Field label="Email" htmlFor="si-email" className="si-field">
+          <Field label={t("screensB.signIn.email")} htmlFor="si-email" className="si-field">
             <TextInput
               id="si-email"
               type="email"
               value={siEmail}
               onChange={(v) => set({ siEmail: v })}
+              /* A sample address is a machine token, not copy. */
               placeholder="you@example.com"
               className="si-input"
             />
@@ -123,14 +129,14 @@ export default function SignIn() {
           <div className="lp-field si-field">
             <div className="si-passline">
               <label className="lp-field__label" htmlFor="si-pass">
-                Password
+                {t("screensB.signIn.password")}
               </label>
               <button
                 type="button"
                 className="lp-nav si-forgot"
-                onClick={() => showToast("We would email you a reset link.", "mail")}
+                onClick={() => showToast(t("screensB.signIn.resetToast"), "mail")}
               >
-                Forgot it?
+                {t("screensB.signIn.forgot")}
               </button>
             </div>
             <TextInput
@@ -144,12 +150,12 @@ export default function SignIn() {
           </div>
 
           <ButtonPrimary className="si-submit" type="submit" disabled={siBusy}>
-            {siBusy ? "Signing in…" : "Sign in"}
+            {siBusy ? t("screensB.signIn.busy") : t("screensB.signIn.submit")}
           </ButtonPrimary>
 
           <div className="si-or">
             <span className="si-or__rule" />
-            or
+            {t("screensB.signIn.or")}
             <span className="si-or__rule" />
           </div>
 
@@ -167,13 +173,13 @@ export default function SignIn() {
           </div>
 
           <Callout className="si-note" tone="info" icon="info">
-            Any password works. This is a demo.
+            {t("screensB.signIn.demoNote")}
           </Callout>
 
           <p className="si-create">
-            New here?{" "}
+            {t("screensB.signIn.newHere")}{" "}
             <button type="button" className="lp-nav si-create__btn" onClick={() => go("onboarding")}>
-              Create an account
+              {t("screensB.signIn.createAccount")}
             </button>
           </p>
         </form>

@@ -29,6 +29,7 @@ import {
   TOKENS_SUB,
 } from "../data/screens/grades";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { hasPassed, scoreExam } from "../lib/exam";
 import { doneCount, fmtDate, weekStart } from "../lib/schedule";
 import { useAppStore } from "../state/store";
@@ -53,6 +54,7 @@ interface Row {
 }
 
 export default function Grades() {
+  const { t, number } = useI18n();
   const week = useAppStore((s) => s.week);
   const asState = useAppStore((s) => s.asState);
   const exSubmitted = useAppStore((s) => s.exSubmitted);
@@ -70,31 +72,38 @@ export default function Grades() {
   const mine = asState === "graded";
   const item = (id: string) => GRADE_ITEMS.find((g) => g.id === id)!;
 
+  const outOf = (earned: number, possible: number) =>
+    t("screensA.grades.outOf", { score: number(earned), max: number(possible) });
+
   /*
    * "Module 04 · opens Mon 17 Aug". The comp hardcoded the weeks (5 and 7);
    * they are the modules' own release weeks, so they come off the curriculum.
    */
   const opensSub = (num: string) => {
     const m = modules.find((x) => x.num === num);
-    return m ? `Module ${m.num} · opens ${fmtDate(weekStart(m.week))}` : `Module ${num}`;
+    return m
+      ? t("screensA.grades.moduleOpens", { num: m.num, date: fmtDate(weekStart(m.week)) })
+      : t("screensA.grades.module", { num });
   };
 
   const rows: Row[] = [
     {
       ...item("tokens"),
       sub: TOKENS_SUB,
-      score: `${TOKENS_EARNED} / ${TOKENS_POSSIBLE}`,
+      score: outOf(TOKENS_EARNED, TOKENS_POSSIBLE),
       ok: true,
     },
     {
       ...item("specimen"),
-      sub: `Module 03 · ${
-        mine ? "graded by Yara" : asState === "submitted" ? "awaiting grade" : "not submitted"
-      }`,
-      score: mine
-        ? `${work.grade} / ${work.points}`
+      sub: mine
+        ? t("screensA.grades.specimenGraded")
         : asState === "submitted"
-          ? "Pending"
+          ? t("screensA.grades.specimenAwaiting")
+          : t("screensA.grades.specimenNotSubmitted"),
+      score: mine
+        ? outOf(work.grade, work.points)
+        : asState === "submitted"
+          ? t("screensA.grades.pending")
           : "—",
       ok: mine,
       /* The comp wrote `pending: !mine`, which painted the draft state's "—"
@@ -111,8 +120,8 @@ export default function Grades() {
     },
     {
       ...item("final"),
-      sub: exSubmitted ? "Auto-graded · essay pending" : opensSub("05"),
-      score: exSubmitted ? `${score.correct} / ${score.total}` : "—",
+      sub: exSubmitted ? t("screensA.grades.autoGradedEssayPending") : opensSub("05"),
+      score: exSubmitted ? outOf(score.correct, score.total) : "—",
       ok: exSubmitted && hasPassed(score),
       locked: !exSubmitted,
     },
@@ -132,21 +141,28 @@ export default function Grades() {
   const lessonsDone = doneCount(done);
   const complete = lessonsDone >= totalLessons && exSubmitted;
 
+  const percent = (value: number) =>
+    number(value / 100, { style: "percent", maximumFractionDigits: 0 });
+
   return (
     <div className="lp-page scr-gr">
       <div className="scr-gr__head">
         <div>
-          <h1 className="scr-gr__title">Grades</h1>
+          <h1 className="scr-gr__title">{t("screensA.grades.title")}</h1>
           <p className="scr-gr__sub">
-            {course.title} · {COHORT_LABEL}
+            {t("screensA.grades.sub", { course: course.title, cohort: COHORT_LABEL })}
           </p>
         </div>
         <div className="scr-gr__overall">
-          <ProgressRing pct={pct} size="sm" label="Overall grade" />
+          <ProgressRing pct={pct} size="sm" label={t("screensA.grades.overallLabel")} />
           <div>
-            <p className="scr-gr__overalltitle">Overall</p>
+            <p className="scr-gr__overalltitle">{t("screensA.grades.overall")}</p>
             <p className="scr-gr__overallsub">
-              {gradedCount} of {rows.length} items graded · {gradedWeight}% of the grade
+              {t("screensA.grades.overallSub", {
+                graded: number(gradedCount),
+                total: number(rows.length),
+                weight: percent(gradedWeight),
+              })}
             </p>
           </div>
         </div>
@@ -154,10 +170,10 @@ export default function Grades() {
 
       <div className="scr-gr__table">
         <div className="scr-gr__thead">
-          <span>Item</span>
-          <span>Type</span>
-          <span className="scr-gr__num">Weight</span>
-          <span className="scr-gr__num">Score</span>
+          <span>{t("screensA.grades.colItem")}</span>
+          <span>{t("screensA.grades.colType")}</span>
+          <span className="scr-gr__num">{t("screensA.grades.colWeight")}</span>
+          <span className="scr-gr__num">{t("screensA.grades.colScore")}</span>
         </div>
         {rows.map((r) => (
           <div
@@ -169,7 +185,7 @@ export default function Grades() {
               <span className="scr-gr__itemsub">{r.sub}</span>
             </span>
             <span className="scr-gr__kind">{r.kind}</span>
-            <span className="scr-gr__weight lp-mono">{r.weight}%</span>
+            <span className="scr-gr__weight lp-mono">{percent(r.weight)}</span>
             <span
               className={`scr-gr__score lp-mono${
                 r.ok ? " is-ok" : r.pending ? " is-pending" : ""
@@ -192,7 +208,10 @@ export default function Grades() {
           <p className="scr-gr__certtext">
             {complete
               ? CERT_DONE_BODY
-              : `Finish all ${totalLessons} lessons and sit the final exam to unlock it. You are ${lessonsDone} of ${totalLessons} in.`}
+              : t("screensA.grades.certLockedBody", {
+                  total: number(totalLessons),
+                  done: number(lessonsDone),
+                })}
           </p>
         </div>
         {complete ? (

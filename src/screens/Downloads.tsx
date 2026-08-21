@@ -18,12 +18,12 @@ import {
   BUSY_PCT,
   DEVICE_LABEL,
   DOWNLOAD_MS,
-  DOWNLOAD_SIZES,
+  sizeLabel,
   GB_PER_FILE,
-  NO_SIZE,
 } from "../data/screens/downloads";
 import { dataSource } from "../data/source";
 import type { Lesson } from "../data/types";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-downloads.css";
 
@@ -36,6 +36,7 @@ function isLesson(l: Lesson): boolean {
 }
 
 export default function Downloads() {
+  const { t, number } = useI18n();
   const dlWifi = useAppStore((s) => s.dlWifi);
   const dlState = useAppStore((s) => s.dlState);
   const set = useAppStore((s) => s.set);
@@ -47,7 +48,7 @@ export default function Downloads() {
   useEffect(() => {
     const pending = timers.current;
     return () => {
-      for (const t of Object.values(pending)) clearTimeout(t);
+      for (const timer of Object.values(pending)) clearTimeout(timer);
     };
   }, []);
 
@@ -69,9 +70,9 @@ export default function Downloads() {
   const resourcePct = usedPct - lessonPct;
 
   const clearTimer = (id: string) => {
-    const t = timers.current[id];
-    if (t) {
-      clearTimeout(t);
+    const timer = timers.current[id];
+    if (timer) {
+      clearTimeout(timer);
       delete timers.current[id];
     }
   };
@@ -105,37 +106,44 @@ export default function Downloads() {
       next[l.id] = "done";
     }
     set({ dlState: next });
-    showToast("Five lessons saved to this device.", "download");
+    showToast(
+      t("screensA.downloads.weekSaved", { count: number(files.length) }, files.length),
+      "download",
+    );
   };
 
   const clearAll = () => {
     for (const id of Object.keys(timers.current)) clearTimer(id);
     set({ dlState: {} });
-    showToast("Downloads cleared.", "trash-2");
+    showToast(t("screensA.downloads.cleared"), "trash-2");
   };
+
+  const busyPct = number(BUSY_PCT / 100, { style: "percent", maximumFractionDigits: 0 });
 
   return (
     <div className="lp-page lp-page--narrow scr-downloads">
-      <PageHead
-        title="Downloads"
-        lede="Keep lessons on this device. They play with no signal — the train, the plane, the basement studio."
-      />
+      <PageHead title={t("screensA.downloads.title")} lede={t("screensA.downloads.lede")} />
 
       <section className="dl-storage">
         <div className="dl-storage__head">
           <span className="lp-mono dl-storage__used">
-            {(doneIds.length * GB_PER_FILE).toFixed(1)} GB
+            {number(doneIds.length * GB_PER_FILE, {
+              style: "unit",
+              unit: "gigabyte",
+              maximumFractionDigits: 1,
+              minimumFractionDigits: 1,
+            })}
           </span>
           <span className="dl-storage__of">{DEVICE_LABEL}</span>
           <button type="button" className="lp-nav dl-storage__clear" onClick={clearAll}>
-            Remove all
+            {t("screensA.downloads.removeAll")}
           </button>
         </div>
 
         <div
           className="dl-bar"
           role="progressbar"
-          aria-label="Device storage used"
+          aria-label={t("screensA.downloads.storageLabel")}
           aria-valuenow={usedPct}
           aria-valuemin={0}
           aria-valuemax={100}
@@ -147,18 +155,18 @@ export default function Downloads() {
         <div className="dl-legend">
           <span className="dl-legend__item">
             <span className="dl-legend__dot dl-legend__dot--lessons" />
-            Lessons
+            {t("screensA.downloads.legendLessons")}
           </span>
           <span className="dl-legend__item">
             <span className="dl-legend__dot dl-legend__dot--res" />
-            Resources
+            {t("screensA.downloads.legendResources")}
           </span>
           <span className="dl-wifi">
-            <span className="dl-wifi__label">Only on Wi-Fi</span>
+            <span className="dl-wifi__label">{t("screensA.downloads.wifiOnly")}</span>
             <Toggle
               checked={dlWifi}
               onChange={(next) => set({ dlWifi: next })}
-              label="Only download on Wi-Fi"
+              label={t("screensA.downloads.wifiOnlyLabel")}
               hideLabel
             />
           </span>
@@ -166,9 +174,9 @@ export default function Downloads() {
       </section>
 
       <div className="dl-week">
-        <h2 className="dl-week__title">This week</h2>
+        <h2 className="dl-week__title">{t("screensA.downloads.thisWeek")}</h2>
         <ButtonPrimary className="dl-week__all" icon="download" iconSize={15} onClick={downloadWeek}>
-          Download the week
+          {t("screensA.downloads.downloadWeek")}
         </ButtonPrimary>
       </div>
 
@@ -192,9 +200,15 @@ export default function Downloads() {
               <span className="dl-row__body">
                 <span className="dl-row__title">{l.title}</span>
                 <span className="dl-row__sub">
-                  {done ? "Downloaded · " : ""}
-                  {kind.l} · {l.dur}
-                  {busy ? ` · ${BUSY_PCT}% done` : ""}
+                  {done
+                    ? t("screensA.downloads.subDone", { kind: kind.l, dur: l.dur })
+                    : busy
+                      ? t("screensA.downloads.subBusy", {
+                          kind: kind.l,
+                          dur: l.dur,
+                          pct: busyPct,
+                        })
+                      : t("screensA.downloads.sub", { kind: kind.l, dur: l.dur })}
                 </span>
                 {busy ? (
                   <span className="dl-row__track">
@@ -203,16 +217,26 @@ export default function Downloads() {
                 ) : null}
               </span>
 
-              <span className="lp-mono dl-row__size">{DOWNLOAD_SIZES[l.id] ?? NO_SIZE}</span>
+              <span className="lp-mono dl-row__size">{sizeLabel(l.id)}</span>
 
               <ButtonSecondary
                 className={`dl-row__btn${done ? " is-done" : ""}`}
                 icon={done ? "trash-2" : busy ? "x" : "download"}
                 iconSize={15}
                 onClick={() => toggleRow(l.id, done || busy)}
-                title={`${done ? "Remove" : busy ? "Cancel" : "Download"} ${l.title}`}
+                title={
+                  done
+                    ? t("screensA.downloads.removeTitle", { title: l.title })
+                    : busy
+                      ? t("screensA.downloads.cancelTitle", { title: l.title })
+                      : t("screensA.downloads.downloadTitle", { title: l.title })
+                }
               >
-                {done ? "Remove" : busy ? "Cancel" : "Download"}
+                {done
+                  ? t("screensA.downloads.remove")
+                  : busy
+                    ? t("screensA.downloads.cancel")
+                    : t("screensA.downloads.download")}
               </ButtonSecondary>
             </div>
           );

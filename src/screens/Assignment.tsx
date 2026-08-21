@@ -29,14 +29,23 @@ import {
   ASSIGNMENT_RUBRIC,
 } from "../data/screens/assignment";
 import { dataSource } from "../data/source";
-import { addDays, demoNow, dueDate, fmtDate } from "../lib/schedule";
+import { useI18n } from "../i18n";
+import { addDays, demoNow, dueDate, endOfDay, fmtDate, fmtTime } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-assignment.css";
 
 /** Module 03's graded assignment — the lesson this brief hangs off. */
 const ASSIGNMENT_LESSON = "L15";
 
+/** When Yara's marks land: the day after the submission, late afternoon. */
+function gradedMoment(week: number): Date {
+  const d = addDays(demoNow(week), 1);
+  d.setHours(16, 41, 0, 0);
+  return d;
+}
+
 export default function Assignment() {
+  const { t, number } = useI18n();
   const week = useAppStore((s) => s.week);
   const asText = useAppStore((s) => s.asText);
   const asFiles = useAppStore((s) => s.asFiles);
@@ -57,13 +66,23 @@ export default function Assignment() {
    */
   const overdue = asState === "draft" && week > (mod?.week ?? 3);
 
-  const due = `${overdue ? "Overdue · was due " : "Due "}${fmtDate(dueDate())} · 23:59`;
-  const submittedAt = `Submitted ${asAt ?? `${fmtDate(demoNow(week))} · 10:20`}`;
-  const gradedAt = `Graded ${fmtDate(addDays(demoNow(week), 1))} · 16:41`;
+  /* The deadline is an instant, so the hour prints as "23:59" or "11:59 PM"
+     depending on who is reading it — the comp spliced "23:59" on by hand. */
+  const deadline = endOfDay(dueDate());
+  const due = overdue
+    ? t("screensA.assignment.overdue", { date: fmtDate(deadline), time: fmtTime(deadline) })
+    : t("screensA.assignment.due", { date: fmtDate(deadline), time: fmtTime(deadline) });
+
+  const submittedStamp =
+    asAt ?? t("screensA.assignment.stamp", {
+      date: fmtDate(demoNow(week)),
+      time: fmtTime(demoNow(week)),
+    });
+  const graded = gradedMoment(week);
 
   const addFile = () => {
     set({ asFiles: [...asFiles, { n: ASSIGNMENT_EXTRA_FILE }] });
-    showToast(`Attached ${ASSIGNMENT_EXTRA_FILE}`, "paperclip");
+    showToast(t("screensA.assignment.attached", { name: ASSIGNMENT_EXTRA_FILE }), "paperclip");
   };
 
   return (
@@ -71,7 +90,10 @@ export default function Assignment() {
       <header>
         <p className="scr-as__eyebrow">
           <Icon name="pen-line" size={15} />
-          Module {mod?.num ?? "03"} · {mod?.title ?? "Type and spacing"}
+          {t("screensA.assignment.moduleEyebrow", {
+            num: mod?.num ?? "03",
+            title: mod?.title ?? "Type and spacing",
+          })}
         </p>
         <h1 className="scr-as__title">{work.title}</h1>
       </header>
@@ -80,13 +102,17 @@ export default function Assignment() {
         <Pill tone={overdue ? "warn" : "neutral"} icon="calendar" iconSize={14}>
           {due}
         </Pill>
-        <Pill className="lp-mono">{work.points} points</Pill>
+        <Pill className="lp-mono">
+          {t("screensA.assignment.points", { count: number(work.points) }, work.points)}
+        </Pill>
         {/* First name only — the comp's chip reads "Graded by Yara". */}
-        <Pill>Graded by {instructor.name.split(" ")[0]}</Pill>
+        <Pill>
+          {t("screensA.assignment.gradedBy", { name: instructor.name.split(" ")[0] })}
+        </Pill>
       </div>
 
       <section className="scr-as__card">
-        <h2 className="scr-as__cardtitle">The brief</h2>
+        <h2 className="scr-as__cardtitle">{t("screensA.assignment.brief")}</h2>
         <p className="scr-as__brief">{ASSIGNMENT_BRIEF}</p>
         <div className="scr-as__files scr-as__files--brief">
           {work.briefFiles.map((f) => (
@@ -97,14 +123,14 @@ export default function Assignment() {
 
       {asState === "draft" ? (
         <section className="scr-as__card">
-          <h2 className="scr-as__cardtitle">Your submission</h2>
+          <h2 className="scr-as__cardtitle">{t("screensA.assignment.yourSubmission")}</h2>
           <TextArea
             value={asText}
             onChange={(v) => set({ asText: v })}
             rows={6}
             className="scr-as__text"
-            ariaLabel="Your submission"
-            placeholder="Tell us what you made and what you're unsure about."
+            ariaLabel={t("screensA.assignment.yourSubmission")}
+            placeholder={t("screensA.assignment.submissionPlaceholder")}
           />
           <div className="scr-as__files">
             {asFiles.map((f, i) => (
@@ -116,12 +142,14 @@ export default function Assignment() {
             ))}
             <button type="button" className="lp-gi scr-as__attach" onClick={addFile}>
               <Icon name="plus" size={13} />
-              Attach a file
+              {t("screensA.assignment.attachFile")}
             </button>
           </div>
           <div className="scr-as__actions">
-            <ButtonPrimary onClick={submitAssignment}>Submit assignment</ButtonPrimary>
-            <span className="scr-as__note">You can resubmit until the deadline.</span>
+            <ButtonPrimary onClick={submitAssignment}>
+              {t("screensA.assignment.submit")}
+            </ButtonPrimary>
+            <span className="scr-as__note">{t("screensA.assignment.resubmitNote")}</span>
           </div>
         </section>
       ) : null}
@@ -130,8 +158,10 @@ export default function Assignment() {
         <section className="scr-as__receipt">
           <Icon name="check-circle-2" size={22} className="scr-as__receiptico" />
           <div className="scr-as__receiptbody">
-            <p className="scr-as__receipttitle">Submitted — thank you.</p>
-            <p className="scr-as__receiptat lp-mono">{submittedAt}</p>
+            <p className="scr-as__receipttitle">{t("screensA.assignment.thanks")}</p>
+            <p className="scr-as__receiptat lp-mono">
+              {t("screensA.assignment.submittedAt", { at: submittedStamp })}
+            </p>
             <p className="scr-as__receipttext">{asText}</p>
             <div className="scr-as__files">
               {asFiles.map((f, i) => (
@@ -142,7 +172,7 @@ export default function Assignment() {
               className="scr-as__edit"
               onClick={() => set({ asState: "draft" })}
             >
-              Edit submission
+              {t("screensA.assignment.editSubmission")}
             </ButtonSecondary>
           </div>
         </section>
@@ -153,16 +183,29 @@ export default function Assignment() {
           <header className="scr-as__gradehead">
             <Avatar initials={instructor.initials} size="lg" accent />
             <div>
-              <p className="scr-as__gradeby">Graded by {instructor.name}</p>
-              <p className="scr-as__gradeat lp-mono">{gradedAt}</p>
+              <p className="scr-as__gradeby">
+                {t("screensA.assignment.gradedBy", { name: instructor.name })}
+              </p>
+              <p className="scr-as__gradeat lp-mono">
+                {t("screensA.assignment.gradedAt", {
+                  at: t("screensA.assignment.stamp", {
+                    date: fmtDate(graded),
+                    time: fmtTime(graded),
+                  }),
+                })}
+              </p>
             </div>
             <p className="scr-as__score">
-              <span className="scr-as__scorenum lp-mono">{work.grade}</span>
-              <span className="scr-as__scoremax lp-mono">/ {work.points}</span>
+              <span className="scr-as__scorenum lp-mono">{number(work.grade)}</span>
+              <span className="scr-as__scoremax lp-mono">
+                {t("screensA.assignment.outOf", { max: number(work.points) })}
+              </span>
             </p>
           </header>
           <div className="scr-as__gradebody">
-            <h2 className="scr-as__cardtitle scr-as__cardtitle--sm">Feedback</h2>
+            <h2 className="scr-as__cardtitle scr-as__cardtitle--sm">
+              {t("screensA.assignment.feedback")}
+            </h2>
             <p className="scr-as__feedback">{ASSIGNMENT_FEEDBACK}</p>
             <div className="scr-as__rubric">
               {ASSIGNMENT_RUBRIC.map((r) => (

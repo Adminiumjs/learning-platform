@@ -4,8 +4,19 @@
  * Page-local: the feed is presentational, and every row is really a pointer at
  * a screen that owns the truth (the classroom, the Q&A, the grade). Read state
  * lives in the store as `nfRead`, so nothing here is mutable.
+ *
+ * Translation. A notification is the product talking, not a character, so the
+ * lines are translated — with the lesson and course titles left inside them in
+ * English, because those are the fiction's own names. `NOTIF_GROUPS` stays as
+ * written: those two strings are the `group` discriminator every row is
+ * bucketed by, and their reader-facing names are `data.notifs.group.*`.
+ *
+ * The `at` column was a hand-written "Mon" / "Fri"; it now asks `Intl` for the
+ * weekday, so a Czech reader gets "po" and an Egyptian one "الاثنين".
  */
 
+import { t } from "../../i18n/ambient";
+import { weekdayName } from "../../lib/schedule";
 import type { ViewId } from "../types";
 
 /** The two buckets the feed groups by, in the order they render. */
@@ -35,7 +46,9 @@ export const NOTIFS: Notif[] = [
     group: "Today",
     icon: "unlock",
     tone: "accent",
-    title: "Week 3 is open — Grids and rhythm is up",
+    get title() {
+      return t("data.notifs.weekOpen");
+    },
     sub: "Design Systems from Scratch",
     at: "09:12",
     unread: true,
@@ -46,7 +59,9 @@ export const NOTIFS: Notif[] = [
     group: "Today",
     icon: "message-circle-reply",
     tone: "pos",
-    title: "Yara answered your question about the 13px caption",
+    get title() {
+      return t("data.notifs.answered");
+    },
     sub: "A type scale you can defend",
     at: "08:12",
     unread: true,
@@ -57,8 +72,12 @@ export const NOTIFS: Notif[] = [
     group: "Today",
     icon: "radio",
     tone: "accent",
-    title: "Live critique on Thursday at 18:00",
-    sub: "Six specimens on the running order",
+    get title() {
+      return t("data.notifs.liveCritique");
+    },
+    get sub() {
+      return t("data.notifs.liveCritiqueSub");
+    },
     at: "07:40",
     unread: false,
     go: "live",
@@ -68,9 +87,15 @@ export const NOTIFS: Notif[] = [
     group: "This week",
     icon: "award",
     tone: "pos",
-    title: "Your token sheet was graded · 17 / 20",
-    sub: "Feedback from Yara Haddad",
-    at: "Mon",
+    get title() {
+      return t("data.notifs.graded");
+    },
+    get sub() {
+      return t("data.notifs.gradedSub");
+    },
+    get at() {
+      return weekdayName(1);
+    },
     unread: false,
     go: "grades",
   },
@@ -79,9 +104,15 @@ export const NOTIFS: Notif[] = [
     group: "This week",
     icon: "clock",
     tone: "warn",
-    title: "Type specimen page is due Friday",
-    sub: "20 points · module 03",
-    at: "Mon",
+    get title() {
+      return t("data.notifs.dueFriday");
+    },
+    get sub() {
+      return t("data.notifs.dueFridaySub");
+    },
+    get at() {
+      return weekdayName(1);
+    },
     unread: false,
     go: "assignment",
   },
@@ -90,9 +121,15 @@ export const NOTIFS: Notif[] = [
     group: "This week",
     icon: "message-square-text",
     tone: "info",
-    title: "Tomás replied in “4px or 8px spacing?”",
-    sub: "Discussion · Week 3",
-    at: "Sun",
+    get title() {
+      return t("data.notifs.replied");
+    },
+    get sub() {
+      return t("data.notifs.repliedSub");
+    },
+    get at() {
+      return weekdayName(0);
+    },
     unread: false,
     go: "board",
   },
@@ -101,9 +138,15 @@ export const NOTIFS: Notif[] = [
     group: "This week",
     icon: "megaphone",
     tone: "accent",
-    title: "Office hours move to Thursday",
-    sub: "Announcement from Yara",
-    at: "Fri",
+    get title() {
+      return t("data.notifs.officeHours");
+    },
+    get sub() {
+      return t("data.notifs.officeHoursSub");
+    },
+    get at() {
+      return weekdayName(5);
+    },
     unread: false,
     go: "learning",
   },

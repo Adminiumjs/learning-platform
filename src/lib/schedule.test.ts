@@ -38,7 +38,7 @@ import {
 describe("the demo clock", () => {
   it("anchors cohort week 1 to Monday 20 July 2026", () => {
     const w1 = weekStart(1);
-    expect(fmtDateLong(w1)).toBe("Mon 20 Jul 2026");
+    expect(fmtDateLong(w1)).toBe("Mon, Jul 20, 2026");
     /* 1 === Monday in JS's zero-indexed, Sunday-first week. */
     expect(w1.getDay()).toBe(1);
   });
@@ -48,8 +48,8 @@ describe("the demo clock", () => {
       expect(weekStart(w).getDay()).toBe(1);
     }
     expect(weekStart(3).getTime() - weekStart(1).getTime()).toBe(14 * 86400_000);
-    expect(fmtDate(weekStart(3))).toBe("Mon 3 Aug");
-    expect(fmtDate(weekStart(8))).toBe("Mon 7 Sep");
+    expect(fmtDate(weekStart(3))).toBe("Mon, Aug 3");
+    expect(fmtDate(weekStart(8))).toBe("Mon, Sep 7");
   });
 
   it("clamps below week 1 rather than running backwards into June", () => {
@@ -66,13 +66,13 @@ describe("the demo clock", () => {
   });
 
   it("reads the dock's label straight off the week number", () => {
-    expect(clockLabel(3)).toBe("Week 3 of 8 · Mon 3 Aug");
-    expect(clockLabel(1)).toBe("Week 1 of 8 · Mon 20 Jul");
+    expect(clockLabel(3)).toBe("Week 3 of 8 · Mon, Aug 3");
+    expect(clockLabel(1)).toBe("Week 1 of 8 · Mon, Jul 20");
   });
 
   it("never reads the wall clock — the same week always formats identically", () => {
     expect(clockLabel(5)).toBe(clockLabel(5));
-    expect(fmtDate(weekStart(5))).toBe("Mon 17 Aug");
+    expect(fmtDate(weekStart(5))).toBe("Mon, Aug 17");
   });
 });
 
@@ -107,8 +107,8 @@ describe("module locking", () => {
   });
 
   it("labels a lock with the date it actually opens", () => {
-    expect(unlockLabel(components)).toBe("Unlocks Mon 17 Aug");
-    expect(unlockLabel(ship)).toBe("Unlocks Mon 31 Aug");
+    expect(unlockLabel(components)).toBe("Unlocks Mon, Aug 17");
+    expect(unlockLabel(ship)).toBe("Unlocks Mon, Aug 31");
   });
 
   it("opens the two sales-page preview lessons and nothing else", () => {
@@ -141,10 +141,21 @@ describe("the curriculum", () => {
     expect(lessonById("L999")).toBeUndefined();
   });
 
-  it("parses mm:ss durations and falls back for the ones that aren't", () => {
+  it("reads a runtime off the seed and falls back only when there isn't one", () => {
+    /* Video, the case that used to be recovered by parsing "18:30". */
     expect(lessonSeconds("L12")).toBe(18 * 60 + 30);
-    /* "9 min" is not mm:ss — the reading lesson takes the fallback. */
-    expect(lessonSeconds("L3")).toBe(600);
+    /*
+     * A reading. This was 600 while `dur` was the English string "9 min" and
+     * `lessonSeconds` could only parse mm:ss — the reading silently took the
+     * ten-minute fallback. It now reports its real length.
+     */
+    expect(lessonSeconds("L3")).toBe(9 * 60);
+    /* The live session and the exam are timed too, in whole minutes. */
+    expect(lessonSeconds("L14")).toBe(60 * 60);
+    expect(lessonSeconds("L22")).toBe(45 * 60);
+    /* An assignment is measured in points, not minutes — nothing to read. */
+    expect(lessonById("L15")?.secs).toBeUndefined();
+    expect(lessonSeconds("L15")).toBe(600);
     expect(lessonSeconds("nope")).toBe(600);
   });
 });
@@ -195,7 +206,7 @@ describe("the lesson player head", () => {
 describe("dates and clocks", () => {
   it("keeps the week-3 deadline fixed so it can go overdue as time moves", () => {
     /* Friday of week 3 — the assignment brief's stated due date. */
-    expect(fmtDate(dueDate())).toBe("Fri 7 Aug");
+    expect(fmtDate(dueDate())).toBe("Fri, Aug 7");
     expect(dueDate().getTime()).toBeLessThan(weekStart(4).getTime());
   });
 
@@ -204,7 +215,7 @@ describe("dates and clocks", () => {
     const before = base.getTime();
     const later = addDays(base, 3);
     expect(base.getTime()).toBe(before);
-    expect(fmtDate(later)).toBe("Thu 23 Jul");
+    expect(fmtDate(later)).toBe("Thu, Jul 23");
   });
 
   it("counts the live session down and floors at zero rather than going negative", () => {

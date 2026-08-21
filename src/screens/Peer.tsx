@@ -28,9 +28,19 @@ import {
   PEER_TIPS,
   PEER_WORK_TINT,
 } from "../data/screens/peer";
+import { useI18n } from "../i18n";
 import { addDays, dueDate, fmtDate } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-peer.css";
+
+/** The module and piece this round reviews — in-fiction curriculum names. */
+const ROUND_MODULE = "03";
+const ROUND_PIECE = "type specimen page";
+/** What came back to you was the round before: module 02's token sheet. */
+const RECEIVED_MODULE = "02";
+const RECEIVED_PIECE = "token sheet";
+/** Reviews are due three days after the assignment itself. */
+const REVIEW_GRACE_DAYS = 3;
 
 function wordCount(text: string): number {
   const t = text.trim();
@@ -38,6 +48,7 @@ function wordCount(text: string): number {
 }
 
 export default function Peer() {
+  const { t, number } = useI18n();
   const prvI = useAppStore((s) => s.prvI);
   const prvDone = useAppStore((s) => s.prvDone);
   const prvScore = useAppStore((s) => s.prvScore);
@@ -67,17 +78,22 @@ export default function Peer() {
 
   const send = () => {
     if (words < PEER_MIN_WORDS) {
-      showToast("A couple of sentences at least — it is somebody’s week.", "info");
+      showToast(t("screensB.peer.tooShort"), "info");
       return;
     }
     set({ prvDone: { ...prvDone, [cur.id]: 1 }, prvI: 0 });
-    showToast(`Review sent to ${cur.who}.`, "send", "Undo", () => {
-      /* Read fresh — the toast can be undone several seconds later. */
-      const store = useAppStore.getState();
-      const back = { ...store.prvDone };
-      delete back[cur.id];
-      store.set({ prvDone: back });
-    });
+    showToast(
+      t("screensB.peer.sent", { who: cur.who }),
+      "send",
+      t("screensB.peer.undo"),
+      () => {
+        /* Read fresh — the toast can be undone several seconds later. */
+        const store = useAppStore.getState();
+        const back = { ...store.prvDone };
+        delete back[cur.id];
+        store.set({ prvDone: back });
+      },
+    );
   };
 
   return (
@@ -86,28 +102,34 @@ export default function Peer() {
         <div>
           <div className="scr-peer__eyebrow">
             <Icon name="users" size={15} />
-            Module 03 · type specimen page
+            {t("screensB.peer.eyebrow", { num: ROUND_MODULE, piece: ROUND_PIECE })}
           </div>
-          <h1 className="scr-peer__title">Peer review</h1>
-          <p className="scr-peer__lede">
-            Three specimens land on your desk each round. Two reviews given means yours get read.
-          </p>
+          <h1 className="scr-peer__title">{t("screensB.peer.title")}</h1>
+          <p className="scr-peer__lede">{t("screensB.peer.lede")}</p>
         </div>
 
         <div className="scr-peer__tally">
-          <ProgressRing pct={(given / PEER_ROUND) * 100} size="sm" label="Reviews given">
-            {given} / {PEER_ROUND}
+          <ProgressRing
+            pct={(given / PEER_ROUND) * 100}
+            size="sm"
+            label={t("screensB.peer.given")}
+          >
+            {number(given)} / {number(PEER_ROUND)}
           </ProgressRing>
           <div>
-            <div className="scr-peer__tallylabel">Reviews given</div>
-            <div className="scr-peer__tallysub">Due {fmtDate(addDays(dueDate(), 3))}</div>
+            <div className="scr-peer__tallylabel">{t("screensB.peer.given")}</div>
+            <div className="scr-peer__tallysub">
+              {t("screensB.peer.due", {
+                date: fmtDate(addDays(dueDate(), REVIEW_GRACE_DAYS)),
+              })}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="scr-peer__grid">
         <div className="lp-scroll scr-peer__queue">
-          <div className="scr-peer__queuehead">Assigned to you</div>
+          <div className="scr-peer__queuehead">{t("screensB.peer.assigned")}</div>
 
           {PEER_QUEUE.map((q) => {
             const isDone = Boolean(prvDone[q.id]);
@@ -133,20 +155,22 @@ export default function Peer() {
                 <span className="scr-peer__qbody">
                   <span className="scr-peer__qwho">{q.who}</span>
                   <span className="scr-peer__qsub">
-                    {isDone ? "Review sent" : "Waiting for you"}
+                    {isDone ? t("screensB.peer.rowSent") : t("screensB.peer.rowWaiting")}
                   </span>
                 </span>
-                <Pill tone={isDone ? "pos" : "warn"}>{isDone ? "Done" : "To do"}</Pill>
+                <Pill tone={isDone ? "pos" : "warn"}>
+                  {isDone ? t("screensB.peer.pillDone") : t("screensB.peer.pillToDo")}
+                </Pill>
               </button>
             );
           })}
 
           <div className="scr-peer__tips">
-            <span className="scr-peer__tipshead">How to give a useful review</span>
-            {PEER_TIPS.map((t) => (
-              <span key={t} className="scr-peer__tip">
+            <span className="scr-peer__tipshead">{t("screensB.peer.tipsHead")}</span>
+            {PEER_TIPS.map((tip) => (
+              <span key={tip} className="scr-peer__tip">
                 <span className="scr-peer__bullet" aria-hidden="true" />
-                {t}
+                {tip}
               </span>
             ))}
           </div>
@@ -183,7 +207,10 @@ export default function Peer() {
                     <div
                       className="scr-peer__dots"
                       role="group"
-                      aria-label={`${c.label} — score out of ${PEER_MAX_DOT}`}
+                      aria-label={t("screensB.peer.scoreAria", {
+                        label: c.label,
+                        max: number(PEER_MAX_DOT),
+                      })}
                     >
                       {Array.from({ length: PEER_MAX_DOT }, (_, n) => n + 1).map((x) => (
                         <button
@@ -193,7 +220,7 @@ export default function Peer() {
                           aria-pressed={x <= val}
                           onClick={() => set({ prvScore: { ...prvScore, [key]: x } })}
                         >
-                          {x}
+                          {number(x)}
                         </button>
                       ))}
                     </div>
@@ -204,11 +231,11 @@ export default function Peer() {
 
             <div className="scr-peer__note">
               <label className="scr-peer__notelabel" htmlFor="prv-note">
-                One thing that works, one thing to change
+                {t("screensB.peer.noteLabel")}
                 <span
                   className={`scr-peer__words lp-mono${words >= PEER_GOOD_WORDS ? " is-good" : ""}`}
                 >
-                  {words} words
+                  {t("screensB.peer.words", { total: number(words) }, words)}
                 </span>
               </label>
               <TextArea
@@ -216,20 +243,20 @@ export default function Peer() {
                 className="scr-peer__notefld"
                 value={text}
                 onChange={(v) => set({ prvText: { ...prvText, [cur.id]: v } })}
-                placeholder="Be specific and be kind. Point at the thing, not the person."
+                placeholder={t("screensB.peer.notePlaceholder")}
               />
             </div>
 
             <div className="scr-peer__send">
               <span className="scr-peer__anon">
                 <Icon name="eye-off" size={14} />
-                {prvAnonOn ? "Sent without your name" : "Sent with your name on it"}
+                {prvAnonOn ? t("screensB.peer.anonOn") : t("screensB.peer.anonOff")}
               </span>
               <ButtonSecondary
                 className="scr-peer__anonbtn"
                 onClick={() => set({ prvAnonOn: !prvAnonOn })}
               >
-                {prvAnonOn ? "Show my name" : "Hide my name"}
+                {prvAnonOn ? t("screensB.peer.showName") : t("screensB.peer.hideName")}
               </ButtonSecondary>
               <ButtonPrimary
                 className="scr-peer__sendbtn"
@@ -238,7 +265,7 @@ export default function Peer() {
                 iconEnd
                 onClick={send}
               >
-                Send and next
+                {t("screensB.peer.sendNext")}
               </ButtonPrimary>
             </div>
           </div>
@@ -247,9 +274,9 @@ export default function Peer() {
 
       <div className="lp-list">
         <div className="scr-peer__gothead">
-          Reviews of your work{" "}
+          {t("screensB.peer.gotHead")}{" "}
           <span className="scr-peer__gotsub">
-            · Module 02 token sheet · your specimen goes out once you submit it
+            {t("screensB.peer.gotSub", { num: RECEIVED_MODULE, piece: RECEIVED_PIECE })}
           </span>
         </div>
 
@@ -277,13 +304,13 @@ export default function Peer() {
                 className="lp-nav scr-peer__thank"
                 onClick={() => {
                   if (thanked[g.id]) return;
-                  setThanked((t) => ({ ...t, [g.id]: true }));
-                  showToast(`Thanks sent to ${g.who}.`, "heart");
+                  setThanked((prev) => ({ ...prev, [g.id]: true }));
+                  showToast(t("screensB.peer.thanksSent", { who: g.who }), "heart");
                 }}
                 aria-pressed={thanked[g.id]}
               >
                 <Icon name="heart" size={14} />
-                {thanked[g.id] ? "Thanked" : "Thank them"}
+                {thanked[g.id] ? t("screensB.peer.thanked") : t("screensB.peer.thankThem")}
               </button>
             </div>
           </div>

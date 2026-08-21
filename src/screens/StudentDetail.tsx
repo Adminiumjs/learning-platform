@@ -30,7 +30,8 @@ import {
   STUDENT_SUBMISSIONS,
 } from "../data/screens/student";
 import { dataSource } from "../data/source";
-import { MONTHS, weekStart } from "../lib/schedule";
+import { useI18n } from "../i18n";
+import { fmtDayMonth, weekStart } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-student.css";
 
@@ -38,6 +39,7 @@ import "../styles/screen-student.css";
 const BEHIND_PCT = 50;
 
 export default function StudentDetail() {
+  const { t, number } = useI18n();
   const sdNote = useAppStore((s) => s.sdNote);
   const set = useAppStore((s) => s.set);
   const go = useAppStore((s) => s.go);
@@ -53,13 +55,23 @@ export default function StudentDetail() {
 
   /* Everyone in cohort 03 joined in week 1; derived so it survives a clock move. */
   const start = weekStart(1);
-  const joined = `${start.getDate()} ${MONTHS[start.getMonth()]}`;
+  const joined = fmtDayMonth(start);
 
   const stats = [
-    { label: "Lessons watched", value: `${LESSONS_WATCHED} / ${dataSource.totalLessons()}` },
-    { label: "Grade average", value: `${avg}%`, strong: true },
-    { label: "Questions asked", value: String(QUESTIONS_ASKED) },
-    { label: "Avg watch time", value: AVG_WATCH_TIME },
+    {
+      label: t("screensB.studentDetail.statWatched"),
+      value: t("screensB.studentDetail.watchedValue", {
+        done: number(LESSONS_WATCHED),
+        total: number(dataSource.totalLessons()),
+      }),
+    },
+    {
+      label: t("screensB.studentDetail.statAverage"),
+      value: number(avg / 100, { style: "percent" }),
+      strong: true,
+    },
+    { label: t("screensB.studentDetail.statQuestions"), value: number(QUESTIONS_ASKED) },
+    { label: t("screensB.studentDetail.statWatchTime"), value: AVG_WATCH_TIME },
   ];
 
   /*
@@ -72,7 +84,7 @@ export default function StudentDetail() {
   function message(): void {
     const i = conversationIndexFor(name);
     if (i < 0) {
-      showToast("A message thread would open here.", "send");
+      showToast(t("screensB.studentDetail.noThread"), "send");
       return;
     }
     set({ msI: i });
@@ -83,7 +95,7 @@ export default function StudentDetail() {
     <div className="lp-page scr-student">
       <button type="button" className="lp-nav sd-back" onClick={() => go("roster")}>
         <Icon name="arrow-left" size={15} />
-        Roster
+        {t("screensB.studentDetail.backToRoster")}
       </button>
 
       <div className="sd-head">
@@ -94,29 +106,37 @@ export default function StudentDetail() {
             <span className="sd-name">{name}</span>
             {pct < BEHIND_PCT ? (
               <Pill tone="warn" icon="triangle-alert">
-                Behind
+                {t("screensB.studentDetail.behind")}
               </Pill>
             ) : null}
           </div>
           <div className="sd-meta">
-            {`Cohort 03 · joined ${joined} · last active ${last} · ${pct}% through`}
+            {t("screensB.studentDetail.meta", {
+              joined,
+              last,
+              pct: number(pct / 100, { style: "percent" }),
+            })}
           </div>
           <div className="sd-actions">
             <ButtonPrimary icon="send" iconSize={15} className="sd-msg" onClick={message}>
-              Message
+              {t("screensB.studentDetail.message")}
             </ButtonPrimary>
             <ButtonSecondary
               className="sd-nudge"
-              onClick={() => showToast(`Nudge sent to ${name}.`, "bell")}
+              onClick={() => showToast(t("screensB.studentDetail.nudged", { name }), "bell")}
             >
-              Send a nudge
+              {t("screensB.studentDetail.nudge")}
             </ButtonSecondary>
           </div>
         </div>
 
-        <ProgressRing pct={pct} className="sd-ring" label={`${name} — course progress`}>
-          <span className="sd-ring__pct">{pct}%</span>
-          <span className="sd-ring__cap">complete</span>
+        <ProgressRing
+          pct={pct}
+          className="sd-ring"
+          label={t("screensB.studentDetail.progressAria", { name })}
+        >
+          <span className="sd-ring__pct">{number(pct / 100, { style: "percent" })}</span>
+          <span className="sd-ring__cap">{t("screensB.studentDetail.complete")}</span>
         </ProgressRing>
       </div>
 
@@ -133,7 +153,7 @@ export default function StudentDetail() {
 
       <div className="sd-grid">
         <div className="lp-list sd-panel">
-          <div className="sd-panel__head">Submissions</div>
+          <div className="sd-panel__head">{t("screensB.studentDetail.submissions")}</div>
           {STUDENT_SUBMISSIONS.map((s) => (
             <button
               type="button"
@@ -155,7 +175,7 @@ export default function StudentDetail() {
 
         <div className="sd-side">
           <div className="lp-list sd-panel">
-            <div className="sd-panel__head">Recent activity</div>
+            <div className="sd-panel__head">{t("screensB.studentDetail.activity")}</div>
             {STUDENT_ACTIVITY.map((a) => (
               <div className="sd-act" key={a.text}>
                 <Icon name={a.icon} size={15} className="sd-act__ico" />
@@ -168,21 +188,23 @@ export default function StudentDetail() {
           <div className="sd-note">
             <div className="sd-note__head">
               <Icon name="notebook-pen" size={16} className="sd-note__ico" />
-              <span>Private note</span>
+              <span>{t("screensB.studentDetail.privateNote")}</span>
             </div>
             <TextArea
               value={sdNote}
               onChange={(v) => set({ sdNote: v })}
-              placeholder={`Only you and ${ASSISTANT.name.split(" ")[0]} can see this.`}
+              placeholder={t("screensB.studentDetail.notePlaceholder", {
+                name: ASSISTANT.name.split(" ")[0],
+              })}
               rows={3}
               className="sd-note__field"
-              ariaLabel="Private note"
+              ariaLabel={t("screensB.studentDetail.privateNote")}
             />
             <ButtonPrimary
               className="sd-note__save"
-              onClick={() => showToast("Private note saved.", "check")}
+              onClick={() => showToast(t("screensB.studentDetail.noteSaved"), "check")}
             >
-              Save note
+              {t("screensB.studentDetail.saveNote")}
             </ButtonPrimary>
           </div>
         </div>

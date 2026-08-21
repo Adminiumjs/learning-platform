@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useRef } from "react";
+import { useT } from "../i18n";
 import { useAppStore } from "../state/store";
 import { Icon } from "./Icon";
 
@@ -42,6 +43,7 @@ export function Toast() {
 /* ------------------------------------------------------------------ modal */
 
 export function Modal() {
+  const t = useT();
   const modal = useAppStore((s) => s.modal);
   const close = useAppStore((s) => s.closeModal);
   const confirm = useAppStore((s) => s.confirmModal);
@@ -76,7 +78,7 @@ export function Modal() {
 
         <div className="lp-modal__foot">
           <button type="button" className="lp-gi lp-btn--secondary lp-modal__cancel" onClick={close}>
-            Keep it
+            {t("chrome.modal.keep")}
           </button>
           <button
             ref={confirmRef}
@@ -84,7 +86,7 @@ export function Modal() {
             className={`lp-btn lp-modal__confirm${modal.danger ? " lp-modal__confirm--danger" : ""}`}
             onClick={confirm}
           >
-            {modal.confirmLabel ?? "Confirm"}
+            {modal.confirmLabel ?? t("chrome.modal.confirm")}
           </button>
         </div>
       </div>

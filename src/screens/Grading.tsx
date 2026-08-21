@@ -26,10 +26,12 @@ import {
 } from "../components";
 import { QUICK_SCORE_OFFSETS, SEEDED_GRADED } from "../data/screens/grading";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-grading.css";
 
 export default function Grading() {
+  const { t, number } = useI18n();
   const gqI = useAppStore((s) => s.gqI);
   const gqPts = useAppStore((s) => s.gqPts);
   const gqFb = useAppStore((s) => s.gqFb);
@@ -42,14 +44,18 @@ export default function Grading() {
   const graded = SEEDED_GRADED + Object.keys(gqDone).length;
 
   if (pending.length === 0) {
+    const capacity = dataSource.cohortCapacity();
     return (
       <div className="lp-page scr-grading">
-        <PageHead title="Grading queue" lede={`${graded} graded · nothing waiting`} />
+        <PageHead
+          title={t("screensA.grading.title")}
+          lede={t("screensA.grading.ledeClear", { count: number(graded) }, graded)}
+        />
         <EmptyState
           className="gq-clear"
           icon="check-check"
-          title="Queue clear. Every submission is graded."
-          body={`${dataSource.cohortCapacity()} students will see feedback the next time they open the course.`}
+          title={t("screensA.grading.emptyTitle")}
+          body={t("screensA.grading.emptyBody", { count: number(capacity) }, capacity)}
         />
       </div>
     );
@@ -63,30 +69,40 @@ export default function Grading() {
 
   const save = () => {
     if (!gqPts) {
-      showToast("Give it a score first — even a rough one.", "info");
+      showToast(t("screensA.grading.needScore"), "info");
       return;
     }
     const scored = gqPts;
     set({ gqDone: { ...gqDone, [cur.id]: 1 }, gqPts: "", gqFb: "", gqI: 0 });
-    showToast(`${cur.who} graded · ${scored} / ${cur.max}`, "check", "Undo", () => {
-      /* Read the map fresh: another submission may have been graded while the
-         toast was up, and this must only take back its own row. */
-      const next = { ...useAppStore.getState().gqDone };
-      delete next[cur.id];
-      set({ gqDone: next });
-    });
+    showToast(
+      t("screensA.grading.savedToast", { who: cur.who, score: scored, max: number(cur.max) }),
+      "check",
+      t("screensA.grading.undo"),
+      () => {
+        /* Read the map fresh: another submission may have been graded while the
+           toast was up, and this must only take back its own row. */
+        const next = { ...useAppStore.getState().gqDone };
+        delete next[cur.id];
+        set({ gqDone: next });
+      },
+    );
   };
 
   return (
     <div className="lp-page scr-grading">
       <PageHead
-        title="Grading queue"
-        lede={`${pending.length} waiting · ${graded} graded so far`}
+        title={t("screensA.grading.title")}
+        lede={t("screensA.grading.lede", {
+          waiting: number(pending.length),
+          graded: number(graded),
+        })}
       />
 
       <div className="gq-grid">
         <section className="lp-list gq-queue">
-          <header className="gq-queue__head">Pending · {pending.length}</header>
+          <header className="gq-queue__head">
+            {t("screensA.grading.pending", { count: number(pending.length) })}
+          </header>
 
           {pending.map((s, ix) => (
             <button
@@ -100,10 +116,11 @@ export default function Grading() {
               <span className="gq-row__text">
                 <span className="gq-row__who">{s.who}</span>
                 <span className="gq-row__item">
-                  {s.item} · {s.at}
+                  {t("screensA.grading.rowMeta", { item: s.item, at: s.at })}
                 </span>
               </span>
-              <Pill tone={s.tag === "late" ? "warn" : "neutral"}>{s.tag}</Pill>
+              {/* Tone switches on the machine token; the badge draws the label. */}
+              <Pill tone={s.tag === "late" ? "warn" : "neutral"}>{s.tagLabel}</Pill>
             </button>
           ))}
         </section>
@@ -114,7 +131,7 @@ export default function Grading() {
             <div className="gq-detail__who">
               <h2 className="gq-detail__name">{cur.who}</h2>
               <p className="gq-detail__meta">
-                {cur.item} · submitted {cur.at}
+                {t("screensA.grading.submittedMeta", { item: cur.item, at: cur.at })}
               </p>
             </div>
             <Pill className="gq-detail__tag" tone={cur.tag === "late" ? "warn" : "neutral"}>
@@ -124,7 +141,7 @@ export default function Grading() {
 
           <div className="lp-scroll gq-detail__body">
             <div className="gq-work">
-              <div className="gq-work__label">Their work</div>
+              <div className="gq-work__label">{t("screensA.grading.theirWork")}</div>
               <p className="gq-work__text">{cur.work}</p>
               {cur.files.length > 0 ? (
                 <div className="gq-files">
@@ -136,18 +153,20 @@ export default function Grading() {
             </div>
 
             <div className="gq-score">
-              <Field label="Points" htmlFor="gq-pts" className="gq-field">
+              <Field label={t("screensA.grading.points")} htmlFor="gq-pts" className="gq-field">
                 <span className="gq-ptsrow">
                   <TextInput
                     id="gq-pts"
                     className="gq-pts"
                     mono
                     inputMode="numeric"
-                    placeholder="0"
+                    placeholder={number(0)}
                     value={gqPts}
                     onChange={(v) => set({ gqPts: v })}
                   />
-                  <span className="gq-max lp-mono">/ {cur.max}</span>
+                  <span className="gq-max lp-mono">
+                    {t("screensA.grading.max", { max: number(cur.max) })}
+                  </span>
                 </span>
               </Field>
 
@@ -160,30 +179,33 @@ export default function Grading() {
                       className="gq-quickbtn lp-mono"
                       onClick={() => set({ gqPts: String(v) })}
                     >
-                      {v} / {cur.max}
+                      {t("screensA.grading.quickScore", {
+                        score: number(v),
+                        max: number(cur.max),
+                      })}
                     </ButtonSecondary>
                   );
                 })}
               </div>
             </div>
 
-            <Field label="Feedback" htmlFor="gq-fb">
+            <Field label={t("screensA.grading.feedback")} htmlFor="gq-fb">
               <TextArea
                 id="gq-fb"
                 className="gq-fb"
                 value={gqFb}
                 onChange={(v) => set({ gqFb: v })}
-                placeholder="Say what worked before what didn't. One clear next step."
+                placeholder={t("screensA.grading.feedbackPlaceholder")}
               />
             </Field>
           </div>
 
           <footer className="gq-foot">
             <ButtonSecondary onClick={() => openAt((i + 1) % pending.length)}>
-              Skip for now
+              {t("screensA.grading.skip")}
             </ButtonSecondary>
             <ButtonPrimary className="gq-save" icon="arrow-right" iconEnd onClick={save}>
-              Save and next
+              {t("screensA.grading.saveAndNext")}
             </ButtonPrimary>
           </footer>
         </section>

@@ -22,10 +22,15 @@ import {
   Pill,
 } from "../components";
 import { ALUMNI, ALUMNI_FILTERS, ALUMNI_LEDE } from "../data/screens/alumni";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-alumni.css";
 
+/** How many people have finished a course here — the empty state's reassurance. */
+const GRADUATES = 184;
+
 export default function Alumni() {
+  const { t, number } = useI18n();
   const query = useAppStore((s) => s.alQuery);
   const filter = useAppStore((s) => s.alFilter);
   const connected = useAppStore((s) => s.alConnected);
@@ -46,13 +51,13 @@ export default function Alumni() {
   function sayHello(name: string) {
     if (connected[name]) return;
     set({ alConnected: { ...connected, [name]: 1 } });
-    showToast(`Intro sent to ${name.split(" ")[0]}.`, "send");
+    showToast(t("screensA.alumni.introSent", { name: name.split(" ")[0] }), "send");
   }
 
   function toggleListing() {
     set({ alListed: !listed });
     showToast(
-      listed ? "Removed from the directory." : "You will be listed the day you finish.",
+      listed ? t("screensA.alumni.unlisted") : t("screensA.alumni.willList"),
       "user-round-check",
     );
   }
@@ -61,7 +66,7 @@ export default function Alumni() {
     <div className="lp-page scr-alumni">
       <PageHead
         className="al-head"
-        title="Alumni"
+        title={t("screensA.alumni.title")}
         lede={ALUMNI_LEDE}
         action={
           /* No shared search-field primitive yet, so the icon + bare input
@@ -71,8 +76,8 @@ export default function Alumni() {
             <input
               className="al-search__input"
               value={query}
-              placeholder="Name, city or what they do"
-              aria-label="Search alumni"
+              placeholder={t("screensA.alumni.searchPlaceholder")}
+              aria-label={t("screensA.alumni.searchLabel")}
               onChange={(e) => set({ alQuery: e.target.value })}
             />
           </label>
@@ -91,7 +96,7 @@ export default function Alumni() {
           </Chip>
         ))}
         <span className="al-count">
-          {list.length} {list.length === 1 ? "person" : "people"}
+          {t("screensA.alumni.count", { count: number(list.length) }, list.length)}
         </span>
       </ChipRow>
 
@@ -107,15 +112,15 @@ export default function Alumni() {
                     <span className="al-card__name">{p.name}</span>
                     <span className="al-card__role">{p.role}</span>
                   </span>
-                  {p.hiring ? <Pill tone="pos">Hiring</Pill> : null}
+                  {p.hiring ? <Pill tone="pos">{t("screensA.alumni.hiring")}</Pill> : null}
                 </div>
 
                 <p className="al-card__line">{p.line}</p>
 
                 <div className="al-tags">
-                  {p.tags.map((t) => (
-                    <span className="al-tag" key={t}>
-                      {t}
+                  {p.tags.map((tag) => (
+                    <span className="al-tag" key={tag}>
+                      {tag}
                     </span>
                   ))}
                 </div>
@@ -131,7 +136,7 @@ export default function Alumni() {
                     className={`al-say${sent ? " al-say--sent" : ""}`}
                     onClick={() => sayHello(p.name)}
                   >
-                    {sent ? "Message sent" : "Say hello"}
+                    {sent ? t("screensA.alumni.sent") : t("screensA.alumni.sayHello")}
                   </ButtonSecondary>
                 </div>
               </div>
@@ -142,23 +147,21 @@ export default function Alumni() {
         <EmptyState
           className="al-empty"
           icon="user-round-search"
-          title={`Nobody matches “${query}”.`}
-          body="184 people have finished a course here. Try a city, or a word like “systems”."
+          title={t("screensA.alumni.emptyTitle", { query })}
+          body={t("screensA.alumni.emptyBody", { count: number(GRADUATES) })}
         />
       )}
 
       <div className={`al-cta${listed ? " is-listed" : ""}`}>
         <Icon name="user-round-check" size={20} className="al-cta__ico" />
         <span className="al-cta__text">
-          {listed
-            ? "You are listed. Alumni can see your role, city and one line about your work — nothing else."
-            : "Finish a course and you can list yourself here. We show your role, city and one line. No email, no scraping."}
+          {listed ? t("screensA.alumni.ctaListed") : t("screensA.alumni.ctaUnlisted")}
         </span>
         {/* The comp labelled this "Edit my listing" while the handler removed
             the listing — and its own toast said "Removed from the directory".
             Labelled for what it actually does. */}
         <ButtonPrimary className="al-cta__btn" onClick={toggleListing}>
-          {listed ? "Remove my listing" : "List me when I finish"}
+          {listed ? t("screensA.alumni.removeListing") : t("screensA.alumni.listMe")}
         </ButtonPrimary>
       </div>
     </div>

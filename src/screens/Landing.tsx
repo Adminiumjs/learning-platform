@@ -22,11 +22,21 @@ import {
   WEEKS,
 } from "../data/screens/landing";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { fmtDateLong } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-landing.css";
 
+/** How many reviews the quote's footer link promises. */
+const REVIEW_COUNT = 6;
+
+/** The testimonial is in-fiction content: a real alumna's words, kept verbatim. */
+const QUOTE = "“I came in with a folder of components and left with a system I can defend in a meeting.”";
+const QUOTE_NAME = "Ingrid Halvorsen";
+const QUOTE_ROLE = "Cohort 02 · now runs the system at Nordre";
+
 export default function Landing() {
+  const { t, money, number } = useI18n();
   const faqOpen = useAppStore((s) => s.lpFaq);
   const set = useAppStore((s) => s.set);
   const go = useAppStore((s) => s.go);
@@ -44,6 +54,8 @@ export default function Landing() {
     go("checkout");
   };
 
+  const enrolLabel = t("screensA.landing.enrolPrice", { price: money(course.price) });
+
   return (
     <div className="lp-page lp-page--flush scr-landing">
       <section
@@ -54,23 +66,24 @@ export default function Landing() {
           <div className="scr-landing__herotext">
             <span className="scr-landing__urgency">
               <span className="scr-landing__dot" />
-              Cohort {COHORT_4.no} · {COHORT_4.sold} of {COHORT_4.seats} seats sold
+              {t("screensA.landing.seatsSold", {
+                no: COHORT_4.no,
+                sold: number(COHORT_4.sold),
+                seats: number(COHORT_4.seats),
+              })}
             </span>
-            <h1 className="scr-landing__title">Stop rebuilding the same button.</h1>
-            <p className="scr-landing__lede">
-              Eight weeks, thirty people, one system built from your own product. You leave with a
-              documented library and the arguments to defend it.
-            </p>
+            <h1 className="scr-landing__title">{t("screensA.landing.heroTitle")}</h1>
+            <p className="scr-landing__lede">{t("screensA.landing.heroLede")}</p>
             <div className="scr-landing__cta">
               <ButtonPrimary className="scr-landing__ctabtn" onClick={enrol}>
-                Enrol · ${course.price}
+                {enrolLabel}
               </ButtonPrimary>
               <ButtonSecondary
                 className="scr-landing__ctabtn"
                 icon="list-tree"
                 onClick={() => openCourse(course.id)}
               >
-                See the syllabus
+                {t("screensA.landing.seeSyllabus")}
               </ButtonSecondary>
             </div>
             <div className="scr-landing__proof">
@@ -97,14 +110,8 @@ export default function Landing() {
       <section className="scr-landing__body">
         <div className="scr-landing__pains">
           <div className="scr-landing__painlede">
-            <h2 className="scr-landing__h2">
-              You already have a design system. It's just spread across nine files and two people's
-              heads.
-            </h2>
-            <p className="scr-landing__p">
-              Most teams don't need more components. They need names they agree on, tokens that
-              survive a rebrand, and documentation somebody actually reads. That's the whole course.
-            </p>
+            <h2 className="scr-landing__h2">{t("screensA.landing.painsTitle")}</h2>
+            <p className="scr-landing__p">{t("screensA.landing.painsBody")}</p>
           </div>
           <div className="scr-landing__painlist">
             {PAINS.map((p) => (
@@ -118,9 +125,15 @@ export default function Landing() {
 
         <div className="scr-landing__weeks">
           <div className="scr-landing__weekshead">
-            <h2 className="scr-landing__h2 scr-landing__h2--sm">Eight weeks, week by week</h2>
+            <h2 className="scr-landing__h2 scr-landing__h2--sm">
+              {t("screensA.landing.weeksTitle")}
+            </h2>
             <span className="scr-landing__weeksmeta">
-              {course.lessons} lessons · {course.dur} · 4 graded assignments
+              {t("screensA.landing.weeksMeta", {
+                lessons: number(course.lessons),
+                dur: course.dur,
+                assignments: number(4),
+              })}
             </span>
           </div>
           <div className="scr-landing__weekgrid">
@@ -136,24 +149,23 @@ export default function Landing() {
 
         <figure className="scr-landing__quote">
           <Icon name="quote" size={26} className="scr-landing__quoteico" />
-          <blockquote className="scr-landing__quotetext">
-            “I came in with a folder of components and left with a system I can defend in a
-            meeting.”
-          </blockquote>
+          <blockquote className="scr-landing__quotetext">{QUOTE}</blockquote>
           <figcaption className="scr-landing__quotewho">
             <span className="scr-landing__quoteini">IH</span>
             <span>
-              <span className="scr-landing__quotename">Ingrid Halvorsen</span>
-              <span className="scr-landing__quoterole">
-                Cohort 02 · now runs the system at Nordre
-              </span>
+              <span className="scr-landing__quotename">{QUOTE_NAME}</span>
+              <span className="scr-landing__quoterole">{QUOTE_ROLE}</span>
             </span>
             <button
               type="button"
               className="lp-nav scr-landing__quotelink"
               onClick={() => go("reviews")}
             >
-              All 6 reviews
+              {t(
+                "screensA.landing.allReviews",
+                { count: number(REVIEW_COUNT) },
+                REVIEW_COUNT,
+              )}
             </button>
           </figcaption>
         </figure>
@@ -163,7 +175,9 @@ export default function Landing() {
             <Avatar initials={instructor.initials} size="xl" accent />
             <div className="scr-landing__teachtext">
               <span className="scr-landing__teachname">{instructor.name}</span>
-              <span className="scr-landing__teachrole">Design lead, 14 years</span>
+              <span className="scr-landing__teachrole">
+                {t("screensA.landing.teacherRole", { years: number(14) })}
+              </span>
               <p className="scr-landing__teachbio">{TEACHER_BIO}</p>
             </div>
           </div>
@@ -196,11 +210,17 @@ export default function Landing() {
         <div className="scr-landing__final">
           <div className="scr-landing__finaltext">
             <span className="scr-landing__finaltitle">
-              Cohort {COHORT_4.no} opens {fmtDateLong(COHORT_4_OPENS)}
+              {t("screensA.landing.finalTitle", {
+                no: COHORT_4.no,
+                date: fmtDateLong(COHORT_4_OPENS),
+              })}
             </span>
             <span className="scr-landing__finalsub">
-              {COHORT_4.seats - COHORT_4.sold} of {COHORT_4.seats} seats left ·{" "}
-              {COHORT_4.funded} funded places each cohort
+              {t("screensA.landing.finalSub", {
+                left: number(COHORT_4.seats - COHORT_4.sold),
+                seats: number(COHORT_4.seats),
+                funded: number(COHORT_4.funded),
+              })}
             </span>
           </div>
           <div className="scr-landing__finalcta">
@@ -208,10 +228,10 @@ export default function Landing() {
               className="scr-landing__finalbtn"
               onClick={() => go("scholarship")}
             >
-              Apply for a scholarship
+              {t("screensA.landing.applyScholarship")}
             </ButtonSecondary>
             <ButtonPrimary className="scr-landing__finalbtn" onClick={enrol}>
-              Enrol · ${course.price}
+              {enrolLabel}
             </ButtonPrimary>
           </div>
         </div>

@@ -20,6 +20,7 @@ import {
   Toggle,
 } from "../components";
 import { AWARDED, VERIFY_URL } from "../data/screens/certificates";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-certificates.css";
 
@@ -32,6 +33,7 @@ function initials(name: string): string {
 }
 
 export default function Certificates() {
+  const { t, number } = useI18n();
   const ctWording = useAppStore((s) => s.ctWording);
   const ctExam = useAppStore((s) => s.ctExam);
   const set = useAppStore((s) => s.set);
@@ -46,15 +48,21 @@ export default function Certificates() {
     <div className="lp-page scr-certificates">
       <PageHead
         className="ct-head"
-        title="Certificates"
-        lede={`${AWARDED.length} awarded across two cohorts · the wording is yours to change`}
+        title={t("screensA.certificates.title")}
+        lede={t(
+          "screensA.certificates.lede",
+          { count: number(AWARDED.length) },
+          AWARDED.length,
+        )}
       />
 
       <div className="ct-grid">
         <div className="lp-list ct-awarded">
           <div className="ct-awarded__head">
-            <span className="ct-card__title">Awarded</span>
-            <span className="lp-mono ct-awarded__count">{AWARDED.length} total</span>
+            <span className="ct-card__title">{t("screensA.certificates.awarded")}</span>
+            <span className="lp-mono ct-awarded__count">
+              {t("screensA.certificates.total", { count: number(AWARDED.length) })}
+            </span>
           </div>
 
           {AWARDED.map((c) => (
@@ -66,7 +74,7 @@ export default function Certificates() {
               </span>
               <span className="ct-row__at">{c.at}</span>
               <ButtonSecondary className="ct-row__view" onClick={() => go("certificate")}>
-                View
+                {t("screensA.certificates.view")}
               </ButtonSecondary>
             </div>
           ))}
@@ -74,9 +82,9 @@ export default function Certificates() {
 
         <div className="ct-side">
           <div className="ct-card">
-            <div className="ct-card__title">Wording</div>
+            <div className="ct-card__title">{t("screensA.certificates.wording")}</div>
 
-            <Field label="Line under the name" htmlFor="ct-wording">
+            <Field label={t("screensA.certificates.lineUnderName")} htmlFor="ct-wording">
               <TextArea
                 id="ct-wording"
                 value={ctWording}
@@ -86,37 +94,39 @@ export default function Certificates() {
             </Field>
 
             <div className="ct-preview">
-              <span className="ct-preview__eyebrow">Preview</span>
+              <span className="ct-preview__eyebrow">{t("screensA.certificates.preview")}</span>
               <span className="ct-preview__name">{specimen}</span>
               <span className="ct-preview__line">{ctWording}</span>
             </div>
 
             <div className="ct-examrow">
-              <span className="ct-examrow__label">Require the exam to pass</span>
+              <span className="ct-examrow__label">
+                {t("screensA.certificates.requireExam")}
+              </span>
               <Toggle
                 checked={ctExam}
                 onChange={(next) => set({ ctExam: next })}
-                label="Require the exam to pass"
+                label={t("screensA.certificates.requireExam")}
                 hideLabel
               />
             </div>
 
             <ButtonPrimary
               className="ct-save"
-              onClick={() => showToast("Certificate template saved.", "check")}
+              onClick={() => showToast(t("screensA.certificates.saved"), "check")}
             >
-              Save template
+              {t("screensA.certificates.saveTemplate")}
             </ButtonPrimary>
           </div>
 
           <div className="ct-verify">
             <div className="ct-verify__head">
               <Icon name="shield-check" size={16} className="ct-verify__ico" />
-              <span className="ct-verify__title">Verification</span>
+              <span className="ct-verify__title">
+                {t("screensA.certificates.verification")}
+              </span>
             </div>
-            <p className="ct-verify__body">
-              Every certificate carries a code anyone can check at
-            </p>
+            <p className="ct-verify__body">{t("screensA.certificates.verifyBody")}</p>
             <span className="lp-mono ct-verify__url">{VERIFY_URL}</span>
           </div>
         </div>

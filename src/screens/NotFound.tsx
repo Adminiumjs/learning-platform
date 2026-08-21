@@ -7,27 +7,26 @@
  */
 
 import { ButtonPrimary, ButtonSecondary } from "../components";
+import { useT } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-404.css";
 
 export default function NotFound() {
+  const t = useT();
   const go = useAppStore((s) => s.go);
 
   return (
     <div className="lp-page scr-404">
       <div className="scr-404__inner">
         <span className="scr-404__code">404</span>
-        <h1 className="scr-404__title">That lesson isn't here.</h1>
-        <p className="scr-404__body">
-          The link may be from an older cohort, or the page has been retired. Your progress is safe
-          — pick up where you left off.
-        </p>
+        <h1 className="scr-404__title">{t("screensB.notFound.title")}</h1>
+        <p className="scr-404__body">{t("screensB.notFound.body")}</p>
         <div className="scr-404__cta">
           <ButtonPrimary className="scr-404__btn" onClick={() => go("classroom")}>
-            Back to my lesson
+            {t("screensB.notFound.back")}
           </ButtonPrimary>
           <ButtonSecondary className="scr-404__btn" onClick={() => go("catalog")}>
-            Browse courses
+            {t("screensB.notFound.browse")}
           </ButtonSecondary>
         </div>
       </div>

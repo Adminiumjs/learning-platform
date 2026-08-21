@@ -10,10 +10,12 @@
 import { ButtonSecondary, Chip, ChipRow, EmptyState, Icon, PageHead } from "../components";
 import type { Notif } from "../data/screens/notifs";
 import { NOTIFS, NOTIF_GROUPS } from "../data/screens/notifs";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-notifs.css";
 
 export default function Notifs() {
+  const { t, number } = useI18n();
   const tab = useAppStore((s) => s.nfTab);
   const read = useAppStore((s) => s.nfRead);
   const set = useAppStore((s) => s.set);
@@ -38,32 +40,32 @@ export default function Notifs() {
     const all: Record<string, number> = {};
     for (const n of NOTIFS) all[n.id] = 1;
     set({ nfRead: all });
-    showToast("All marked as read.", "check-check");
+    showToast(t("screensB.notifs.allRead"), "check-check");
   }
 
   return (
     <div className="lp-page scr-notifs">
       <PageHead
         className="nf-head"
-        title="Notifications"
+        title={t("screensB.notifs.title")}
         lede={
           unread
-            ? `${unread} unread · everything from your two courses`
-            : "All caught up. Nothing needs you."
+            ? t("screensB.notifs.ledeUnread", { total: number(unread) }, unread)
+            : t("screensB.notifs.ledeClear")
         }
         action={
           <ButtonSecondary className="nf-markall" onClick={markAll}>
-            Mark all as read
+            {t("screensB.notifs.markAll")}
           </ButtonSecondary>
         }
       />
 
       <ChipRow>
         <Chip active={tab === "all"} onClick={() => set({ nfTab: "all" })} className="nf-tab">
-          All
+          {t("screensB.notifs.tabAll")}
         </Chip>
         <Chip active={tab === "unread"} onClick={() => set({ nfTab: "unread" })} className="nf-tab">
-          Unread · {unread}
+          {t("screensB.notifs.tabUnread", { total: number(unread) })}
         </Chip>
       </ChipRow>
 
@@ -86,7 +88,9 @@ export default function Notifs() {
                   <span className="nf-row__sub">{n.sub}</span>
                 </span>
                 <span className="lp-mono nf-row__at">{n.at}</span>
-                {n.unread ? <span className="nf-dot" aria-label="Unread" /> : null}
+                {n.unread ? (
+                  <span className="nf-dot" aria-label={t("screensB.notifs.unreadDot")} />
+                ) : null}
               </button>
             ))}
           </div>
@@ -100,9 +104,13 @@ export default function Notifs() {
         <EmptyState
           className="nf-empty"
           icon="check-check"
-          title="Nothing unread."
-          body="Everything from both courses has been seen. New lessons, replies and grades land here."
-          action={{ label: "Show everything", icon: "bell", onClick: () => set({ nfTab: "all" }) }}
+          title={t("screensB.notifs.emptyTitle")}
+          body={t("screensB.notifs.emptyBody")}
+          action={{
+            label: t("screensB.notifs.showAll"),
+            icon: "bell",
+            onClick: () => set({ nfTab: "all" }),
+          }}
         />
       ) : null}
     </div>

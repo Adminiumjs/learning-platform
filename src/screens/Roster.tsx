@@ -13,6 +13,7 @@
 
 import { Avatar, Chip, ChipRow, PageHead, Pill, ProgressBar } from "../components";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-roster.css";
 
@@ -31,6 +32,7 @@ function initials(name: string): string {
 }
 
 export default function Roster() {
+  const { t, number } = useI18n();
   const roFilter = useAppStore((s) => s.roFilter);
   const week = useAppStore((s) => s.week);
   const set = useAppStore((s) => s.set);
@@ -40,15 +42,19 @@ export default function Roster() {
   const rows = roFilter === "behind" ? behind : students;
 
   const filters = [
-    { id: "co", label: `Cohort 03 · ${students.length}` },
-    { id: "behind", label: `Behind · ${behind.length}` },
+    { id: "co", label: t("screensB.roster.filterCohort", { total: number(students.length) }) },
+    { id: "behind", label: t("screensB.roster.filterBehind", { total: number(behind.length) }) },
   ];
 
   return (
     <div className="lp-page scr-roster">
       <PageHead
-        title="Roster"
-        lede={`${students.length} students in cohort 03 · ${behind.length} behind at week ${week}`}
+        title={t("screensB.roster.title")}
+        lede={t("screensB.roster.lede", {
+          students: number(students.length),
+          behind: number(behind.length),
+          week: number(week),
+        })}
         action={
           <ChipRow>
             {filters.map((f) => (
@@ -67,10 +73,10 @@ export default function Roster() {
 
       <div className="lp-list ro-table">
         <div className="ro-row ro-row--head">
-          <span>Student</span>
-          <span>Progress</span>
-          <span className="ro-col--soft">Last active</span>
-          <span className="ro-row__end">Average</span>
+          <span>{t("screensB.roster.colStudent")}</span>
+          <span>{t("screensB.roster.colProgress")}</span>
+          <span className="ro-col--soft">{t("screensB.roster.colLastActive")}</span>
+          <span className="ro-row__end">{t("screensB.roster.colAverage")}</span>
         </div>
 
         {rows.map(([name, pct, last, avg]) => {
@@ -87,7 +93,7 @@ export default function Roster() {
                   <span className="ro-who__name">{name}</span>
                   {isBehind ? (
                     <Pill tone="warn" icon="triangle-alert" iconSize={11} className="ro-behind">
-                      Behind
+                      {t("screensB.roster.behind")}
                     </Pill>
                   ) : null}
                 </span>
@@ -98,14 +104,14 @@ export default function Roster() {
                   pct={pct}
                   tone={isBehind ? "warn" : "accent"}
                   className="ro-bar"
-                  label={`${name} — course progress`}
+                  label={t("screensB.roster.progressAria", { name })}
                 />
-                <span className="lp-mono ro-pct">{pct}%</span>
+                <span className="lp-mono ro-pct">{number(pct / 100, { style: "percent" })}</span>
               </span>
 
               <span className="ro-last ro-col--soft">{last}</span>
               <span className={`lp-mono ro-avg${avg >= STRONG_AVG ? " ro-avg--strong" : ""}`}>
-                {avg}%
+                {number(avg / 100, { style: "percent" })}
               </span>
             </div>
           );

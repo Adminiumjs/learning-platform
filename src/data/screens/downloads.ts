@@ -10,19 +10,41 @@
  * filtered out of the list — a live call is not a download. Dropped.
  */
 
-/** Per-lesson download size, keyed by lesson id. */
-export const DOWNLOAD_SIZES: Record<string, string> = {
-  L9: "388 MB",
-  L11: "286 MB",
-  L12: "412 MB",
-  L13: "2 MB",
-  L15: "1 MB",
+import { number } from "../../i18n/ambient";
+
+/**
+ * Per-lesson download size in megabytes, keyed by lesson id.
+ *
+ * Numbers, not the strings "388 MB" — the megabyte marker is a CLDR unit and
+ * the digits are the reader's. `sizeLabel` renders them at call time.
+ */
+export const DOWNLOAD_SIZES_MB: Record<string, number> = {
+  L9: 388,
+  L11: 286,
+  L12: 412,
+  L13: 2,
+  L15: 1,
 };
 
-/** Shown when a lesson has no size of its own. */
+/** "388 MB" / "٣٨٨ م.بايت" — the size chip on a download row. */
+export function sizeLabel(id: string): string {
+  const mb = DOWNLOAD_SIZES_MB[id];
+  return mb === undefined
+    ? NO_SIZE
+    : number(mb, { style: "unit", unit: "megabyte", unitDisplay: "short" });
+}
+
+/** Shown when a lesson has no size of its own. A dash reads the same anywhere. */
 export const NO_SIZE = "—";
 
-/** Device storage, as the comp states it. */
+/**
+ * Device storage, as the comp states it.
+ *
+ * A module-level `const` is evaluated once, before React mounts, so it cannot
+ * be a getter; the translation is filed as `data.downloads.deviceLabel` and
+ * takes a `{size}` the screen already knows.
+ */
+export const DEVICE_TOTAL_GB = 8;
 export const DEVICE_LABEL = "of 8 GB on this device";
 /** Rule of thumb the used-space readout is built from. */
 export const GB_PER_FILE = 0.36;

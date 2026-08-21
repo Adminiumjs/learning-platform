@@ -8,6 +8,7 @@
  */
 
 import { dataSource } from "../data/source";
+import { useI18n, useT } from "../i18n";
 import { useAppStore } from "../state/store";
 import { BARE_VIEWS, BRAND, FOOTER_LINKS, navFor } from "./chrome";
 import { Icon } from "./Icon";
@@ -15,6 +16,7 @@ import { Icon } from "./Icon";
 /* ----------------------------------------------------------------- header */
 
 export function Header() {
+  const t = useT();
   const view = useAppStore((s) => s.view);
   const persona = useAppStore((s) => s.persona);
   const q = useAppStore((s) => s.q);
@@ -38,7 +40,7 @@ export function Header() {
           type="button"
           className="lp-gi lp-header__burger"
           onClick={openMenu}
-          aria-label="Open menu"
+          aria-label={t("chrome.header.openMenu")}
         >
           <Icon name="menu" size={18} />
         </button>
@@ -52,7 +54,7 @@ export function Header() {
           <span className="lp-header__name">{BRAND.name}</span>
         </button>
 
-        <nav className="lp-header__nav" aria-label="Main">
+        <nav className="lp-header__nav" aria-label={t("chrome.header.mainNav")}>
           {nav.map((n) => (
             <button
               key={n.view}
@@ -60,7 +62,7 @@ export function Header() {
               className={`lp-row lp-header__navlink${view === n.view ? " is-active" : ""}`}
               onClick={() => go(n.view)}
             >
-              {n.label}
+              {t(n.label)}
             </button>
           ))}
         </nav>
@@ -71,8 +73,8 @@ export function Header() {
             <input
               value={q}
               onChange={(e) => set({ q: e.target.value })}
-              placeholder="Search courses"
-              aria-label="Search courses"
+              placeholder={t("chrome.header.searchCourses")}
+              aria-label={t("chrome.header.searchCourses")}
             />
           </label>
         ) : null}
@@ -84,7 +86,7 @@ export function Header() {
               className="lp-btn lp-header__cta"
               onClick={() => go("catalog")}
             >
-              Browse courses
+              {t("chrome.header.browseCourses")}
             </button>
           ) : null}
 
@@ -94,7 +96,10 @@ export function Header() {
             onClick={() =>
               student
                 ? go("profile")
-                : showToast("Signed in as Yara Haddad — you teach here.", "user-round")
+                : showToast(
+                    t("chrome.header.teachingToast", { name: who.name }),
+                    "user-round",
+                  )
             }
           >
             <span className={`lp-header__avatar${student ? "" : " lp-header__avatar--accent"}`}>
@@ -114,6 +119,7 @@ export function Header() {
 /* ----------------------------------------------------------- mobile sheet */
 
 export function MobileSheet() {
+  const t = useT();
   const menu = useAppStore((s) => s.menu);
   const view = useAppStore((s) => s.view);
   const persona = useAppStore((s) => s.persona);
@@ -129,7 +135,7 @@ export function MobileSheet() {
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label="Menu"
+        aria-label={t("chrome.header.menu")}
       >
         <div className="lp-sheet__head">
           <span className="lp-sheet__brand">
@@ -140,7 +146,7 @@ export function MobileSheet() {
             type="button"
             className="lp-gi lp-iconbtn"
             onClick={closeMenu}
-            aria-label="Close menu"
+            aria-label={t("chrome.header.closeMenu")}
           >
             <Icon name="x" size={17} />
           </button>
@@ -154,7 +160,7 @@ export function MobileSheet() {
             onClick={() => go(n.view)}
           >
             <Icon name={n.icon} size={17} />
-            {n.label}
+            {t(n.label)}
           </button>
         ))}
       </div>
@@ -165,6 +171,11 @@ export function MobileSheet() {
 /* ----------------------------------------------------------------- footer */
 
 export function Footer() {
+  /*
+   * The copyright year goes through `Intl` like every other number in the app,
+   * so an Arabic reader gets ٢٠٢٦ — and never grouped as "2,026".
+   */
+  const { t, number } = useI18n();
   const view = useAppStore((s) => s.view);
   const go = useAppStore((s) => s.go);
   const setPersona = useAppStore((s) => s.setPersona);
@@ -179,7 +190,9 @@ export function Footer() {
             <span className="lp-footer__mark">{BRAND.mark}</span>
             {BRAND.name}
           </span>
-          <p className="lp-footer__legal">{BRAND.legal}</p>
+          <p className="lp-footer__legal">
+            {t(BRAND.legalKey, { year: number(BRAND.year, { useGrouping: false }) })}
+          </p>
           <span className="lp-footer__domain">{BRAND.domain}</span>
         </div>
 
@@ -191,7 +204,7 @@ export function Footer() {
               className="lp-nav lp-footer__link"
               onClick={() => (f.view === "teach" ? setPersona("instructor") : go(f.view))}
             >
-              {f.label}
+              {t(f.label)}
             </button>
           ))}
         </div>

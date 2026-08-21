@@ -7,6 +7,8 @@
  * only page-local thing is which buckets the chips offer.
  */
 
+import { t } from "../../i18n/ambient";
+
 /** "all" is the sentinel; the rest match a result's `type`. */
 export type SearchType = "all" | "course" | "lesson" | "thread" | "qa";
 
@@ -16,9 +18,34 @@ export interface SearchTypeOption {
 }
 
 export const SEARCH_TYPES: SearchTypeOption[] = [
-  { id: "all", label: "Everything" },
-  { id: "course", label: "Courses" },
-  { id: "lesson", label: "Lessons" },
-  { id: "thread", label: "Threads" },
-  { id: "qa", label: "Q&A" },
+  {
+    id: "all",
+    get label() {
+      return t("data.search.type.all");
+    },
+  },
+  {
+    id: "course",
+    get label() {
+      return t("data.search.type.course");
+    },
+  },
+  {
+    id: "lesson",
+    get label() {
+      return t("data.search.type.lesson");
+    },
+  },
+  {
+    id: "thread",
+    get label() {
+      return t("data.search.type.thread");
+    },
+  },
+  {
+    id: "qa",
+    get label() {
+      return t("data.search.type.qa");
+    },
+  },
 ];

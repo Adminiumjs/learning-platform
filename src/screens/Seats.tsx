@@ -20,11 +20,17 @@ import {
 import type { Tone } from "../components";
 import { SEAT_COURSES, SEAT_MEMBERS, SEAT_PRICE } from "../data/screens/seats";
 import type { SeatStatus } from "../data/screens/seats";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-seats.css";
 
 const MIN_SEATS = 1;
 const MAX_SEATS = 50;
+/** The block discount, and how long an unclaimed invite holds its seat. */
+const BULK_DISCOUNT = 0.1;
+const HOLD_DAYS = 14;
+/** The studio buying the block — an in-fiction organisation name. */
+const ORG = "Marchetti Studio";
 
 /** How each seat state pills itself, and whether its bar counts as progress. */
 const SEAT_TONE: Record<SeatStatus, Tone> = {
@@ -42,6 +48,7 @@ function initials(name: string): string {
 }
 
 export default function Seats() {
+  const { t, money, number } = useI18n();
   const tsSeats = useAppStore((s) => s.tsSeats);
   const tsInvite = useAppStore((s) => s.tsInvite);
   const tsCourse = useAppStore((s) => s.tsCourse);
@@ -60,100 +67,117 @@ export default function Seats() {
   const claimed = members.filter((m) => m.status !== "Open").length;
   const claimedPct = Math.min(100, Math.round((claimed / tsSeats) * 100));
 
+  const holdDays = number(HOLD_DAYS, { style: "unit", unit: "day", unitDisplay: "long" });
+
   const sendInvite = () => {
     if (!tsInvite.trim()) {
-      showToast("An email address first.", "info");
+      showToast(t("screensB.seats.needEmail"), "info");
       return;
     }
     set({ tsInvite: "" });
-    showToast("Invite sent. The seat is held for 14 days.", "send");
+    showToast(t("screensB.seats.inviteSent", { days: holdDays }), "send");
   };
 
   return (
     <div className="lp-page scr-seats">
       <PageHead
         className="ts-head"
-        title="Team seats"
-        lede="Marchetti Studio · buy a block of seats and hand them out as people join."
+        title={t("screensB.seats.title")}
+        lede={t("screensB.seats.lede", { org: ORG })}
       />
 
       <div className="ts-top">
         <section className="lp-cardbox ts-plan">
-          <h2 className="ts-plan__head">Seats on your plan</h2>
+          <h2 className="ts-plan__head">{t("screensB.seats.planHead")}</h2>
 
           <div className="ts-count">
             <IconButton
               icon="minus"
               className="ts-step"
-              title="One fewer seat"
+              title={t("screensB.seats.oneFewer")}
               onClick={() => set({ tsSeats: Math.max(MIN_SEATS, tsSeats - 1) })}
             />
-            <span className="lp-mono ts-count__n">{tsSeats}</span>
+            <span className="lp-mono ts-count__n">{number(tsSeats)}</span>
             <IconButton
               icon="plus"
               className="ts-step"
-              title="One more seat"
+              title={t("screensB.seats.oneMore")}
               onClick={() => set({ tsSeats: Math.min(MAX_SEATS, tsSeats + 1) })}
             />
             <div className="ts-price">
-              <div className="lp-mono ts-price__total">${tsSeats * SEAT_PRICE}</div>
-              <div className="ts-price__per">${SEAT_PRICE} per seat · 10% off</div>
+              <div className="lp-mono ts-price__total">{money(tsSeats * SEAT_PRICE)}</div>
+              <div className="ts-price__per">
+                {t("screensB.seats.perSeat", {
+                  price: money(SEAT_PRICE),
+                  off: number(BULK_DISCOUNT, { style: "percent" }),
+                })}
+              </div>
             </div>
           </div>
 
           <div className="ts-claimed">
-            <ProgressBar pct={claimedPct} className="ts-claimed__bar" label="Seats claimed" />
+            <ProgressBar
+              pct={claimedPct}
+              className="ts-claimed__bar"
+              label={t("screensB.seats.claimedBar")}
+            />
             <span className="lp-mono ts-claimed__n">
-              {claimed} of {tsSeats} claimed
+              {t("screensB.seats.claimedCount", {
+                claimed: number(claimed),
+                total: number(tsSeats),
+              })}
             </span>
           </div>
 
           <div className="ts-actions">
             <ButtonPrimary
               className="ts-buy"
-              onClick={() => showToast(`Seats updated to ${tsSeats} · demo only.`, "users")}
+              onClick={() =>
+                showToast(t("screensB.seats.updatedToast", { total: number(tsSeats) }), "users")
+              }
             >
-              Update seats
+              {t("screensB.seats.updateSeats")}
             </ButtonPrimary>
             <ButtonSecondary className="ts-billing" onClick={() => go("teambilling")}>
-              Billing
+              {t("screensB.seats.billing")}
             </ButtonSecondary>
           </div>
         </section>
 
         <section className="ts-invite">
-          <h2 className="ts-invite__head">Invite someone</h2>
+          <h2 className="ts-invite__head">{t("screensB.seats.inviteHead")}</h2>
           <TextInput
             className="ts-invite__field"
             value={tsInvite}
             onChange={(v) => set({ tsInvite: v })}
+            /* A sample address is a machine token, not copy. */
             placeholder="name@studio.com"
             type="email"
             inputMode="email"
-            ariaLabel="Email address to invite"
+            ariaLabel={t("screensB.seats.inviteAria")}
           />
           <Segmented
             className="ts-seg"
             options={SEAT_COURSES.map((c) => ({ id: c.id, label: c.label }))}
             value={tsCourse}
             onChange={(id) => set({ tsCourse: id })}
-            label="Course this seat opens"
+            label={t("screensB.seats.courseLabel")}
           />
           <ButtonPrimary className="ts-send" onClick={sendInvite}>
-            Send invite
+            {t("screensB.seats.sendInvite")}
           </ButtonPrimary>
           <span className="ts-invite__note">
-            They get an email with a seat attached. Unclaimed invites free up after 14 days.
+            {t("screensB.seats.inviteNote", { days: holdDays })}
           </span>
         </section>
       </div>
 
       <section className="lp-list ts-table">
         <div className="ts-row ts-row--head">
-          <span>Member</span>
-          <span className="ts-cell-course">Course</span>
-          <span>Progress</span>
-          <span className="ts-cell-status">Status</span>
+          <span>{t("screensB.seats.colMember")}</span>
+          <span className="ts-cell-course">{t("screensB.seats.colCourse")}</span>
+          <span>{t("screensB.seats.colProgress")}</span>
+          <span className="ts-cell-status">{t("screensB.seats.colStatus")}</span>
         </div>
         {members.map((m) => {
           const open = m.status === "Open";
@@ -167,7 +191,9 @@ export default function Seats() {
                   className={open ? "ts-av ts-av--open" : "ts-av"}
                 />
                 <span className="ts-member__text">
-                  <span className="ts-member__name">{open ? "Free seat" : m.name}</span>
+                  <span className="ts-member__name">
+                    {open ? t("screensB.seats.freeSeat") : m.name}
+                  </span>
                   <span className="ts-member__email">{m.email}</span>
                 </span>
               </span>
@@ -177,9 +203,11 @@ export default function Seats() {
                   pct={m.pct}
                   tone={idle ? "neutral" : "accent"}
                   className="ts-progress__bar"
-                  label={`${m.name} progress`}
+                  label={t("screensB.seats.progressAria", { name: m.name })}
                 />
-                <span className="lp-mono ts-progress__pct">{open ? "—" : `${m.pct}%`}</span>
+                <span className="lp-mono ts-progress__pct">
+                  {open ? "—" : number(m.pct / 100, { style: "percent" })}
+                </span>
               </span>
               <span className="ts-cell-status">
                 <Pill tone={SEAT_TONE[m.status]}>{m.status}</Pill>

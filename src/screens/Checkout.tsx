@@ -22,19 +22,20 @@ import {
   TextInput,
 } from "../components";
 import { dataSource } from "../data/source";
-import { fmtDate, isCohort, liveDate, weekStart } from "../lib/schedule";
+import { useI18n } from "../i18n";
+import { fmtDate, fmtTime, isCohort, liveDate, weekStart } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-checkout.css";
 
 /** How long the fake processor "thinks" before it approves or declines. */
 const CONFIRM_MS = 1100;
 
-const DECLINE_MSG =
-  "Your card was declined. Try another card — or flip the switch in the demo dock.";
-
-const money = (n: number): string => `$${n}`;
+/** The seeded test card and the placeholders around it — machine tokens. */
+const TEST_CARD = "4242 4242 4242 4242";
+const CARD_BRAND = "VISA";
 
 export default function Checkout() {
+  const { t, money, number } = useI18n();
   const courseId = useAppStore((s) => s.courseId);
   const week = useAppStore((s) => s.week);
   const mode = useAppStore((s) => s.mode);
@@ -73,17 +74,17 @@ export default function Checkout() {
       const s = useAppStore.getState();
       if (s.ckDecline) {
         s.set({ ckBusy: false, ckError: true });
-        s.showToast("Card declined — this is the demo switch.", "x-circle");
+        s.showToast(t("screensA.checkout.declinedToast"), "x-circle");
         return;
       }
       s.set({ ckBusy: false, ckDone: true });
       window.scrollTo({ top: 0, behavior: "auto" });
       /* The comp asked for "party-popper", which the icon registry does not carry. */
-      s.showToast(`Enrolled. Order ${orderNo} is on its way to your inbox.`, "sparkles");
+      s.showToast(t("screensA.checkout.enrolledToast", { order: orderNo }), "sparkles");
     }, CONFIRM_MS);
 
     return () => window.clearTimeout(id);
-  }, [ckBusy, orderNo]);
+  }, [ckBusy, orderNo, t]);
 
   /* --------------------------------------------------------------- done -- */
 
@@ -95,8 +96,12 @@ export default function Checkout() {
      */
     const doneSub =
       cohort && isCohort(mode)
-        ? `You have a seat in cohort 03. Week ${week} is open now, and the next live critique is ${fmtDate(liveDate(week))} at 18:00.`
-        : "Every lesson is unlocked. Take it at whatever pace suits your week.";
+        ? t("screensA.checkout.doneCohort", {
+            week: number(week),
+            date: fmtDate(liveDate(week)),
+            time: fmtTime(liveDate(week)),
+          })
+        : t("screensA.checkout.doneSelf");
 
     return (
       <div className="lp-page scr-checkout">
@@ -104,18 +109,20 @@ export default function Checkout() {
           <span className="ck-done__ico">
             <Icon name="check" size={30} />
           </span>
-          <h1 className="ck-done__title">You're in, {student.name.split(" ")[0]}.</h1>
+          <h1 className="ck-done__title">
+            {t("screensA.checkout.doneTitle", { name: student.name.split(" ")[0] })}
+          </h1>
           <p className="ck-done__sub">{doneSub}</p>
           <p className="ck-done__order lp-mono">
             <Icon name="receipt" size={15} />
-            Order {orderNo}
+            {t("screensA.checkout.orderNo", { order: orderNo })}
           </p>
           <div className="ck-done__acts">
             <ButtonPrimary className="ck-done__cta" onClick={() => go("classroom")}>
-              Start learning
+              {t("screensA.checkout.startLearning")}
             </ButtonPrimary>
             <ButtonSecondary className="ck-done__cta" onClick={() => go("learning")}>
-              My learning
+              {t("screensA.checkout.myLearning")}
             </ButtonSecondary>
           </div>
         </div>
@@ -126,50 +133,50 @@ export default function Checkout() {
   /* --------------------------------------------------------------- form -- */
 
   const lines = [
-    { k: "Course", v: money(course.price) },
-    { k: "Student discount", v: "$0" },
-    { k: "VAT (demo)", v: "$0" },
+    { k: t("screensA.checkout.lineCourse"), v: money(course.price) },
+    { k: t("screensA.checkout.lineDiscount"), v: money(0) },
+    { k: t("screensA.checkout.lineVat"), v: money(0) },
   ];
 
   const lineSub = cohort
-    ? `Cohort 03 · starts ${fmtDate(weekStart(1))}`
-    : "Self-paced · lifetime access";
+    ? t("screensA.checkout.summaryCohort", { date: fmtDate(weekStart(1)) })
+    : t("screensA.checkout.summarySelf");
 
   return (
     <div className="lp-page scr-checkout">
       <button type="button" className="lp-nav ck-back" onClick={() => go("course")}>
         <Icon name="arrow-left" size={15} />
-        Back to course
+        {t("screensA.checkout.backToCourse")}
       </button>
 
-      <h1 className="ck-title">Enrol in {course.title}</h1>
+      <h1 className="ck-title">{t("screensA.checkout.title", { course: course.title })}</h1>
 
       <div className="ck-grid">
         <div className="ck-main">
           <Callout tone="info" icon="info">
-            This is a demo. No real card is charged.
+            {t("screensA.checkout.demoNotice")}
           </Callout>
 
           <Card className="ck-panel">
-            <h2 className="ck-panel__title">Payment</h2>
+            <h2 className="ck-panel__title">{t("screensA.checkout.payment")}</h2>
 
-            <Field label="Email" htmlFor="ck-email">
+            <Field label={t("screensA.checkout.email")} htmlFor="ck-email">
               <TextInput
                 id="ck-email"
                 type="email"
                 inputMode="email"
                 value={ckEmail}
                 onChange={(v) => set({ ckEmail: v })}
-                placeholder="you@example.com"
+                placeholder={t("screensA.checkout.emailPlaceholder")}
               />
             </Field>
 
             <Field
-              label="Card details"
+              label={t("screensA.checkout.cardDetails")}
               hint={
                 ckDecline
-                  ? "Demo card set to decline. Flip it in the dock above."
-                  : "Test card only. Nothing leaves this page."
+                  ? t("screensA.checkout.hintDecline")
+                  : t("screensA.checkout.hintTestCard")
               }
               error={ckDecline}
             >
@@ -181,34 +188,34 @@ export default function Checkout() {
                     className="lp-fld ck-cardbox__num"
                     value={ckCard}
                     onChange={(e) => set({ ckCard: e.target.value })}
-                    placeholder="4242 4242 4242 4242"
+                    placeholder={TEST_CARD}
                     inputMode="numeric"
-                    aria-label="Card number"
+                    aria-label={t("screensA.checkout.cardNumber")}
                   />
-                  <span className="ck-brand">VISA</span>
+                  <span className="ck-brand">{CARD_BRAND}</span>
                 </div>
                 <div className="ck-cardbox__split">
                   <input
                     className="lp-fld ck-cardbox__part"
                     value={ckExp}
                     onChange={(e) => set({ ckExp: e.target.value })}
-                    placeholder="MM / YY"
+                    placeholder={t("screensA.checkout.expiryPlaceholder")}
                     inputMode="numeric"
-                    aria-label="Expiry date"
+                    aria-label={t("screensA.checkout.expiry")}
                   />
                   <input
                     className="lp-fld ck-cardbox__part"
                     value={ckCvc}
                     onChange={(e) => set({ ckCvc: e.target.value })}
-                    placeholder="CVC"
+                    placeholder={t("screensA.checkout.cvcPlaceholder")}
                     inputMode="numeric"
-                    aria-label="Security code"
+                    aria-label={t("screensA.checkout.cvc")}
                   />
                 </div>
               </div>
             </Field>
 
-            <Field label="Name on card" htmlFor="ck-name">
+            <Field label={t("screensA.checkout.nameOnCard")} htmlFor="ck-name">
               <TextInput
                 id="ck-name"
                 value={ckName}
@@ -219,7 +226,7 @@ export default function Checkout() {
 
             {ckError ? (
               <Callout tone="danger" icon="x-circle">
-                {DECLINE_MSG}
+                {t("screensA.checkout.declineMessage")}
               </Callout>
             ) : null}
 
@@ -229,19 +236,21 @@ export default function Checkout() {
               onClick={() => set({ ckBusy: true, ckError: false })}
             >
               {ckBusy ? <span className="ck-spin" aria-hidden="true" /> : null}
-              {ckBusy ? "Confirming…" : `Complete enrollment · ${money(course.price)}`}
+              {ckBusy
+                ? t("screensA.checkout.confirming")
+                : t("screensA.checkout.complete", { amount: money(course.price) })}
             </ButtonPrimary>
 
             <p className="ck-fine">
               <Icon name="lock" size={13} />
-              Payments handled by our processor. Cancel within 14 days.
+              {t("screensA.checkout.fine")}
             </p>
           </Card>
         </div>
 
         <aside className="ck-aside">
           <Card className="ck-panel ck-summary">
-            <h2 className="ck-panel__title">Order summary</h2>
+            <h2 className="ck-panel__title">{t("screensA.checkout.orderSummary")}</h2>
 
             <div className="ck-item">
               <CoverChip tint={course.tint} icon={course.icon} size="md" />
@@ -261,7 +270,7 @@ export default function Checkout() {
             </div>
 
             <div className="ck-total">
-              <span className="ck-total__k">Total</span>
+              <span className="ck-total__k">{t("screensA.checkout.total")}</span>
               <span className="lp-mono ck-total__v">{money(course.price)}</span>
             </div>
           </Card>

@@ -6,8 +6,16 @@
  * narration: which course carries a certificate, and the two lines of copy
  * each row shows. Both are written against the enrolment record so the numbers
  * can never drift from it.
+ *
+ * `line` and `meta` were already functions — they run at render, which is the
+ * one place `t()` is safe to call from a data module — so translating them
+ * needed no change of shape. The two fixed dates now go through `Intl` too:
+ * "Paused since 2 May 2026" was the last date on this screen still spelled
+ * out in English.
  */
 
+import { number, t } from "../../i18n/ambient";
+import { fmtDateLong } from "../../lib/schedule";
 import type { EnrolledCourse, ViewId } from "../types";
 
 export interface ShelfEntry {
@@ -19,39 +27,85 @@ export interface ShelfEntry {
   meta: (course: EnrolledCourse) => string;
 }
 
+/** The day the motion course was put down. Fixed, so formatted at render. */
+const PAUSED_ON = new Date(2026, 4, 2);
+/** The day the retired writing course was finished. */
+const FINISHED_ON = new Date(2025, 10, 18);
+
+/** A zero-padded intake number — "03", and "٠٣" in Arabic. */
+function intake(n: number): string {
+  return number(n, { minimumIntegerDigits: 2, useGrouping: false });
+}
+
 /** Newest activity first, which is not the same as newest purchase first. */
 export const ARCHIVE_SHELF: ShelfEntry[] = [
   {
     id: "TY-140",
     cert: false,
-    line: () => "In progress · self-paced",
-    meta: (c) => `Self-paced · ${c.done ?? 0} of ${c.total} lessons · next: ${c.next ?? "—"}`,
+    line: () => t("data.archive.line.selfPaced"),
+    meta: (c) =>
+      t("data.archive.meta.selfPaced", {
+        done: number(c.done ?? 0),
+        total: number(c.total),
+        next: c.next ?? "—",
+      }),
   },
   {
     id: "DS-101",
     cert: false,
-    line: (_c, week) => `In progress · week ${week}`,
-    meta: (c) => `Cohort 03 · ${c.total} lessons · started ${c.date}`,
+    line: (_c, week) => t("data.archive.line.inWeek", { week: number(week) }),
+    meta: (c) =>
+      t("data.archive.meta.cohort", {
+        cohort: intake(3),
+        total: number(c.total),
+        date: c.date,
+      }),
   },
   {
     id: "MO-220",
     cert: false,
-    line: () => "Paused since 2 May 2026",
-    meta: (c) => `Self-paced · ${c.done ?? 0} of ${c.total} lessons done`,
+    line: () =>
+      t("data.archive.line.pausedSince", { date: fmtDateLong(PAUSED_ON) }),
+    meta: (c) =>
+      t("data.archive.meta.done", {
+        done: number(c.done ?? 0),
+        total: number(c.total),
+      }),
   },
   {
     id: "PF-201",
     cert: true,
-    line: () => "Finished 18 Nov 2025",
-    meta: () => "Cohort 01 · retired course · kept for you",
+    line: () =>
+      t("data.archive.line.finishedOn", { date: fmtDateLong(FINISHED_ON) }),
+    meta: () => t("data.archive.meta.retired", { cohort: intake(1) }),
   },
 ];
 
 export const ARCHIVE_FILTERS: { id: string; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "done", label: "Finished" },
-  { id: "active", label: "In progress" },
-  { id: "paused", label: "Paused" },
+  {
+    id: "all",
+    get label() {
+      return t("data.archive.filter.all");
+    },
+  },
+  {
+    id: "done",
+    get label() {
+      return t("data.archive.filter.finished");
+    },
+  },
+  {
+    id: "active",
+    get label() {
+      return t("data.archive.filter.active");
+    },
+  },
+  {
+    id: "paused",
+    get label() {
+      return t("data.archive.filter.paused");
+    },
+  },
 ];
 
 export interface KeptItem {
@@ -63,33 +117,54 @@ export interface KeptItem {
   go: ViewId;
 }
 
+/** How many notes the Notes screen seeds. The comp counted them by hand. */
+const KEPT_NOTES = 5;
+
 /** What survives a finished course. The promise is that none of it expires. */
 export const ARCHIVE_KEPT: KeptItem[] = [
   {
-    title: "Your case study page",
+    get title() {
+      return t("data.archive.kept.caseStudy");
+    },
+    /* The course name is fiction; the grade beside it is a figure. */
     sub: "Writing for Interfaces · graded 19/20",
     meta: "case_study_final.pdf",
     icon: "file-text",
     go: "notes",
   },
   {
-    /* The comp counted the Notes screen's own seed list; it holds five. */
-    title: "5 notes",
-    sub: "Across two courses, timestamped",
+    get title() {
+      return t(
+        "data.archive.kept.notes",
+        { count: number(KEPT_NOTES) },
+        KEPT_NOTES,
+      );
+    },
+    get sub() {
+      return t("data.archive.kept.notesSub");
+    },
     meta: "notes",
     icon: "notebook-pen",
     go: "notes",
   },
   {
-    title: "One certificate",
-    sub: "Verifiable for as long as we exist",
+    get title() {
+      return t("data.archive.kept.certificate");
+    },
+    get sub() {
+      return t("data.archive.kept.certificateSub");
+    },
     meta: "YA-CERT-1804-PF",
     icon: "award",
     go: "certificate",
   },
   {
-    title: "Every lesson you downloaded",
-    sub: "Playable offline, no expiry",
+    get title() {
+      return t("data.archive.kept.downloads");
+    },
+    get sub() {
+      return t("data.archive.kept.downloadsSub");
+    },
     meta: "1.1 GB",
     icon: "download",
     go: "downloads",

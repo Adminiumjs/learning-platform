@@ -6,7 +6,15 @@
  * the `dataSource` seam. The two older invoices are cheaper because the studio
  * was on four seats before it bought the fifth — the history has to make sense
  * next to the plan card.
+ *
+ * Translation. The detail rows' captions are interface. Their values are not:
+ * "Visa ···· 4242" is a card scheme and a mask, a VAT number is a number, and
+ * the address is an address. Amounts and dates go through `Intl`; the invoice
+ * `status` stays an English token with `data.invoiceStatus.*` as its label.
  */
+
+import { money, t } from "../../i18n/ambient";
+import { fmtDateLong } from "../../lib/schedule";
 
 export interface Invoice {
   no: string;
@@ -16,10 +24,46 @@ export interface Invoice {
 }
 
 export const TEAM_INVOICES: Invoice[] = [
-  { no: "INV-2026-07", date: "1 Jul 2026", amount: "$270.00", status: "Paid" },
-  { no: "INV-2026-06", date: "1 Jun 2026", amount: "$270.00", status: "Paid" },
-  { no: "INV-2026-05", date: "1 May 2026", amount: "$216.00", status: "Paid" },
-  { no: "INV-2026-04", date: "1 Apr 2026", amount: "$216.00", status: "Paid" },
+  {
+    no: "INV-2026-07",
+    get date() {
+      return fmtDateLong(new Date(2026, 6, 1));
+    },
+    get amount() {
+      return money(270);
+    },
+    status: "Paid",
+  },
+  {
+    no: "INV-2026-06",
+    get date() {
+      return fmtDateLong(new Date(2026, 5, 1));
+    },
+    get amount() {
+      return money(270);
+    },
+    status: "Paid",
+  },
+  {
+    no: "INV-2026-05",
+    get date() {
+      return fmtDateLong(new Date(2026, 4, 1));
+    },
+    get amount() {
+      return money(216);
+    },
+    status: "Paid",
+  },
+  {
+    no: "INV-2026-04",
+    get date() {
+      return fmtDateLong(new Date(2026, 3, 1));
+    },
+    get amount() {
+      return money(216);
+    },
+    status: "Paid",
+  },
 ];
 
 export interface SpendLine {
@@ -29,10 +73,29 @@ export interface SpendLine {
   pct: number;
 }
 
+/** The labels are course titles, which are demo fiction and stay English. */
 export const TEAM_SPEND: SpendLine[] = [
-  { label: "Design Systems from Scratch", value: "$540", pct: 68 },
-  { label: "Type & Layout Fundamentals", value: "$190", pct: 24 },
-  { label: "Motion for Interfaces", value: "$120", pct: 15 },
+  {
+    label: "Design Systems from Scratch",
+    get value() {
+      return money(540);
+    },
+    pct: 68,
+  },
+  {
+    label: "Type & Layout Fundamentals",
+    get value() {
+      return money(190);
+    },
+    pct: 24,
+  },
+  {
+    label: "Motion for Interfaces",
+    get value() {
+      return money(120);
+    },
+    pct: 15,
+  },
 ];
 
 export interface BillingDetail {
@@ -44,10 +107,36 @@ export interface BillingDetail {
 }
 
 export const TEAM_DETAILS: BillingDetail[] = [
-  { icon: "landmark", k: "Payment method", v: "Visa ···· 4242", mono: true },
-  { icon: "user-round", k: "Billing contact", v: "rosa@marchetti.studio" },
-  { icon: "building-2", k: "VAT number", v: "IT 04412 9930 21", mono: true },
-  { icon: "map-pin", k: "Address", v: "Via Zamboni 12, Bologna" },
+  {
+    icon: "landmark",
+    get k() {
+      return t("data.teambilling.paymentMethod");
+    },
+    v: "Visa ···· 4242",
+    mono: true,
+  },
+  {
+    icon: "user-round",
+    get k() {
+      return t("data.teambilling.contact");
+    },
+    v: "rosa@marchetti.studio",
+  },
+  {
+    icon: "building-2",
+    get k() {
+      return t("data.teambilling.vat");
+    },
+    v: "IT 04412 9930 21",
+    mono: true,
+  },
+  {
+    icon: "map-pin",
+    get k() {
+      return t("data.teambilling.address");
+    },
+    v: "Via Zamboni 12, Bologna",
+  },
 ];
 
 /** What one seat costs the organisation each month. */

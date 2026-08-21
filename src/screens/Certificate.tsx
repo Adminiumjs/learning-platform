@@ -12,6 +12,7 @@
 
 import { ButtonPrimary, ButtonSecondary, Icon, PageHead, Pill } from "../components";
 import { dataSource } from "../data/source";
+import { useI18n, type MessageKey } from "../i18n";
 import { demoNow, doneCount, fmtDateLong } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-certificate.css";
@@ -20,15 +21,21 @@ import "../styles/screen-certificate.css";
 const CERT_ID = "YA-CERT-2041-DS";
 const VERIFY_URL = "adminium.dev/verify/YA-CERT-2041-DS";
 
+/** The academy and the course are in-fiction names, so they stay as written. */
+const BRAND = "Yara's Academy";
+const COURSE_TITLE = "Design Systems from Scratch";
+const INSTRUCTOR_NAME = "Yara Haddad";
+
 interface CertifiedRow {
   icon: string;
-  k: string;
+  k: MessageKey;
   v: string;
   /** Mono figure by default; the exam row is a toned word instead. */
   tone?: "pos" | "subtle";
 }
 
 export default function Certificate() {
+  const { t, number } = useI18n();
   const done = useAppStore((s) => s.done);
   const exSubmitted = useAppStore((s) => s.exSubmitted);
   const asState = useAppStore((s) => s.asState);
@@ -40,31 +47,46 @@ export default function Certificate() {
   const lessons = doneCount(done);
   const complete = lessons >= total && exSubmitted;
 
+  const ofTotal = (n: number, max: number) =>
+    t("screensA.certificate.ofTotal", { done: number(n), total: number(max) });
+
   const rows: CertifiedRow[] = [
-    { icon: "list-checks", k: "Lessons completed", v: `${lessons} of ${total}` },
-    { icon: "pen-line", k: "Assignments graded", v: asState === "graded" ? "2 of 4" : "1 of 4" },
+    { icon: "list-checks", k: "screensA.certificate.rowLessons", v: ofTotal(lessons, total) },
+    {
+      icon: "pen-line",
+      k: "screensA.certificate.rowAssignments",
+      v: asState === "graded" ? ofTotal(2, 4) : ofTotal(1, 4),
+    },
     {
       icon: "file-check",
-      k: "Final exam",
-      v: exSubmitted ? "Passed · essay pending" : "Not sat yet",
+      k: "screensA.certificate.rowExam",
+      v: exSubmitted
+        ? t("screensA.certificate.examPassed")
+        : t("screensA.certificate.examNotSat"),
       tone: exSubmitted ? "pos" : "subtle",
     },
-    { icon: "clock", k: "Time on the course", v: "21h 40m" },
+    {
+      icon: "clock",
+      k: "screensA.certificate.rowTime",
+      v: t("screensA.certificate.timeOnCourse"),
+    },
   ];
 
   return (
     <div className="lp-page scr-certificate">
       <PageHead
         className="ce-head"
-        title="Certificate"
+        title={t("screensA.certificate.title")}
         lede={
           complete
-            ? "Design Systems from Scratch · cohort 03"
-            : "Finish the course and this becomes yours."
+            ? t("screensA.certificate.ledeAwarded", { course: COURSE_TITLE })
+            : t("screensA.certificate.ledeLocked")
         }
         action={
           <Pill tone={complete ? "pos" : "neutral"} icon={complete ? "badge-check" : "lock"}>
-            {complete ? "Awarded" : "Not yet earned"}
+            {complete
+              ? t("screensA.certificate.awarded")
+              : t("screensA.certificate.notYetEarned")}
           </Pill>
         }
       />
@@ -73,26 +95,25 @@ export default function Certificate() {
         <div className="ce-sheet">
           <div className="ce-sheet__head">
             <span className="ce-sheet__mark">Y</span>
-            <span className="ce-sheet__brand">Yara's Academy</span>
+            <span className="ce-sheet__brand">{BRAND}</span>
             <span className="lp-mono ce-sheet__id">{CERT_ID}</span>
           </div>
 
           <div className="ce-sheet__body">
-            <span className="ce-sheet__eyebrow">Certificate of completion</span>
-            <span className="ce-sheet__line">This is to confirm that</span>
+            <span className="ce-sheet__eyebrow">{t("screensA.certificate.ofCompletion")}</span>
+            <span className="ce-sheet__line">{t("screensA.certificate.confirmThat")}</span>
             <span className="ce-sheet__name">{prName}</span>
-            <span className="ce-sheet__line">completed the eight-week course</span>
-            <span className="ce-sheet__course">Design Systems from Scratch</span>
+            <span className="ce-sheet__line">{t("screensA.certificate.completedCourse")}</span>
+            <span className="ce-sheet__course">{COURSE_TITLE}</span>
             <span className="ce-sheet__line ce-sheet__line--wrap">
-              Twenty-two lessons, four assignments and a final exam, across eight weeks of live
-              critique.
+              {t("screensA.certificate.sheetDetail")}
             </span>
           </div>
 
           <div className="ce-sign">
             <div className="ce-sign__col">
-              <div className="lp-mono ce-sign__value">Yara Haddad</div>
-              <div className="ce-sign__label">Instructor</div>
+              <div className="lp-mono ce-sign__value">{INSTRUCTOR_NAME}</div>
+              <div className="ce-sign__label">{t("screensA.certificate.instructor")}</div>
             </div>
             <div className="ce-sign__col">
               {/* The comp printed fmt(now()) + " 2026". The cohort runs in 2026,
@@ -100,7 +121,7 @@ export default function Certificate() {
               <div className="lp-mono ce-sign__value">
                 {complete ? fmtDateLong(demoNow(week)) : "—"}
               </div>
-              <div className="ce-sign__label">Awarded</div>
+              <div className="ce-sign__label">{t("screensA.certificate.awardedOn")}</div>
             </div>
           </div>
         </div>
@@ -111,11 +132,17 @@ export default function Certificate() {
               <span className="ce-lock__ico">
                 <Icon name="lock" size={21} />
               </span>
-              <span className="ce-lock__title">Not yet — and that is fine.</span>
+              <span className="ce-lock__title">{t("screensA.certificate.notYetTitle")}</span>
               <span className="ce-lock__body">
-                {lessons} of {total} lessons done
-                {exSubmitted ? "" : ", final exam still to sit"}. Use "Finish everything" in the
-                dock to see the awarded state.
+                {exSubmitted
+                  ? t("screensA.certificate.lockBody", {
+                      done: number(lessons),
+                      total: number(total),
+                    })
+                  : t("screensA.certificate.lockBodyExam", {
+                      done: number(lessons),
+                      total: number(total),
+                    })}
               </span>
             </div>
           </div>
@@ -129,36 +156,36 @@ export default function Certificate() {
           onClick={() =>
             showToast(
               complete
-                ? "Demo certificate — nothing downloads here."
-                : "Finish the course first — you are close.",
+                ? t("screensA.certificate.downloadDemo")
+                : t("screensA.certificate.finishFirst"),
               complete ? "download" : "lock",
             )
           }
         >
-          Download PDF
+          {t("screensA.certificate.downloadPdf")}
         </ButtonPrimary>
         <ButtonSecondary
           icon="linkedin"
-          onClick={() => showToast("Demo — no post was made.", "linkedin")}
+          onClick={() => showToast(t("screensA.certificate.noPostMade"), "linkedin")}
         >
-          Add to LinkedIn
+          {t("screensA.certificate.addToLinkedIn")}
         </ButtonSecondary>
         <ButtonSecondary
           icon="link"
           iconSize={15}
           className="lp-mono ce-verify"
-          onClick={() => showToast("Verification link copied.", "link")}
+          onClick={() => showToast(t("screensA.certificate.linkCopied"), "link")}
         >
           {VERIFY_URL}
         </ButtonSecondary>
       </div>
 
       <div className="lp-list ce-rows">
-        <div className="ce-rows__head">What it certifies</div>
+        <div className="ce-rows__head">{t("screensA.certificate.whatItCertifies")}</div>
         {rows.map((r) => (
           <div className="lp-list__row ce-row" key={r.k}>
             <Icon name={r.icon} size={16} className="ce-row__ico" />
-            <span className="ce-row__k">{r.k}</span>
+            <span className="ce-row__k">{t(r.k)}</span>
             <span className={r.tone ? `ce-row__v ce-row__v--${r.tone}` : "lp-mono ce-row__v"}>
               {r.v}
             </span>

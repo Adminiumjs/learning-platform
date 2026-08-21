@@ -36,6 +36,7 @@ import {
 } from "../data/screens/exam";
 import { dataSource } from "../data/source";
 import type { ExamAnswer } from "../data/types";
+import { useI18n } from "../i18n";
 import {
   attemptsLeftLabel,
   canRetake,
@@ -58,6 +59,7 @@ function wordCount(value: ExamAnswer): number {
 }
 
 export default function Exam() {
+  const { t, number } = useI18n();
   const exStarted = useAppStore((s) => s.exStarted);
   const exSubmitted = useAppStore((s) => s.exSubmitted);
   const exI = useAppStore((s) => s.exI);
@@ -75,14 +77,29 @@ export default function Exam() {
   const rules = dataSource.examRules();
   const last = questions.length - 1;
 
+  const pct = (value: number): string =>
+    number(value / 100, { style: "percent", maximumFractionDigits: 0 });
+
   /* -------------------------------------------------------------- intro -- */
 
   if (!exStarted && !exSubmitted) {
     const facts = [
-      { icon: "clock", k: "Duration", v: `${rules.durationMin} minutes` },
-      { icon: "list-checks", k: "Questions", v: String(rules.questions) },
-      { icon: "repeat-2", k: "Attempts allowed", v: String(rules.attemptsAllowed) },
-      { icon: "target", k: "Pass mark", v: `${rules.passScore}%` },
+      {
+        icon: "clock",
+        k: t("screensA.exam.factDuration"),
+        v: t(
+          "screensA.exam.minutes",
+          { count: number(rules.durationMin) },
+          rules.durationMin,
+        ),
+      },
+      { icon: "list-checks", k: t("screensA.exam.factQuestions"), v: number(rules.questions) },
+      {
+        icon: "repeat-2",
+        k: t("screensA.exam.factAttempts"),
+        v: number(rules.attemptsAllowed),
+      },
+      { icon: "target", k: t("screensA.exam.factPassMark"), v: pct(rules.passScore) },
     ];
 
     return (
@@ -92,7 +109,7 @@ export default function Exam() {
             <span className="scr-ex__badge">
               <Icon name="file-check" size={26} />
             </span>
-            <h1 className="scr-ex__title">Final exam</h1>
+            <h1 className="scr-ex__title">{t("screensA.exam.title")}</h1>
             <p className="scr-ex__lede">{EXAM_INTRO_LEDE}</p>
           </div>
 
@@ -106,7 +123,7 @@ export default function Exam() {
             ))}
             <div className="scr-ex__cardfoot">
               <ButtonPrimary className="scr-ex__start" onClick={startExam}>
-                Start the exam
+                {t("screensA.exam.start")}
               </ButtonPrimary>
             </div>
           </div>
@@ -133,6 +150,23 @@ export default function Exam() {
     const retakeAllowed = canRetake(exAttempts);
     const attemptsNote = attemptsLeftLabel(exAttempts);
 
+    /* The count is carried by `attemptsNote` below, never spliced mid-sentence:
+       a lower-cased translation is not a translation. */
+    const verdictSub = passed
+      ? t("screensA.exam.verdictPassed", {
+          correct: number(score.correct),
+          total: number(score.total),
+        })
+      : retakeAllowed
+        ? t("screensA.exam.verdictRetake", {
+            correct: number(score.correct),
+            total: number(score.total),
+          })
+        : t("screensA.exam.verdictLast", {
+            correct: number(score.correct),
+            total: number(score.total),
+          });
+
     return (
       <div className="lp-page scr-ex">
         <div className="scr-ex__result">
@@ -141,38 +175,34 @@ export default function Exam() {
               pct={score.pct}
               size="lg"
               tone={passed ? "pos" : "warn"}
-              label="Auto-graded score"
+              label={t("screensA.exam.autoGradedScore")}
             >
-              <span className="scr-ex__ringpct">{score.pct}%</span>
-              <span className="scr-ex__ringnote">auto-graded</span>
+              <span className="scr-ex__ringpct">{pct(score.pct)}</span>
+              <span className="scr-ex__ringnote">{t("screensA.exam.autoGraded")}</span>
             </ProgressRing>
             <div>
-              <p className="scr-ex__verdict">{passed ? "You passed." : "Not quite there."}</p>
-              <p className="scr-ex__verdictsub">
-                {passed
-                  ? `You got ${score.correct} of ${score.total} auto-graded questions. The essay is with Yara — expect notes within two days.`
-                  : retakeAllowed
-                    ? `You got ${score.correct} of ${score.total}. You have ${attemptsNote.toLowerCase()}, and the sections below say exactly where to look.`
-                    : `You got ${score.correct} of ${score.total}. That was your last attempt, so this score stands — the sections below say where it went.`}
+              <p className="scr-ex__verdict">
+                {passed ? t("screensA.exam.passed") : t("screensA.exam.notQuite")}
               </p>
+              <p className="scr-ex__verdictsub">{verdictSub}</p>
             </div>
           </div>
 
           <div className="scr-ex__card">
-            <p className="scr-ex__cardhead">By section</p>
+            <p className="scr-ex__cardhead">{t("screensA.exam.bySection")}</p>
             {Object.entries(score.bySec).map(([name, s]) => {
-              const pct = Math.round((s.c / s.t) * 100);
+              const sectionPct = Math.round((s.c / s.t) * 100);
               return (
                 <div key={name} className="scr-ex__sec">
                   <span className="scr-ex__secname">{name}</span>
                   <ProgressBar
-                    pct={pct}
-                    tone={pct >= rules.passScore ? "pos" : "warn"}
+                    pct={sectionPct}
+                    tone={sectionPct >= rules.passScore ? "pos" : "warn"}
                     className="scr-ex__secbar"
-                    label={`${name} score`}
+                    label={t("screensA.exam.sectionScore", { section: name })}
                   />
                   <span className="scr-ex__secscore lp-mono">
-                    {s.c} / {s.t}
+                    {t("screensA.exam.outOf", { correct: number(s.c), total: number(s.t) })}
                   </span>
                 </div>
               );
@@ -180,16 +210,22 @@ export default function Exam() {
             {/* The essay never auto-scores — this row is the D7 handoff to Yara. */}
             <div className="scr-ex__essayrow">
               <Icon name="hourglass" size={17} className="scr-ex__essayico" />
-              <span className="scr-ex__essaytext">Essay answer — pending review</span>
-              <span className="scr-ex__essaymax lp-mono">— / {EXAM_ESSAY_MAX}</span>
+              <span className="scr-ex__essaytext">{t("screensA.exam.essayPending")}</span>
+              <span className="scr-ex__essaymax lp-mono">
+                {t("screensA.exam.essayMax", { max: number(EXAM_ESSAY_MAX) })}
+              </span>
             </div>
           </div>
 
           <div className="scr-ex__resultbtns">
             <ButtonSecondary onClick={retakeExam} disabled={!retakeAllowed}>
-              {retakeAllowed ? "Review your answers" : "No attempts left"}
+              {retakeAllowed
+                ? t("screensA.exam.reviewAnswers")
+                : t("screensA.exam.noAttemptsLeft")}
             </ButtonSecondary>
-            <ButtonPrimary onClick={() => go("grades")}>See my grades</ButtonPrimary>
+            <ButtonPrimary onClick={() => go("grades")}>
+              {t("screensA.exam.seeGrades")}
+            </ButtonPrimary>
             <span className="scr-ex__attempts lp-mono">{attemptsNote}</span>
           </div>
         </div>
@@ -224,11 +260,13 @@ export default function Exam() {
   const confirmSubmit = () => {
     const missing = unansweredCount(exAns);
     openModal({
-      title: missing ? `Submit with ${missing} unanswered?` : "Submit your exam?",
+      title: missing
+        ? t("screensA.exam.submitMissingTitle", { count: number(missing) }, missing)
+        : t("screensA.exam.submitTitle"),
       body: missing
-        ? `You can still go back and finish them — the timer has ${time} left.`
-        : "Once you submit, the auto-graded sections score straight away and Yara reads the essay.",
-      confirmLabel: "Submit",
+        ? t("screensA.exam.submitMissingBody", { time })
+        : t("screensA.exam.submitBody"),
+      confirmLabel: t("screensA.exam.submitConfirm"),
       icon: "file-check",
       onConfirm: submitExam,
     });
@@ -240,7 +278,10 @@ export default function Exam() {
         <div className="scr-ex__main">
           <div className="scr-ex__meta">
             <span className="scr-ex__counter lp-mono">
-              Question {exI + 1} of {questions.length}
+              {t("screensA.exam.counter", {
+                n: number(exI + 1),
+                total: number(questions.length),
+              })}
             </span>
             <Pill>{EXAM_KIND_LABEL[q.kind]}</Pill>
             {/* Always rendered; the rail copy takes over from 900px up. */}
@@ -272,8 +313,8 @@ export default function Exam() {
               <TextInput
                 value={String(got ?? "")}
                 onChange={answer}
-                placeholder="Type your answer"
-                ariaLabel="Your answer"
+                placeholder={t("screensA.exam.shortPlaceholder")}
+                ariaLabel={t("screensA.exam.shortLabel")}
                 className="scr-ex__short"
               />
             ) : null}
@@ -285,12 +326,18 @@ export default function Exam() {
                   onChange={answer}
                   rows={8}
                   className="scr-ex__essaybox"
-                  ariaLabel="Your essay"
-                  placeholder="Write your case. Around 200 words is plenty."
+                  ariaLabel={t("screensA.exam.essayLabel")}
+                  placeholder={t("screensA.exam.essayPlaceholder")}
                 />
                 <p className="scr-ex__words">
-                  <span className="lp-mono">{wordCount(got)} words</span>
-                  <span className="scr-ex__wordsnote">Read by Yara, not a machine.</span>
+                  <span className="lp-mono">
+                    {t(
+                      "screensA.exam.words",
+                      { count: number(wordCount(got)) },
+                      wordCount(got),
+                    )}
+                  </span>
+                  <span className="scr-ex__wordsnote">{t("screensA.exam.readByHuman")}</span>
                 </p>
               </div>
             ) : null}
@@ -300,7 +347,7 @@ export default function Exam() {
                 icon="arrow-left"
                 onClick={() => set({ exI: Math.max(0, exI - 1) })}
               >
-                Back
+                {t("screensA.exam.back")}
               </ButtonSecondary>
               <ButtonPrimary
                 icon="arrow-right"
@@ -308,7 +355,7 @@ export default function Exam() {
                 className="scr-ex__next"
                 onClick={() => set({ exI: Math.min(last, exI + 1) })}
               >
-                {exI === last ? "Review" : "Next"}
+                {exI === last ? t("screensA.exam.review") : t("screensA.exam.next")}
               </ButtonPrimary>
             </div>
           </div>
@@ -323,10 +370,10 @@ export default function Exam() {
                 className={`scr-ex__railico${low ? " is-low" : ""}`}
               />
               <span className={`scr-ex__railtime lp-mono${low ? " is-low" : ""}`}>{time}</span>
-              <span className="scr-ex__railleft">left</span>
+              <span className="scr-ex__railleft">{t("screensA.exam.left")}</span>
             </div>
 
-            <p className="scr-ex__raillabel">Questions</p>
+            <p className="scr-ex__raillabel">{t("screensA.exam.questions")}</p>
             <div className="scr-ex__map">
               {questions.map((x, i) => {
                 const state =
@@ -337,9 +384,10 @@ export default function Exam() {
                     type="button"
                     className={`lp-btn scr-ex__mapbtn scr-ex__mapbtn--${state} lp-mono`}
                     aria-current={i === exI}
+                    aria-label={t("screensA.exam.goToQuestion", { n: number(i + 1) })}
                     onClick={() => set({ exI: i })}
                   >
-                    {i + 1}
+                    {number(i + 1)}
                   </button>
                 );
               })}
@@ -355,7 +403,7 @@ export default function Exam() {
             </div>
 
             <ButtonPrimary className="scr-ex__submit" onClick={confirmSubmit}>
-              Submit exam
+              {t("screensA.exam.submitExam")}
             </ButtonPrimary>
           </div>
         </aside>

@@ -15,6 +15,7 @@ import {
   STUDY_ROOMS,
   YOU_FACE,
 } from "../data/screens/rooms";
+import { useI18n } from "../i18n";
 import { hhmmss } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-rooms.css";
@@ -42,6 +43,7 @@ function Face({ ini, live }: { ini: string; live: boolean }) {
 }
 
 export default function Rooms() {
+  const { t, number } = useI18n();
   const srIn = useAppStore((s) => s.srIn);
   const srMuted = useAppStore((s) => s.srMuted);
   const srRsvp = useAppStore((s) => s.srRsvp);
@@ -60,10 +62,10 @@ export default function Rooms() {
       } catch {
         /* non-browser hosts */
       }
-      showToast(`You are in “${r.title}”.`, "mic");
+      showToast(t("screensB.rooms.joinedToast", { title: r.title }), "mic");
       return;
     }
-    showToast(`Added to your calendar · ${r.when}`, "calendar-plus");
+    showToast(t("screensB.rooms.calendarToast", { when: r.when }), "calendar-plus");
   };
 
   const rsvp = (title: string) => {
@@ -77,18 +79,18 @@ export default function Rooms() {
     <div className="lp-page scr-rooms">
       <div className="scr-rooms__head">
         <div>
-          <h1 className="scr-rooms__title">Study rooms</h1>
+          <h1 className="scr-rooms__title">{t("screensB.rooms.title")}</h1>
           <p className="scr-rooms__lede">
-            {liveCount} rooms live now · cohort 03 runs these, not us
+            {t("screensB.rooms.lede", { total: number(liveCount) }, liveCount)}
           </p>
         </div>
         <ButtonPrimary
           className="scr-rooms__open"
           icon="plus"
           iconSize={15}
-          onClick={() => showToast("Demo — rooms are seeded here.", "plus")}
+          onClick={() => showToast(t("screensB.rooms.seededToast"), "plus")}
         >
-          Open a room
+          {t("screensB.rooms.openRoom")}
         </ButtonPrimary>
       </div>
 
@@ -115,8 +117,8 @@ export default function Rooms() {
               className={`lp-gi scr-rooms__mute${srMuted ? " is-muted" : ""}`}
               onClick={() => set({ srMuted: !srMuted })}
               aria-pressed={srMuted}
-              title={srMuted ? "Unmute" : "Mute"}
-              aria-label={srMuted ? "Unmute" : "Mute"}
+              title={srMuted ? t("screensB.rooms.unmute") : t("screensB.rooms.mute")}
+              aria-label={srMuted ? t("screensB.rooms.unmute") : t("screensB.rooms.mute")}
             >
               {srMuted ? (
                 <MicOff size={16} strokeWidth={2} aria-hidden="true" />
@@ -130,10 +132,10 @@ export default function Rooms() {
               onClick={() => {
                 set({ srIn: null });
                 /* The comp asked for "log-out", which the registry lacks. */
-                showToast("Left the room.", "arrow-left");
+                showToast(t("screensB.rooms.leftToast"), "arrow-left");
               }}
             >
-              Leave
+              {t("screensB.rooms.leave")}
             </button>
           </div>
         </div>
@@ -151,7 +153,7 @@ export default function Rooms() {
                 />
                 <span className="scr-rooms__cardtitle">{r.title}</span>
                 <Pill className="scr-rooms__status" tone={r.live ? "pos" : "neutral"}>
-                  {r.live ? "Live" : "Scheduled"}
+                  {r.live ? t("screensB.rooms.statusLive") : t("screensB.rooms.statusScheduled")}
                 </Pill>
               </div>
 
@@ -180,7 +182,11 @@ export default function Rooms() {
                   disabled={inThis}
                   onClick={() => join(r)}
                 >
-                  {inThis ? "You are in" : r.live ? "Join" : "I will come"}
+                  {inThis
+                    ? t("screensB.rooms.ctaIn")
+                    : r.live
+                      ? t("screensB.rooms.ctaJoin")
+                      : t("screensB.rooms.ctaComing")}
                 </ButtonPrimary>
               </div>
             </div>
@@ -191,8 +197,8 @@ export default function Rooms() {
       <div className="lp-list">
         <div className="scr-rooms__standhead">
           <Icon name="calendar-clock" size={16} className="scr-rooms__standico" />
-          <span className="scr-rooms__standtitle">Standing sessions</span>
-          <span className="scr-rooms__standnote">Set by the group, not by us</span>
+          <span className="scr-rooms__standtitle">{t("screensB.rooms.standingTitle")}</span>
+          <span className="scr-rooms__standnote">{t("screensB.rooms.standingNote")}</span>
         </div>
 
         {STANDING_SESSIONS.map((s) => {
@@ -211,7 +217,7 @@ export default function Rooms() {
                 className={`scr-rooms__rsvp${going ? " is-on" : ""}`}
                 onClick={() => rsvp(s.title)}
               >
-                {going ? "Going" : "RSVP"}
+                {going ? t("screensB.rooms.going") : t("screensB.rooms.rsvp")}
               </ButtonSecondary>
             </div>
           );

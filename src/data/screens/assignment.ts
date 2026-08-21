@@ -10,8 +10,13 @@
  * The marking note lives here rather than in demo.ts because it is written
  * about this one assignment. The grading queue does not reuse it — there the
  * feedback box starts empty for the instructor to type into.
+ *
+ * The brief and the feedback are Yara writing to Rosa — demo fiction, and they
+ * stay English. The rubric is the marking scheme's own vocabulary, so it moves
+ * with the reader's language.
  */
 
+import { t } from "../../i18n/ambient";
 import type { Tone } from "../../components";
 
 export const ASSIGNMENT_BRIEF =
@@ -27,9 +32,24 @@ export interface RubricLine {
 }
 
 export const ASSIGNMENT_RUBRIC: RubricLine[] = [
-  { label: "Scale · 8/8", tone: "pos" },
-  { label: "Reasoning · 7/7", tone: "pos" },
-  { label: "Responsive · 3/5", tone: "warn" },
+  {
+    get label() {
+      return t("data.assignment.rubric.scale");
+    },
+    tone: "pos",
+  },
+  {
+    get label() {
+      return t("data.assignment.rubric.reasoning");
+    },
+    tone: "pos",
+  },
+  {
+    get label() {
+      return t("data.assignment.rubric.responsive");
+    },
+    tone: "warn",
+  },
 ];
 
 /** The file the demo's "Attach a file" button drops in. */

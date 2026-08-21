@@ -3,8 +3,16 @@
  *
  * Page-local: rooms are a peer-run thing, not part of the course contract, so
  * nothing outside this screen reads them.
+ *
+ * Translation. A room's name and the line describing it were written by the
+ * student who opened it — fiction, English. Everything the app says about a
+ * room is not: when it runs, how full it is, and the three standing sessions
+ * the school itself hosts. The weekday and clock in a `when` come from `Intl`
+ * rather than from a hand-written "Wed 19:00".
  */
 
+import { number, t } from "../../i18n/ambient";
+import { fmtTime, fmtWeekday, weekStart } from "../../lib/schedule";
 import { STUDENT } from "../demo";
 
 export interface StudyRoom {
@@ -26,62 +34,114 @@ export interface StandingSession {
   icon: string;
 }
 
+/** "Wed 19:00" — a weekday offset from Monday, plus an hour of the day. */
+function slot(dayOffset: number, hour: number): string {
+  const d = weekStart(1);
+  d.setDate(d.getDate() + dayOffset);
+  d.setHours(hour, 0, 0, 0);
+  return t("data.rooms.slot", { day: fmtWeekday(d), time: fmtTime(d) });
+}
+
 export const STUDY_ROOMS: StudyRoom[] = [
   {
     id: "r1",
     title: "Specimen swap",
-    topic: "Bring your type specimen, get three sets of eyes on it before Thursday.",
+    topic:
+      "Bring your type specimen, get three sets of eyes on it before Thursday.",
     live: true,
-    when: "Live now · 34 min",
+    get when() {
+      return t("data.rooms.liveFor", { count: number(34) }, 34);
+    },
     faces: ["TL", "PR", "AB", "CO"],
-    count: "4 of 6",
+    get count() {
+      return t("data.rooms.inRoom", { n: number(4), of: number(6) });
+    },
   },
   {
     id: "r2",
     title: "Token clinic",
-    topic: "Priya is walking through her three-layer setup. Bring the thing that broke.",
+    topic:
+      "Priya is walking through her three-layer setup. Bring the thing that broke.",
     live: true,
-    when: "Live now · 12 min",
+    get when() {
+      return t("data.rooms.liveFor", { count: number(12) }, 12);
+    },
     faces: ["PR", "BA"],
-    count: "2 of 6",
+    get count() {
+      return t("data.rooms.inRoom", { n: number(2), of: number(6) });
+    },
   },
   {
     id: "r3",
     title: "Week 2 catch-up",
-    topic: "For anyone behind on the token sheet. No judgement, we have all been there.",
+    topic:
+      "For anyone behind on the token sheet. No judgement, we have all been there.",
     live: false,
-    when: "Tomorrow 19:00",
+    get when() {
+      return t("data.rooms.tomorrowAt", { time: fmtTime(atHour(19)) });
+    },
     faces: ["MF", "KM", "DF"],
-    count: "3 going",
+    get count() {
+      return t("data.rooms.going", { count: number(3) }, 3);
+    },
   },
   {
     id: "r4",
     title: "Quiet co-working",
     topic: "Cameras off, mics off, timer on. Two hours of getting it done.",
     live: false,
-    when: "Saturday 10:00",
+    get when() {
+      return slot(5, 10);
+    },
     faces: ["FN", "NL", "AN", "IH", "JW"],
-    count: "5 going",
+    get count() {
+      return t("data.rooms.going", { count: number(5) }, 5);
+    },
   },
 ];
 
+/** A bare time of day on an arbitrary date — only the clock face is read. */
+function atHour(hour: number): Date {
+  const d = weekStart(1);
+  d.setHours(hour, 0, 0, 0);
+  return d;
+}
+
 export const STANDING_SESSIONS: StandingSession[] = [
   {
-    title: "Monday kick-off",
-    sub: "Twenty minutes, what everyone is doing this week",
-    when: "Mon 09:00",
+    get title() {
+      return t("data.rooms.standing.kickoff");
+    },
+    get sub() {
+      return t("data.rooms.standing.kickoffSub");
+    },
+    get when() {
+      return slot(0, 9);
+    },
     icon: "sunrise",
   },
   {
-    title: "Midweek co-working",
-    sub: "Two hours, cameras optional, timer shared",
-    when: "Wed 19:00",
+    get title() {
+      return t("data.rooms.standing.midweek");
+    },
+    get sub() {
+      return t("data.rooms.standing.midweekSub");
+    },
+    get when() {
+      return slot(2, 19);
+    },
     icon: "timer",
   },
   {
-    title: "Friday show and tell",
-    sub: "Five minutes each, rough work encouraged",
-    when: "Fri 17:00",
+    get title() {
+      return t("data.rooms.standing.showAndTell");
+    },
+    get sub() {
+      return t("data.rooms.standing.showAndTellSub");
+    },
+    get when() {
+      return slot(4, 17);
+    },
     icon: "presentation",
   },
 ];

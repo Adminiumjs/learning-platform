@@ -27,6 +27,8 @@ import {
   Toast,
 } from "../components";
 import type { ViewId } from "../data/types";
+import { useI18n } from "../i18n";
+import { setAmbient } from "../i18n/ambient";
 import { useAppStore } from "../state/store";
 
 import Alumni from "../screens/Alumni";
@@ -224,6 +226,17 @@ function renderView(view: ViewId) {
 export function App() {
   const view = useAppStore((s) => s.view);
   const theme = useAppStore((s) => s.theme);
+
+  /*
+   * Publish the live locale to the module-level bridge before anything below
+   * renders. `lib/schedule.ts`, `lib/exam.ts` and the store's toast copy all
+   * run outside React and cannot hold a hook; this is the one place that knows
+   * both sides. Assigning during render (rather than in an effect) matters:
+   * children render after this line, so the first paint after a locale switch
+   * is already in the new locale instead of one frame behind.
+   */
+  const { locale, t, money, number } = useI18n();
+  setAmbient(locale, t, money, number);
 
   /* --- theme: an explicit stamp always beats prefers-color-scheme --- */
   useEffect(() => {

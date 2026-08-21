@@ -20,12 +20,14 @@ import {
   heatWeeks,
 } from "../data/screens/streaks";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-streaks.css";
 
 const LEGEND: number[] = [0, 1, 2, 3];
 
 export default function Streaks() {
+  const { t, number } = useI18n();
   const stToday = useAppStore((s) => s.stToday);
   const stFreeze = useAppStore((s) => s.stFreeze);
   const set = useAppStore((s) => s.set);
@@ -39,11 +41,12 @@ export default function Streaks() {
      logging today can move you past someone. The comp matched on the name
      string; the student record is the honest source. */
   const student = dataSource.student();
+  const meLabel = t("screensB.streaks.you");
   const board = useMemo(() => {
     const rows = STREAK_PEERS.map((p) => ({ ...p, me: false }));
-    rows.push({ name: "You", initials: student.initials, days, me: true });
+    rows.push({ name: meLabel, initials: student.initials, days, me: true });
     return rows.sort((a, b) => b.days - a.days);
-  }, [days, student.initials]);
+  }, [days, meLabel, student.initials]);
 
   const logToday = () => {
     const next = !stToday;
@@ -52,7 +55,9 @@ export default function Streaks() {
       /* The comp announced the pre-toggle count ("Day 42 logged") the moment
          you logged day 43. It also asked for `undo-2`, which is not in the
          app's icon registry — rotate-ccw is the registered equivalent. */
-      next ? `Day ${STREAK_BASE_DAYS + 1} logged. Keep going.` : "Today unlogged.",
+      next
+        ? t("screensB.streaks.loggedToast", { day: number(STREAK_BASE_DAYS + 1) })
+        : t("screensB.streaks.unloggedToast"),
       next ? "flame" : "rotate-ccw",
     );
   };
@@ -63,39 +68,39 @@ export default function Streaks() {
         <div className="st-hero__main">
           <div className="st-hero__count">
             <Icon name="flame" size={26} className="st-hero__flame" />
-            <span className="lp-mono st-hero__days">{days}</span>
-            <span className="st-hero__unit">day streak</span>
+            <span className="lp-mono st-hero__days">{number(days)}</span>
+            <span className="st-hero__unit">{t("screensB.streaks.dayStreak", {}, days)}</span>
           </div>
           <p className="st-hero__blurb">
             {stToday
-              ? "Today is logged. Six weeks without a gap — that is longer than the course itself."
-              : "You have not logged today yet. One lesson, one note, or one peer review does it."}
+              ? t("screensB.streaks.blurbLogged")
+              : t("screensB.streaks.blurbNotLogged")}
           </p>
         </div>
 
         <div className="st-hero__side">
           <Pill icon="snowflake" className="st-freeze">
-            {stFreeze} freezes left
+            {t("screensB.streaks.freezes", { total: number(stFreeze) }, stFreeze)}
           </Pill>
           <ButtonPrimary
             icon={stToday ? "check" : "flame"}
             className={stToday ? "st-log st-log--done" : "st-log"}
             onClick={logToday}
           >
-            {stToday ? "Logged today" : "Log today"}
+            {stToday ? t("screensB.streaks.loggedToday") : t("screensB.streaks.logToday")}
           </ButtonPrimary>
         </div>
       </div>
 
       <section className="st-heat">
         <div className="st-heat__head">
-          <span className="st-heat__title">Last twelve weeks</span>
+          <span className="st-heat__title">{t("screensB.streaks.heatTitle")}</span>
           <span className="st-legend">
-            Less
+            {t("screensB.streaks.less")}
             {LEGEND.map((l) => (
               <span key={l} className={`st-cell st-cell--l${l} st-cell--legend`} />
             ))}
-            More
+            {t("screensB.streaks.more")}
           </span>
         </div>
 
@@ -113,8 +118,8 @@ export default function Streaks() {
 
         <div className="st-stats">
           <div className="st-stat">
-            <span className="lp-mono st-stat__value">{days}</span>
-            <span className="st-stat__label">Current streak</span>
+            <span className="lp-mono st-stat__value">{number(days)}</span>
+            <span className="st-stat__label">{t("screensB.streaks.currentStreak")}</span>
           </div>
           {STREAK_TOTALS.map((s) => (
             <div className="st-stat" key={s.label}>
@@ -127,7 +132,7 @@ export default function Streaks() {
 
       <div className="st-bottom">
         <div className="lp-list st-badges">
-          <div className="st-badges__head">Milestones</div>
+          <div className="st-badges__head">{t("screensB.streaks.milestones")}</div>
           {STREAK_BADGES.map((b) => (
             <div
               className={`lp-list__row st-badge${b.earned ? "" : " st-badge--locked"}`}
@@ -140,7 +145,9 @@ export default function Streaks() {
                 <span className="st-badge__title">{b.title}</span>
                 <span className="st-badge__sub">{b.sub}</span>
               </span>
-              <Pill tone={b.earned ? "pos" : "neutral"}>{b.earned ? "Earned" : "Locked"}</Pill>
+              <Pill tone={b.earned ? "pos" : "neutral"}>
+                {b.earned ? t("screensB.streaks.earned") : t("screensB.streaks.locked")}
+              </Pill>
             </div>
           ))}
         </div>
@@ -149,7 +156,7 @@ export default function Streaks() {
           <section className="st-board">
             <div className="st-board__head">
               <Icon name="users" size={16} className="st-board__ico" />
-              <span className="st-board__title">Cohort streaks</span>
+              <span className="st-board__title">{t("screensB.streaks.boardTitle")}</span>
             </div>
             {board.map((b) => (
               <div className="st-board__row" key={b.name}>
@@ -159,7 +166,7 @@ export default function Streaks() {
                 </span>
                 <span className={`lp-mono st-board__days${b.me ? " st-board__days--me" : ""}`}>
                   <Icon name="flame" size={13} />
-                  {b.days}
+                  {number(b.days)}
                 </span>
               </div>
             ))}
@@ -168,15 +175,11 @@ export default function Streaks() {
           <section className="st-honest">
             <div className="st-honest__head">
               <Icon name="bell" size={16} className="st-honest__ico" />
-              <span className="st-honest__title">Keep it honest</span>
+              <span className="st-honest__title">{t("screensB.streaks.honestTitle")}</span>
             </div>
-            <p className="st-honest__body">
-              A streak counts a day you actually learned something — a lesson watched, a note
-              written, a review given. Opening the app does not count, and we are not going to
-              pretend it does.
-            </p>
+            <p className="st-honest__body">{t("screensB.streaks.honestBody")}</p>
             <ButtonSecondary className="st-honest__btn" onClick={() => go("profile")}>
-              Reminder settings
+              {t("screensB.streaks.reminderSettings")}
             </ButtonSecondary>
           </section>
         </div>

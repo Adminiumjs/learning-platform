@@ -6,9 +6,29 @@
  * edit in the generated dashboard, so they stay out of the DataSource seam.
  * The prices are stated here as copy (the comp does the same); the course
  * records behind the two CTAs are still reached through the seam.
+ *
+ * Translation. The table is a specification, so every cell in it is interface
+ * and moves with the locale — including "None" and "—", which is why
+ * `isAbsent` no longer compares against the English words but against the
+ * messages themselves. The two blurbs are the course selling itself and stay
+ * English with the rest of the fiction. Prices go through `Intl` rather than
+ * carrying a hard-coded "$".
  */
 
+import { money, number, t } from "../../i18n/ambient";
+import {
+  fmtDateLong,
+  fmtTime,
+  fmtWeekdayLong,
+  liveDate,
+} from "../../lib/schedule";
 import type { CourseMode } from "../types";
+
+/** When cohort 04 starts. Fixed: it must stay ahead of the demo clock. */
+const COHORT_4_STARTS = new Date(2026, 8, 7);
+
+/** Week 1's live session, as a real instant `Intl` can name and time. */
+const LIVE_AT = liveDate(1, 3, 18);
 
 export interface CompareOption {
   /** Doubles as the picked key and the course mode the choice switches to. */
@@ -23,27 +43,50 @@ export interface CompareOption {
   courseId: string;
 }
 
+/** The cohort runs eight weeks — the number under its price. */
+const COHORT_WEEKS = 8;
+
 export const COMPARE_OPTIONS: CompareOption[] = [
   {
     k: "self",
-    title: "Self-paced",
+    get title() {
+      return t("data.compare.selfPaced");
+    },
     icon: "infinity",
-    price: "$95",
-    priceSub: "from",
+    get price() {
+      return money(95);
+    },
+    get priceSub() {
+      return t("data.compare.from");
+    },
     blurb:
       "Everything opens the day you enrol. Finish in a fortnight or a year — nobody is counting.",
-    cta: "Start self-paced",
+    get cta() {
+      return t("data.compare.startSelfPaced");
+    },
     courseId: "TY-140",
   },
   {
     k: "cohort",
-    title: "Cohort",
+    get title() {
+      return t("data.compare.cohort");
+    },
     icon: "users",
-    price: "$180",
-    priceSub: "8 weeks",
+    get price() {
+      return money(180);
+    },
+    get priceSub() {
+      return t(
+        "data.compare.weeks",
+        { count: number(COHORT_WEEKS) },
+        COHORT_WEEKS,
+      );
+    },
     blurb:
       "A start date, thirty classmates and a critique every Thursday. Harder to put off, which is rather the point.",
-    cta: "Join cohort 04",
+    get cta() {
+      return t("data.compare.joinCohort");
+    },
     courseId: "DS-101",
   },
 ];
@@ -55,17 +98,106 @@ export interface CompareRow {
 }
 
 export const COMPARE_ROWS: CompareRow[] = [
-  { k: "Starts", self: "The minute you pay", cohort: "Mon 7 Sep 2026" },
-  { k: "Pace", self: "Yours entirely", cohort: "~3 hours a week" },
-  { k: "Feedback", self: "Q&A within a day", cohort: "Live critique + graded work" },
-  { k: "Live sessions", self: "None", cohort: "8 · Thursdays 18:00 CET" },
-  { k: "Assignments", self: "Optional, ungraded", cohort: "4, graded by Yara" },
-  { k: "Classmates", self: "—", cohort: "30" },
-  { k: "Certificate", self: "On completion", cohort: "On completion" },
-  { k: "Best for", self: "Fitting study around a loud job", cohort: "Finishing the thing" },
+  {
+    get k() {
+      return t("data.compare.row.starts");
+    },
+    get self() {
+      return t("data.compare.starts.self");
+    },
+    get cohort() {
+      return fmtDateLong(COHORT_4_STARTS);
+    },
+  },
+  {
+    get k() {
+      return t("data.compare.row.pace");
+    },
+    get self() {
+      return t("data.compare.pace.self");
+    },
+    get cohort() {
+      return t("data.compare.pace.cohort");
+    },
+  },
+  {
+    get k() {
+      return t("data.compare.row.feedback");
+    },
+    get self() {
+      return t("data.compare.feedback.self");
+    },
+    get cohort() {
+      return t("data.compare.feedback.cohort");
+    },
+  },
+  {
+    get k() {
+      return t("data.compare.row.live");
+    },
+    get self() {
+      return t("data.compare.none");
+    },
+    get cohort() {
+      return t("data.compare.live.cohort", {
+        count: number(COHORT_WEEKS),
+        day: fmtWeekdayLong(LIVE_AT),
+        time: fmtTime(LIVE_AT),
+        tz: "CET",
+      });
+    },
+  },
+  {
+    get k() {
+      return t("data.compare.row.assignments");
+    },
+    get self() {
+      return t("data.compare.assignments.self");
+    },
+    get cohort() {
+      return t("data.compare.assignments.cohort");
+    },
+  },
+  {
+    get k() {
+      return t("data.compare.row.classmates");
+    },
+    get self() {
+      return t("data.compare.dash");
+    },
+    cohort: "30",
+  },
+  {
+    get k() {
+      return t("data.compare.row.certificate");
+    },
+    get self() {
+      return t("data.compare.onCompletion");
+    },
+    get cohort() {
+      return t("data.compare.onCompletion");
+    },
+  },
+  {
+    get k() {
+      return t("data.compare.row.bestFor");
+    },
+    get self() {
+      return t("data.compare.bestFor.self");
+    },
+    get cohort() {
+      return t("data.compare.bestFor.cohort");
+    },
+  },
 ];
 
-/** A self-paced cell reading "—" or "None" is an absence, and is toned down. */
+/**
+ * A self-paced cell reading "—" or "None" is an absence, and is toned down.
+ *
+ * Compared against the messages rather than the English words: once the table
+ * is translated, "None" is "Keine" and a literal comparison would quietly stop
+ * greying the cell.
+ */
 export function isAbsent(value: string): boolean {
-  return value === "—" || value === "None";
+  return value === t("data.compare.dash") || value === t("data.compare.none");
 }

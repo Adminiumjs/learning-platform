@@ -39,17 +39,31 @@ import {
   RATING_LINE,
   TINTS,
 } from "../data/screens/editor";
+import { levelName } from "../data/format";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { demoNow, fmtDate } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-editor.css";
 
-const LEVEL_OPTIONS: SegmentOption<string>[] = LEVELS.map((l) => ({ id: l, label: l }));
-
 export default function Editor() {
+  const { t, number, money } = useI18n();
+
+  /*
+   * Built per render, not at module scope: a module-level const would call
+   * `levelName` before <App> has pushed the live `t` into the ambient bridge
+   * and freeze the three labels into English for the life of the tab. The
+   * `id` stays the English `CourseLevel` token — it is the stored value, and
+   * it must not move when the language does — while the label follows the
+   * reader.
+   */
+  const levelOptions: SegmentOption<string>[] = LEVELS.map((l) => ({
+    id: l,
+    label: levelName(l),
+  }));
   const edTitle = useAppStore((s) => s.edTitle);
   const edDesc = useAppStore((s) => s.edDesc);
-  const edPrice = useAppStore((s) => s.edPrice);
+  const edPriceRaw = useAppStore((s) => s.edPrice);
   const edCode = useAppStore((s) => s.edCode);
   const edLevel = useAppStore((s) => s.edLevel);
   const edTint = useAppStore((s) => s.edTint);
@@ -63,20 +77,37 @@ export default function Editor() {
   const openCourse = useAppStore((s) => s.openCourse);
   const showToast = useAppStore((s) => s.showToast);
 
+  /*
+   * `null` until the teacher types: the seeded price then renders from the
+   * course record's own number through `Intl`, so a German reader sees
+   * "180,00 $" rather than a hard-coded "$180". An edit wins verbatim.
+   */
+  const edPrice = edPriceRaw ?? money(dataSource.course("DS-101").price);
+
   const meta = [
     {
       i: "list-tree",
-      k: "Modules",
-      v: `${dataSource.modules().length} · ${dataSource.totalLessons()} lessons`,
+      k: t("screensA.editor.metaModules"),
+      v: t(
+        "screensA.editor.metaModulesValue",
+        {
+          modules: number(dataSource.modules().length),
+          count: number(dataSource.totalLessons()),
+        },
+        dataSource.totalLessons(),
+      ),
       mono: false,
     },
     {
       i: "users",
-      k: "Enrolled",
-      v: `${dataSource.cohortCapacity()} in cohort ${COHORT_NO}`,
+      k: t("screensA.editor.metaEnrolled"),
+      v: t("screensA.editor.metaEnrolledValue", {
+        count: number(dataSource.cohortCapacity()),
+        no: COHORT_NO,
+      }),
       mono: false,
     },
-    { i: "star", k: "Rating", v: RATING_LINE, mono: true },
+    { i: "star", k: t("screensA.editor.metaRating"), v: RATING_LINE, mono: true },
   ];
 
   const editLearn = (i: number, value: string) => {
@@ -92,8 +123,8 @@ export default function Editor() {
   };
 
   const save = () => {
-    set({ edSavedAt: "Saved just now" });
-    showToast("Course settings saved.", "check");
+    set({ edSavedAt: t("screensA.editor.savedJustNow") });
+    showToast(t("screensA.editor.savedToast"), "check");
   };
 
   return (
@@ -103,7 +134,7 @@ export default function Editor() {
           <div className="ed-head__text">
             <span className="ed-eyebrow">
               <Icon name="settings-2" size={15} />
-              Course settings
+              {t("screensA.editor.eyebrow")}
             </span>
             <h1 className="ed-title">{edTitle}</h1>
           </div>
@@ -113,16 +144,16 @@ export default function Editor() {
             icon={edPublished ? "badge-check" : "pencil"}
             iconSize={14}
           >
-            {edPublished ? "Published" : "Draft"}
+            {edPublished ? t("screensA.editor.published") : t("screensA.editor.draft")}
           </Pill>
         </header>
 
         <div className="ed-grid">
           <div className="ed-col">
             <section className="ed-card">
-              <h2 className="ed-card__title">The basics</h2>
+              <h2 className="ed-card__title">{t("screensA.editor.basics")}</h2>
 
-              <Field label="Title" htmlFor="ed-title">
+              <Field label={t("screensA.editor.fieldTitle")} htmlFor="ed-title">
                 <TextInput
                   id="ed-title"
                   className="ed-input ed-input--title"
@@ -131,7 +162,7 @@ export default function Editor() {
                 />
               </Field>
 
-              <Field label="Summary" htmlFor="ed-desc">
+              <Field label={t("screensA.editor.fieldSummary")} htmlFor="ed-desc">
                 <TextArea
                   id="ed-desc"
                   rows={4}
@@ -142,7 +173,7 @@ export default function Editor() {
               </Field>
 
               <div className="ed-pair">
-                <Field label="Price" htmlFor="ed-price">
+                <Field label={t("screensA.editor.fieldPrice")} htmlFor="ed-price">
                   <TextInput
                     id="ed-price"
                     mono
@@ -151,7 +182,7 @@ export default function Editor() {
                     onChange={(v) => set({ edPrice: v })}
                   />
                 </Field>
-                <Field label="Course code" htmlFor="ed-code">
+                <Field label={t("screensA.editor.fieldCode")} htmlFor="ed-code">
                   <TextInput
                     id="ed-code"
                     mono
@@ -163,44 +194,44 @@ export default function Editor() {
               </div>
 
               <div className="ed-group">
-                <span className="ed-group__label">Level</span>
+                <span className="ed-group__label">{t("screensA.editor.level")}</span>
                 <Segmented
                   className="ed-group__seg"
-                  options={LEVEL_OPTIONS}
+                  options={levelOptions}
                   value={edLevel}
                   onChange={(l) => set({ edLevel: l })}
-                  label="Level"
+                  label={t("screensA.editor.level")}
                 />
               </div>
             </section>
 
             <section className="ed-card">
               <div className="ed-card__head">
-                <h2 className="ed-card__title">What you&rsquo;ll learn</h2>
+                <h2 className="ed-card__title">{t("screensA.editor.whatYoullLearn")}</h2>
                 <ButtonSecondary
                   className="ed-addline"
                   onClick={() => set({ edLearn: [...edLearn, ""] })}
                 >
-                  Add a line
+                  {t("screensA.editor.addLine")}
                 </ButtonSecondary>
               </div>
 
-              {edLearn.map((t, i) => (
+              {edLearn.map((line, i) => (
                 /* Index keys are right here: the rows have no id, and reorder
                    is a drag affordance the comp never wired up. */
                 <div key={i} className="ed-learn">
                   <Icon name="grip-vertical" size={15} className="ed-learn__grip" />
                   <TextInput
                     className="ed-learn__field"
-                    value={t}
+                    value={line}
                     onChange={(v) => editLearn(i, v)}
-                    ariaLabel={`Learning outcome ${i + 1}`}
+                    ariaLabel={t("screensA.editor.outcomeLabel", { n: number(i + 1) })}
                   />
                   <IconButton
                     className="ed-learn__x"
                     icon="x"
                     iconSize={14}
-                    label={`Remove learning outcome ${i + 1}`}
+                    label={t("screensA.editor.removeOutcome", { n: number(i + 1) })}
                     onClick={() => removeLearn(i)}
                   />
                 </div>
@@ -209,31 +240,28 @@ export default function Editor() {
               {/* Removing every line is reachable, and the comp left the card
                   looking broken when you did. */}
               {edLearn.length === 0 ? (
-                <p className="ed-learn__none">
-                  No outcomes yet. A course page with none of these reads like a
-                  syllabus nobody wrote.
-                </p>
+                <p className="ed-learn__none">{t("screensA.editor.noOutcomes")}</p>
               ) : null}
             </section>
           </div>
 
           <div className="ed-col">
             <section className="ed-card ed-card--rail">
-              <h2 className="ed-card__title">Cover</h2>
+              <h2 className="ed-card__title">{t("screensA.editor.cover")}</h2>
 
               <Cover className="ed-cover" tint={edTint} icon={edIcon} iconSize={46} angle="155deg" />
 
               <div className="ed-tints">
-                {TINTS.map((t) => (
+                {TINTS.map((tint) => (
                   <button
-                    key={t.hex}
+                    key={tint.hex}
                     type="button"
-                    className={`lp-btn ed-tint${t.hex === edTint ? " is-on" : ""}`}
-                    style={{ "--tint": t.hex } as CSSProperties}
-                    onClick={() => set({ edTint: t.hex })}
-                    aria-pressed={t.hex === edTint}
-                    aria-label={t.name}
-                    title={t.name}
+                    className={`lp-btn ed-tint${tint.hex === edTint ? " is-on" : ""}`}
+                    style={{ "--tint": tint.hex } as CSSProperties}
+                    onClick={() => set({ edTint: tint.hex })}
+                    aria-pressed={tint.hex === edTint}
+                    aria-label={tint.name}
+                    title={tint.name}
                   />
                 ))}
               </div>
@@ -241,7 +269,7 @@ export default function Editor() {
               {/* Icon-only, so this is a hand-rolled picker rather than
                   `Segmented`, which would render buttons with no accessible
                   name. Same inset-track look, spelled out in the sheet. */}
-              <div className="ed-icons" role="group" aria-label="Cover icon">
+              <div className="ed-icons" role="group" aria-label={t("screensA.editor.coverIcon")}>
                 {COVER_ICONS.map((c) => (
                   <button
                     key={c.name}
@@ -267,7 +295,7 @@ export default function Editor() {
                 </div>
               ))}
               <button type="button" className="lp-row ed-meta__go" onClick={() => go("content")}>
-                Edit modules and lessons
+                {t("screensA.editor.editModules")}
               </button>
             </section>
           </div>
@@ -277,15 +305,19 @@ export default function Editor() {
       <div className="ed-bar">
         <div className="ed-bar__inner">
           <span className="ed-bar__at">
-            {edSavedAt || `Last saved ${fmtDate(demoNow(week))} · ${LAST_SAVED_TIME}`}
+            {edSavedAt ||
+              t("screensA.editor.lastSaved", {
+                date: fmtDate(demoNow(week)),
+                time: LAST_SAVED_TIME,
+              })}
           </span>
           {/* Previews the course being edited rather than the comp's fixed
               "DS-101"; an unknown code falls back to the first course, which
               is what `dataSource.course` already guarantees. */}
           <ButtonSecondary className="ed-bar__preview" onClick={() => openCourse(edCode)}>
-            Preview as student
+            {t("screensA.editor.previewAsStudent")}
           </ButtonSecondary>
-          <ButtonPrimary onClick={save}>Save changes</ButtonPrimary>
+          <ButtonPrimary onClick={save}>{t("screensA.editor.saveChanges")}</ButtonPrimary>
         </div>
       </div>
     </>

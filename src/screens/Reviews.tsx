@@ -14,16 +14,20 @@ import { Avatar, ButtonPrimary, Chip, ChipRow, Icon, PageHead, Pill, ProgressBar
 import { TOTAL_LESSONS } from "../data/demo";
 import type { Review } from "../data/screens/reviews";
 import { REVIEWS, REVIEW_FILTERS, STAR_LABELS } from "../data/screens/reviews";
+import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { doneCount } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-reviews.css";
 
 const RATINGS = [5, 4, 3, 2, 1];
+/** The cohort the seeded reviews came out of. */
+const COHORT_STUDENTS = 30;
 
 /** Five stars, filled up to `n`. The fill colour lives in the stylesheet. */
-function Stars({ n, size, label }: { n: number; size: number; label?: string }) {
+function Stars({ n, size, label }: { n: number; size: number; label: string }) {
   return (
-    <span className="rv-stars" role="img" aria-label={label ?? `${n} out of 5 stars`}>
+    <span className="rv-stars" role="img" aria-label={label}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Icon key={i} name="star" size={size} className={`rv-star${i <= n ? " is-on" : ""}`} />
       ))}
@@ -39,6 +43,7 @@ function initials(name: string): string {
 }
 
 export default function Reviews() {
+  const { t, number } = useI18n();
   const filter = useAppStore((s) => s.rvFilter);
   const stars = useAppStore((s) => s.rvStars);
   const text = useAppStore((s) => s.rvText);
@@ -51,8 +56,12 @@ export default function Reviews() {
   const set = useAppStore((s) => s.set);
   const showToast = useAppStore((s) => s.showToast);
 
+  const course = dataSource.courses()[0];
+  const instructor = dataSource.instructor();
+
   const all = [...added, ...REVIEWS];
   const avg = all.reduce((a, r) => a + r.stars, 0) / all.length;
+  const avgText = number(avg, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
   const dist = RATINGS.map((n) => ({ n, c: all.filter((r) => r.stars === n).length }));
   const maxc = Math.max(...dist.map((d) => d.c)) || 1;
@@ -70,7 +79,7 @@ export default function Reviews() {
   function post() {
     const body = text.trim();
     if (!body) {
-      showToast("A sentence or two first.", "info");
+      showToast(t("screensB.reviews.tooShort"), "info");
       return;
     }
     const mine: Review = {
@@ -80,14 +89,17 @@ export default function Reviews() {
          Profile, and a fixed monogram would go stale the moment it changes. */
       ini: initials(name),
       stars,
-      at: "Just now",
+      at: t("screensB.reviews.justNow"),
       ageDays: 0,
       helpful: 0,
       verified: false,
       text: body,
     };
     set({ rvAdded: [mine, ...added], rvText: "" });
-    showToast("Review posted. Yara reads every one.", "star");
+    showToast(
+      t("screensB.reviews.posted", { name: instructor.name.split(" ")[0] }),
+      "star",
+    );
   }
 
   function toggleHelpful(id: string) {
@@ -101,28 +113,38 @@ export default function Reviews() {
     <div className="lp-page scr-reviews">
       <PageHead
         className="rv-head"
-        title="Reviews"
-        lede="Design Systems from Scratch · written by students who finished it."
+        title={t("screensB.reviews.title")}
+        lede={t("screensB.reviews.lede", { course: course.title })}
       />
 
       <div className="rv-top">
         <div className="lp-cardbox rv-score">
-          <span className="lp-mono rv-score__num">{avg.toFixed(1)}</span>
-          <Stars n={Math.round(avg)} size={16} label={`Average ${avg.toFixed(1)} out of 5`} />
-          <span className="rv-score__count">{all.length} reviews · 30 students</span>
+          <span className="lp-mono rv-score__num">{avgText}</span>
+          <Stars
+            n={Math.round(avg)}
+            size={16}
+            label={t("screensB.reviews.averageAria", { avg: avgText })}
+          />
+          <span className="rv-score__count">
+            {t(
+              "screensB.reviews.count",
+              { total: number(all.length), students: number(COHORT_STUDENTS) },
+              all.length,
+            )}
+          </span>
         </div>
 
         <div className="lp-cardbox rv-dist">
           {dist.map((d) => (
             <div className="rv-dist__row" key={d.n}>
-              <span className="lp-mono rv-dist__n">{d.n}★</span>
+              <span className="lp-mono rv-dist__n">{number(d.n)}★</span>
               <ProgressBar
                 className="rv-dist__bar"
                 pct={Math.round((d.c / maxc) * 100)}
                 tone="warn"
-                label={`${d.n} star reviews`}
+                label={t("screensB.reviews.distAria", { n: number(d.n) })}
               />
-              <span className="lp-mono rv-dist__c">{d.c}</span>
+              <span className="lp-mono rv-dist__c">{number(d.c)}</span>
             </div>
           ))}
         </div>
@@ -130,7 +152,9 @@ export default function Reviews() {
 
       <div className="lp-cardbox rv-form">
         <div className="rv-form__title">
-          {doneCount(done) >= TOTAL_LESSONS ? "Your review" : "Write a review"}
+          {doneCount(done) >= TOTAL_LESSONS
+            ? t("screensB.reviews.yourReview")
+            : t("screensB.reviews.writeReview")}
         </div>
 
         <div className="rv-pickrow">
@@ -142,7 +166,7 @@ export default function Reviews() {
                 className="lp-btn rv-pick"
                 onClick={() => set({ rvStars: i })}
                 aria-pressed={i === stars}
-                aria-label={`${i} ${i === 1 ? "star" : "stars"}`}
+                aria-label={t("screensB.reviews.starsAria", { total: number(i) }, i)}
               >
                 <Icon name="star" size={18} className={`rv-star${i <= stars ? " is-on" : ""}`} />
               </button>
@@ -155,12 +179,12 @@ export default function Reviews() {
           className="rv-text"
           value={text}
           onChange={(v) => set({ rvText: v })}
-          placeholder="What did this course actually change for you?"
-          ariaLabel="Your review"
+          placeholder={t("screensB.reviews.placeholder")}
+          ariaLabel={t("screensB.reviews.yourReview")}
         />
 
         <ButtonPrimary className="rv-post" onClick={post}>
-          Post review
+          {t("screensB.reviews.post")}
         </ButtonPrimary>
       </div>
 
@@ -185,11 +209,15 @@ export default function Reviews() {
               <div className="rv-card__main">
                 <div className="rv-card__meta">
                   <span className="rv-card__who">{r.who}</span>
-                  <Stars n={r.stars} size={14} label={`${r.stars} out of 5`} />
+                  <Stars
+                    n={r.stars}
+                    size={14}
+                    label={t("screensB.reviews.outOfFive", { n: number(r.stars) })}
+                  />
                   <span className="lp-mono rv-card__at">{r.at}</span>
                   {r.verified ? (
                     <Pill tone="pos" icon="badge-check">
-                      Finished the course
+                      {t("screensB.reviews.finished")}
                     </Pill>
                   ) : null}
                 </div>
@@ -198,9 +226,16 @@ export default function Reviews() {
 
                 {r.reply ? (
                   <div className="rv-reply">
-                    <Avatar initials="YH" size="sm" accent className="rv-reply__av" />
+                    <Avatar
+                      initials={instructor.initials}
+                      size="sm"
+                      accent
+                      className="rv-reply__av"
+                    />
                     <div>
-                      <div className="rv-reply__who">Yara Haddad replied</div>
+                      <div className="rv-reply__who">
+                        {t("screensB.reviews.replied", { name: instructor.name })}
+                      </div>
                       <p className="rv-reply__text">{r.reply}</p>
                     </div>
                   </div>
@@ -214,7 +249,11 @@ export default function Reviews() {
                     aria-pressed={Boolean(helpful[r.id])}
                   >
                     <Icon name="thumbs-up" size={14} />
-                    {r.helpful + (helpful[r.id] ? 1 : 0)} found this helpful
+                    {t(
+                      "screensB.reviews.helpful",
+                      { total: number(r.helpful + (helpful[r.id] ? 1 : 0)) },
+                      r.helpful + (helpful[r.id] ? 1 : 0),
+                    )}
                   </button>
                 </div>
               </div>

@@ -14,6 +14,7 @@
  */
 
 import type { CSSProperties, ReactNode } from "react";
+import { useT } from "../i18n";
 import { Icon } from "./Icon";
 
 /* ------------------------------------------------------------------ card */
@@ -585,6 +586,7 @@ export interface AttachmentChipProps {
 
 /** The mono filename chip. Nothing downloads — there are no real files. */
 export function AttachmentChip({ name, onRemove, onClick, className }: AttachmentChipProps) {
+  const t = useT();
   return (
     <span className={`lp-file${className ? ` ${className}` : ""}`}>
       <Icon name="paperclip" size={13} />
@@ -596,7 +598,12 @@ export function AttachmentChip({ name, onRemove, onClick, className }: Attachmen
         <span className="lp-file__name">{name}</span>
       )}
       {onRemove ? (
-        <button type="button" className="lp-file__x" onClick={onRemove} aria-label={`Remove ${name}`}>
+        <button
+          type="button"
+          className="lp-file__x"
+          onClick={onRemove}
+          aria-label={t("chrome.attachment.remove", { name })}
+        >
           <Icon name="x" size={13} />
         </button>
       ) : null}

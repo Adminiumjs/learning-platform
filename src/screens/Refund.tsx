@@ -25,10 +25,12 @@ import {
   REFUND_WINDOW_WEEKS,
 } from "../data/screens/refund";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-refund.css";
 
 export default function Refund() {
+  const { t, money } = useI18n();
   const week = useAppStore((s) => s.week);
   const rfDone = useAppStore((s) => s.rfDone);
   const rfReason = useAppStore((s) => s.rfReason);
@@ -46,7 +48,7 @@ export default function Refund() {
 
   const submit = () => {
     if (!rfReason) {
-      showToast("Pick a reason so we can learn from it.", "info");
+      showToast(t("screensB.refund.pickReason"), "info");
       return;
     }
     set({ rfDone: true });
@@ -57,7 +59,7 @@ export default function Refund() {
     } catch {
       /* non-browser hosts */
     }
-    showToast("Refund request sent · YA-RF-118", "check");
+    showToast(t("screensB.refund.sentToast", { ref: REFUND_REF }), "check");
   };
 
   if (rfDone) {
@@ -66,30 +68,27 @@ export default function Refund() {
         <span className="rf-tick">
           <Icon name="check" size={28} />
         </span>
-        <h1 className="rf-done__title">We&rsquo;ve got it.</h1>
-        <p className="rf-done__body">
-          Refunds are handled by a person, not a robot, so give us two working days. You keep access
-          until it&rsquo;s processed.
-        </p>
+        <h1 className="rf-done__title">{t("screensB.refund.doneTitle")}</h1>
+        <p className="rf-done__body">{t("screensB.refund.doneBody")}</p>
         <span className="lp-mono rf-ref">
           <Icon name="receipt" size={15} />
           {REFUND_REF}
         </span>
 
         <div className="rf-timeline">
-          {REFUND_TIMELINE.map((t) => (
-            <div className="rf-step" key={t.label}>
-              <span className={`rf-step__dot${t.done ? " rf-step__dot--done" : ""}`}>
-                <Icon name={t.icon} size={13} />
+          {REFUND_TIMELINE.map((step) => (
+            <div className="rf-step" key={step.label}>
+              <span className={`rf-step__dot${step.done ? " rf-step__dot--done" : ""}`}>
+                <Icon name={step.icon} size={13} />
               </span>
-              <span className="rf-step__label">{t.label}</span>
-              <span className="lp-mono rf-step__at">{t.at}</span>
+              <span className="rf-step__label">{step.label}</span>
+              <span className="lp-mono rf-step__at">{step.at}</span>
             </div>
           ))}
         </div>
 
         <ButtonSecondary className="rf-back" onClick={() => go("learning")}>
-          Back to my learning
+          {t("screensB.refund.backToLearning")}
         </ButtonSecondary>
       </div>
     );
@@ -98,10 +97,8 @@ export default function Refund() {
   return (
     <div className="lp-page scr-refund">
       <div className="rf-head">
-        <h1 className="rf-head__title">Request a refund</h1>
-        <p className="rf-head__lede">
-          No hard feelings and no interrogation. Tell us what happened and we&rsquo;ll sort it out.
-        </p>
+        <h1 className="rf-head__title">{t("screensB.refund.title")}</h1>
+        <p className="rf-head__lede">{t("screensB.refund.lede")}</p>
       </div>
 
       {course ? (
@@ -116,10 +113,10 @@ export default function Refund() {
           <div className="rf-course__text">
             <div className="rf-course__title">{course.title}</div>
             <div className="lp-mono rf-course__meta">
-              {course.order} · paid {course.date}
+              {t("screensB.refund.orderMeta", { order: course.order, date: course.date })}
             </div>
           </div>
-          <span className="lp-mono rf-course__price">${course.price}</span>
+          <span className="lp-mono rf-course__price">{money(course.price)}</span>
         </section>
       ) : null}
 
@@ -132,8 +129,8 @@ export default function Refund() {
       </Callout>
 
       <section className="lp-cardbox rf-form">
-        <h2 className="rf-form__head">Why are you asking?</h2>
-        <div className="rf-reasons" role="radiogroup" aria-label="Why are you asking?">
+        <h2 className="rf-form__head">{t("screensB.refund.whyHead")}</h2>
+        <div className="rf-reasons" role="radiogroup" aria-label={t("screensB.refund.whyHead")}>
           {REFUND_REASONS.map((r) => (
             <CheckRow
               key={r.id}
@@ -151,16 +148,16 @@ export default function Refund() {
           className="rf-text"
           value={rfText}
           onChange={(v) => set({ rfText: v })}
-          placeholder="Anything you want us to know (optional)"
-          ariaLabel="Anything you want us to know"
+          placeholder={t("screensB.refund.notePlaceholder")}
+          ariaLabel={t("screensB.refund.noteAria")}
         />
 
         <div className="rf-actions">
           <ButtonPrimary className="rf-send" onClick={submit}>
-            Send the request
+            {t("screensB.refund.send")}
           </ButtonPrimary>
           <ButtonSecondary className="rf-never" onClick={() => go("learning")}>
-            Never mind
+            {t("screensB.refund.neverMind")}
           </ButtonSecondary>
         </div>
       </section>

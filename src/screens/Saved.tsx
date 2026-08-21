@@ -19,6 +19,7 @@ import {
 } from "../components";
 import { dataSource } from "../data/source";
 import type { Course } from "../data/types";
+import { useI18n } from "../i18n";
 import { fmtDate } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-saved.css";
@@ -37,6 +38,7 @@ const SAVED_IDS = ["PF-310", "MO-220"];
 const NEXT_COHORT_START = new Date(2026, 8, 7);
 
 export default function Saved() {
+  const { t, money, number } = useI18n();
   const svRemoved = useAppStore((s) => s.svRemoved);
   const set = useAppStore((s) => s.set);
   const go = useAppStore((s) => s.go);
@@ -50,7 +52,7 @@ export default function Saved() {
 
   const remove = (c: Course) => {
     set({ svRemoved: { ...svRemoved, [c.id]: 1 } });
-    showToast("Removed from saved.", "bookmark-x", "Undo", () => {
+    showToast(t("screensB.saved.removed"), "bookmark-x", t("screensB.saved.undo"), () => {
       /* Read the live map, not the closed-over one — other rows may have gone since. */
       const current = { ...useAppStore.getState().svRemoved };
       delete current[c.id];
@@ -61,15 +63,15 @@ export default function Saved() {
   return (
     <div className="lp-page scr-saved">
       <PageHead
-        title="Saved"
+        title={t("screensB.saved.title")}
         lede={
           list.length
-            ? `${list.length} saved · we will tell you when a cohort opens`
-            : "Nothing saved right now."
+            ? t("screensB.saved.lede", { total: number(list.length) }, list.length)
+            : t("screensB.saved.ledeEmpty")
         }
         action={
           <ButtonSecondary className="sv-head__cta" onClick={() => go("catalog")}>
-            Browse courses
+            {t("screensB.saved.browse")}
           </ButtonSecondary>
         }
       />
@@ -86,28 +88,32 @@ export default function Saved() {
                   <div className="sv-row__head">
                     <span className="sv-row__title">{c.title}</span>
                     <Pill tone={cohort ? "accent" : "neutral"}>
-                      {cohort ? `Cohort · starts ${fmtDate(NEXT_COHORT_START)}` : "Self-paced"}
+                      {cohort
+                        ? t("screensB.saved.cohortStarts", {
+                            date: fmtDate(NEXT_COHORT_START),
+                          })
+                        : t("screensB.saved.selfPaced")}
                     </Pill>
                   </div>
                   <p className="sv-row__sub">{c.blurb}</p>
                   {cohort ? (
                     <p className="sv-row__notify">
                       <Icon name="bell" size={14} />
-                      You will be emailed when seats open
+                      {t("screensB.saved.emailWhenOpen")}
                     </p>
                   ) : null}
                 </div>
 
-                <span className="sv-row__price lp-mono">${c.price}</span>
+                <span className="sv-row__price lp-mono">{money(c.price)}</span>
 
                 <div className="sv-row__acts">
                   <ButtonPrimary className="sv-row__cta" onClick={() => openCourse(c.id)}>
-                    {cohort ? "Join the waitlist" : "Enrol now"}
+                    {cohort ? t("screensB.saved.joinWaitlist") : t("screensB.saved.enrol")}
                   </ButtonPrimary>
                   <IconButton
                     icon="bookmark-x"
                     className="sv-row__remove"
-                    title={`Remove ${c.title} from saved`}
+                    title={t("screensB.saved.removeAria", { title: c.title })}
                     onClick={() => remove(c)}
                   />
                 </div>
@@ -121,20 +127,17 @@ export default function Saved() {
         <EmptyState
           className="sv-empty"
           icon="bookmark"
-          title="Nothing saved yet."
-          body="Save a course from the catalog and we'll tell you when the next cohort opens."
-          action={{ label: "Browse courses", onClick: () => go("catalog") }}
+          title={t("screensB.saved.emptyTitle")}
+          body={t("screensB.saved.emptyBody")}
+          action={{ label: t("screensB.saved.browse"), onClick: () => go("catalog") }}
         />
       )}
 
       <div className="sv-compare">
         <Icon name="git-compare" size={18} className="sv-compare__ico" />
-        <span className="sv-compare__text">
-          Not sure between self-paced and a cohort? They teach the same thing at very
-          different speeds.
-        </span>
+        <span className="sv-compare__text">{t("screensB.saved.compareText")}</span>
         <ButtonSecondary className="sv-compare__cta" onClick={() => go("compare")}>
-          Compare them
+          {t("screensB.saved.compareCta")}
         </ButtonSecondary>
       </div>
     </div>

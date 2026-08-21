@@ -12,10 +12,12 @@
 import { Avatar, ButtonPrimary, PageHead, TextArea } from "../components";
 import type { ChatMessage } from "../data/screens/messages";
 import { CONVERSATIONS } from "../data/screens/messages";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-messages.css";
 
 export default function Messages() {
+  const { t, number } = useI18n();
   const msI = useAppStore((s) => s.msI);
   const msText = useAppStore((s) => s.msText);
   const msSent = useAppStore((s) => s.msSent);
@@ -36,19 +38,25 @@ export default function Messages() {
   function send(): void {
     const text = msText.trim();
     if (!text) {
-      showToast("Write something first.", "info");
+      showToast(t("screensB.messages.empty"), "info");
       return;
     }
     set({
-      msSent: { ...msSent, [cur.id]: [...sent, { me: true, text, at: "Just now" }] },
+      msSent: {
+        ...msSent,
+        [cur.id]: [...sent, { me: true, text, at: t("screensB.messages.justNow") }],
+      },
       msText: "",
     });
-    showToast(`Sent to ${cur.who}.`, "send");
+    showToast(t("screensB.messages.sent", { who: cur.who }), "send");
   }
 
   return (
     <div className="lp-page scr-messages">
-      <PageHead title="Messages" lede={`${unread} unread · private, not the public Q&A`} />
+      <PageHead
+        title={t("screensB.messages.title")}
+        lede={t("screensB.messages.lede", { total: number(unread) }, unread)}
+      />
 
       <div className="ms-grid">
         <div className="lp-list lp-scroll ms-list">
@@ -87,10 +95,12 @@ export default function Messages() {
             <Avatar initials={cur.ini} size="lg" className="ms-pane__ava" />
             <div className="ms-pane__who">
               <div className="ms-pane__name">{cur.who}</div>
-              <div className="ms-pane__meta">{`Cohort 03 · ${cur.standing}`}</div>
+              <div className="ms-pane__meta">
+                {t("screensB.messages.standing", { standing: cur.standing })}
+              </div>
             </div>
             <button type="button" className="lp-gi ms-progress" onClick={() => go("student")}>
-              View progress
+              {t("screensB.messages.viewProgress")}
             </button>
           </div>
 
@@ -110,13 +120,13 @@ export default function Messages() {
             <TextArea
               value={msText}
               onChange={(v) => set({ msText: v })}
-              placeholder={`Write to ${firstName}…`}
+              placeholder={t("screensB.messages.composePlaceholder", { name: firstName })}
               rows={2}
               className="ms-compose__field"
-              ariaLabel={`Message ${cur.who}`}
+              ariaLabel={t("screensB.messages.composeAria", { who: cur.who })}
             />
             <ButtonPrimary icon="send" iconSize={15} className="ms-send" onClick={send}>
-              Send
+              {t("screensB.messages.send")}
             </ButtonPrimary>
           </div>
         </div>

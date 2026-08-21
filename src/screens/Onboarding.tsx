@@ -17,6 +17,8 @@ import {
   PLAN_FALLBACK,
   QUIZ,
 } from "../data/screens/onboarding";
+import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { addDays, demoNow, fmtDate } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-onboarding.css";
@@ -33,6 +35,7 @@ function scrollTop(): void {
 }
 
 export default function Onboarding() {
+  const { t, number } = useI18n();
   const obStep = useAppStore((s) => s.obStep);
   const obA = useAppStore((s) => s.obA);
   const week = useAppStore((s) => s.week);
@@ -42,10 +45,11 @@ export default function Onboarding() {
 
   const onPlan = obStep > LAST_QUESTION;
   const q = QUIZ[Math.min(obStep, LAST_QUESTION)];
+  const firstName = dataSource.student().name.split(" ")[0];
 
   const next = () => {
     if (!obA[q.key]) {
-      showToast("Pick one — there are no wrong answers.", "info");
+      showToast(t("screensB.onboarding.pickOne"), "info");
       return;
     }
     set({ obStep: obStep + 1 });
@@ -62,13 +66,27 @@ export default function Onboarding() {
   };
 
   const plan = [
-    { i: "book-open", k: "Start with", v: GOAL_COURSE[obA.goal] ?? PLAN_FALLBACK.goal },
-    { i: "clock", k: "Pace", v: PACE_LABEL[obA.hours] ?? PLAN_FALLBACK.pace },
-    { i: "bell", k: "Nudges", v: NUDGE_LABEL[obA.remind] ?? PLAN_FALLBACK.nudge },
+    {
+      i: "book-open",
+      k: t("screensB.onboarding.planStart"),
+      v: GOAL_COURSE[obA.goal] ?? PLAN_FALLBACK.goal,
+    },
+    {
+      i: "clock",
+      k: t("screensB.onboarding.planPace"),
+      v: PACE_LABEL[obA.hours] ?? PLAN_FALLBACK.pace,
+    },
+    {
+      i: "bell",
+      k: t("screensB.onboarding.planNudges"),
+      v: NUDGE_LABEL[obA.remind] ?? PLAN_FALLBACK.nudge,
+    },
     {
       i: "flag",
-      k: "First milestone",
-      v: `Audit one screen by ${fmtDate(addDays(demoNow(week), MILESTONE_DAYS))}`,
+      k: t("screensB.onboarding.planMilestone"),
+      v: t("screensB.onboarding.milestoneValue", {
+        date: fmtDate(addDays(demoNow(week), MILESTONE_DAYS)),
+      }),
     },
   ];
 
@@ -78,7 +96,12 @@ export default function Onboarding() {
         <span className="ob-top__mark">{BRAND.mark}</span>
         <span className="ob-top__name">{BRAND.name}</span>
         <span className="lp-mono ob-top__step">
-          {onPlan ? "Your plan" : `Step ${obStep + 1} of ${QUIZ.length}`}
+          {onPlan
+            ? t("screensB.onboarding.yourPlan")
+            : t("screensB.onboarding.step", {
+                n: number(obStep + 1),
+                total: number(QUIZ.length),
+              })}
         </span>
       </div>
 
@@ -97,8 +120,10 @@ export default function Onboarding() {
       {onPlan ? (
         <div className="ob-plan">
           <div>
-            <h1 className="ob-title">Here's your plan, Rosa.</h1>
-            <p className="ob-sub">Nothing binding. Change it any time from your profile.</p>
+            <h1 className="ob-title">
+              {t("screensB.onboarding.planTitle", { name: firstName })}
+            </h1>
+            <p className="ob-sub">{t("screensB.onboarding.planSub")}</p>
           </div>
 
           <div className="lp-list ob-plan__list">
@@ -116,13 +141,13 @@ export default function Onboarding() {
               className="ob-start"
               onClick={() => {
                 go("classroom");
-                showToast("Plan saved. Lesson one is waiting.", "check");
+                showToast(t("screensB.onboarding.planSaved"), "check");
               }}
             >
-              Start learning
+              {t("screensB.onboarding.startLearning")}
             </ButtonPrimary>
             <ButtonSecondary className="ob-redo" onClick={() => set({ obStep: 0, obA: {} })}>
-              Answer again
+              {t("screensB.onboarding.answerAgain")}
             </ButtonSecondary>
           </div>
         </div>
@@ -159,10 +184,12 @@ export default function Onboarding() {
 
           <div className="ob-nav">
             <ButtonSecondary className="ob-back" onClick={back}>
-              Back
+              {t("screensB.onboarding.back")}
             </ButtonSecondary>
             <ButtonPrimary className="ob-next" icon="arrow-right" iconEnd onClick={next}>
-              {obStep === LAST_QUESTION ? "See my plan" : "Next"}
+              {obStep === LAST_QUESTION
+                ? t("screensB.onboarding.seePlan")
+                : t("screensB.onboarding.next")}
             </ButtonPrimary>
           </div>
         </div>

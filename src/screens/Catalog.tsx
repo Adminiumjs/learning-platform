@@ -20,26 +20,17 @@ import {
   Pill,
   Skel,
 } from "../components";
+import { levelName } from "../data/format";
 import { AUTUMN_COHORT_START, CATEGORIES, SKELETON_CARDS } from "../data/screens/catalog";
 import { dataSource } from "../data/source";
 import type { Course } from "../data/types";
+import { useI18n } from "../i18n";
 import { clockLabel, fmtDate, weekStart } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-catalog.css";
 
-/** "Cohort · starts Mon 3 Aug" or "Self-paced" — the card's delivery badge. */
-function badgeFor(c: Course): string {
-  if (c.kind !== "cohort") return "Self-paced";
-  /*
-   * Both intake dates are fixed, not read off the demo clock: the badge has to
-   * say the same thing after the dock advances a week, or the catalogue would
-   * appear to reschedule itself mid-demo.
-   */
-  const start = c.id === "DS-101" ? weekStart(3) : AUTUMN_COHORT_START;
-  return `Cohort · starts ${fmtDate(start)}`;
-}
-
 export default function Catalog() {
+  const { t, money, number } = useI18n();
   const cat = useAppStore((s) => s.cat);
   const q = useAppStore((s) => s.q);
   const week = useAppStore((s) => s.week);
@@ -48,6 +39,18 @@ export default function Catalog() {
   const openCourse = useAppStore((s) => s.openCourse);
 
   const gridRef = useRef<HTMLDivElement>(null);
+
+  /** "Cohort · starts Mon 3 Aug" or "Self-paced" — the card's delivery badge. */
+  const badgeFor = (c: Course): string => {
+    if (c.kind !== "cohort") return t("screensA.catalog.selfPaced");
+    /*
+     * Both intake dates are fixed, not read off the demo clock: the badge has
+     * to say the same thing after the dock advances a week, or the catalogue
+     * would appear to reschedule itself mid-demo.
+     */
+    const start = c.id === "DS-101" ? weekStart(3) : AUTUMN_COHORT_START;
+    return t("screensA.catalog.cohortStarts", { date: fmtDate(start) });
+  };
 
   /*
    * A live search query overrides the category chip — the comp's rule, and the
@@ -72,25 +75,20 @@ export default function Catalog() {
       <section className="scr-catalog__hero">
         <span className="scr-catalog__clock">
           <span className="scr-catalog__dot" />
-          Cohort in session · {clockLabel(week)}
+          {t("screensA.catalog.inSession", { clock: clockLabel(week) })}
         </span>
-        <h1 className="scr-catalog__title">
-          Learn the craft of digital design, one week at a time.
-        </h1>
-        <p className="scr-catalog__lede">
-          Small classes taught by working designers. Watch a lesson, make the thing, get real
-          critique. No fluff, no filler.
-        </p>
+        <h1 className="scr-catalog__title">{t("screensA.catalog.heroTitle")}</h1>
+        <p className="scr-catalog__lede">{t("screensA.catalog.heroLede")}</p>
         <div className="scr-catalog__cta">
           <ButtonPrimary className="scr-catalog__herobtn" onClick={browse}>
-            Browse courses
+            {t("screensA.catalog.browse")}
           </ButtonPrimary>
           <ButtonSecondary
             className="scr-catalog__herobtn"
             icon="calendar-days"
             onClick={() => openCourse("DS-101")}
           >
-            How cohorts work
+            {t("screensA.catalog.howCohortsWork")}
           </ButtonSecondary>
         </div>
       </section>
@@ -102,7 +100,7 @@ export default function Catalog() {
           </Chip>
         ))}
         <span className="scr-catalog__count">
-          {courses.length} {courses.length === 1 ? "course" : "courses"}
+          {t("screensA.catalog.count", { count: number(courses.length) }, courses.length)}
         </span>
       </div>
 
@@ -126,9 +124,9 @@ export default function Catalog() {
           <EmptyState
             className="scr-catalog__empty"
             icon="search-x"
-            title={`Nothing matches "${q}" yet.`}
-            body="Try a broader word — or browse everything."
-            action={{ label: "Show all courses", onClick: clearFilters }}
+            title={t("screensA.catalog.emptyTitle", { query: q })}
+            body={t("screensA.catalog.emptyBody")}
+            action={{ label: t("screensA.catalog.showAll"), onClick: clearFilters }}
           />
         ) : (
           <div className="scr-catalog__grid">
@@ -141,7 +139,7 @@ export default function Catalog() {
               >
                 <Cover tint={c.tint} icon={c.icon} filename={c.file}>
                   <Pill tone="neutral" className="scr-catalog__level">
-                    {c.level}
+                    {levelName(c.level)}
                   </Pill>
                 </Cover>
                 <div className="scr-catalog__body">
@@ -160,9 +158,13 @@ export default function Catalog() {
                   </Pill>
                   <span className="scr-catalog__foot">
                     <span className="scr-catalog__meta">
-                      {c.lessons} lessons · {c.dur}
+                      {t(
+                        "screensA.catalog.cardMeta",
+                        { count: number(c.lessons), dur: c.dur },
+                        c.lessons,
+                      )}
                     </span>
-                    <span className="scr-catalog__price">${c.price}</span>
+                    <span className="scr-catalog__price">{money(c.price)}</span>
                   </span>
                 </div>
               </button>

@@ -23,11 +23,13 @@ import {
 import { SUGGESTED_ANSWER } from "../data/screens/inbox";
 import { dataSource } from "../data/source";
 import type { Question } from "../data/types";
+import { useI18n } from "../i18n";
 import { inboxQueue, instructorReply, isAnswered, questionList } from "../lib/thread";
 import { useAppStore } from "../state/store";
 import "../styles/screen-inbox.css";
 
 export default function Inbox() {
+  const { t, number } = useI18n();
   const qaAdded = useAppStore((s) => s.qaAdded);
   const qaReplies = useAppStore((s) => s.qaReplies);
   const qiDraft = useAppStore((s) => s.qiDraft);
@@ -49,7 +51,7 @@ export default function Inbox() {
   const post = (q: Question) => {
     const text = (qiDraft[q.id] ?? "").trim();
     if (!text) {
-      showToast("Write an answer first.", "info");
+      showToast(t("screensA.inbox.writeFirst"), "info");
       return;
     }
     /* `qiDone` is a handled-marker map (that is how `inboxQueue` and the Teach
@@ -59,16 +61,22 @@ export default function Inbox() {
       qiDone: { ...qiDone, [q.id]: 1 },
       qaReplies: { ...qaReplies, [q.id]: instructorReply(text) },
     });
-    showToast(`Answer posted to ${q.who}.`, "send");
+    showToast(t("screensA.inbox.answerPosted", { who: q.who }), "send");
   };
 
   return (
     <div className="lp-page lp-page--narrow scr-inbox">
       <PageHead
-        title="Q&A inbox"
-        lede={`${open} unanswered across cohort 03${
-          answeredNow ? ` · ${answeredNow} answered just now` : ""
-        }`}
+        title={t("screensA.inbox.title")}
+        lede={
+          answeredNow
+            ? t(
+                "screensA.inbox.ledeWithAnswered",
+                { count: number(open), answered: number(answeredNow) },
+                open,
+              )
+            : t("screensA.inbox.lede", { count: number(open) }, open)
+        }
       />
 
       {/* The comp rendered an empty list as a bare heading. The dock's
@@ -78,9 +86,13 @@ export default function Inbox() {
         <EmptyState
           className="qi-empty"
           icon="check-check"
-          title="Nothing waiting. Every question has an answer."
-          body="New questions from the cohort land here."
-          action={{ label: "See the class Q&A", icon: "message-square", onClick: () => go("qa") }}
+          title={t("screensA.inbox.emptyTitle")}
+          body={t("screensA.inbox.emptyBody")}
+          action={{
+            label: t("screensA.inbox.seeClassQa"),
+            icon: "message-square",
+            onClick: () => go("qa"),
+          }}
         />
       ) : (
         <div className="qi-list">
@@ -96,9 +108,11 @@ export default function Inbox() {
                     <div className="qi-meta">
                       <span className="qi-who">{q.who}</span>
                       <span className="qi-at lp-mono">{q.at}</span>
-                      <span className="qi-lesson">· {q.lesson}</span>
+                      <span className="qi-lesson">
+                        {t("screensA.inbox.onLesson", { lesson: q.lesson })}
+                      </span>
                       <Pill className="qi-state" tone={done ? "pos" : "warn"}>
-                        {done ? "Done" : "Awaiting answer"}
+                        {done ? t("screensA.inbox.done") : t("screensA.inbox.awaiting")}
                       </Pill>
                     </div>
                     <p className="qi-text">{q.text}</p>
@@ -119,13 +133,15 @@ export default function Inbox() {
                         rows={3}
                         value={qiDraft[q.id] ?? ""}
                         onChange={(v) => draft(q.id, v)}
-                        placeholder={`Answer as ${instructor.name.split(" ")[0]}…`}
-                        ariaLabel={`Answer ${q.who}`}
+                        placeholder={t("screensA.inbox.answerAs", {
+                          name: instructor.name.split(" ")[0],
+                        })}
+                        ariaLabel={t("screensA.inbox.answerLabel", { who: q.who })}
                       />
                     </div>
                     <div className="qi-actions">
                       <ButtonPrimary className="qi-post" onClick={() => post(q)}>
-                        Post answer
+                        {t("screensA.inbox.postAnswer")}
                       </ButtonPrimary>
                       <ButtonSecondary
                         className="qi-suggest"
@@ -133,7 +149,7 @@ export default function Inbox() {
                         iconSize={14}
                         onClick={() => draft(q.id, SUGGESTED_ANSWER)}
                       >
-                        Draft for me
+                        {t("screensA.inbox.draftForMe")}
                       </ButtonSecondary>
                     </div>
                   </>

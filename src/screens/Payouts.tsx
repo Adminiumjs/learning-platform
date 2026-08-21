@@ -20,36 +20,41 @@ import {
   NEXT_PAYOUT,
   STATS,
 } from "../data/screens/payouts";
+import { useT } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-payouts.css";
 
 export default function Payouts() {
+  const t = useT();
   const showToast = useAppStore((s) => s.showToast);
   const openModal = useAppStore((s) => s.openModal);
 
   const withdraw = () =>
     openModal({
-      title: `Pay out ${AVAILABLE}?`,
-      body: `It lands in ${METHOD.detail} in two working days. Nothing moves in this demo.`,
+      title: t("screensB.payouts.confirmTitle", { amount: AVAILABLE }),
+      body: t("screensB.payouts.confirmBody", { account: METHOD.detail }),
       icon: "banknote",
-      confirmLabel: "Pay out",
-      onConfirm: () => showToast(`Payout requested · ${AVAILABLE}`, "banknote"),
+      confirmLabel: t("screensB.payouts.confirmCta"),
+      onConfirm: () =>
+        showToast(t("screensB.payouts.requested", { amount: AVAILABLE }), "banknote"),
     });
 
   return (
     <div className="lp-page scr-payouts">
       <header className="py-head">
-        <h1 className="py-title">Payouts</h1>
-        <p className="py-lede">What the school owes you, and where it goes.</p>
+        <h1 className="py-title">{t("screensB.payouts.title")}</h1>
+        <p className="py-lede">{t("screensB.payouts.lede")}</p>
       </header>
 
       <div className="py-top">
         <section className="py-avail">
-          <span className="py-avail__label">Available to pay out</span>
+          <span className="py-avail__label">{t("screensB.payouts.available")}</span>
           <span className="lp-mono py-avail__value">{AVAILABLE}</span>
-          <span className="py-avail__next">Next automatic payout {NEXT_PAYOUT}</span>
+          <span className="py-avail__next">
+            {t("screensB.payouts.nextAuto", { date: NEXT_PAYOUT })}
+          </span>
           <ButtonPrimary className="py-avail__btn" onClick={withdraw}>
-            Pay out now
+            {t("screensB.payouts.payOutNow")}
           </ButtonPrimary>
         </section>
 
@@ -68,13 +73,13 @@ export default function Payouts() {
 
       <div className="py-grid">
         <section className="py-history">
-          <h2 className="py-history__title">Payout history</h2>
+          <h2 className="py-history__title">{t("screensB.payouts.historyTitle")}</h2>
 
           <div className="py-cols py-cols--head">
-            <span>Date</span>
-            <span className="py-col--method">Method</span>
-            <span className="py-col--end">Amount</span>
-            <span className="py-col--end">Status</span>
+            <span>{t("screensB.payouts.colDate")}</span>
+            <span className="py-col--method">{t("screensB.payouts.colMethod")}</span>
+            <span className="py-col--end">{t("screensB.payouts.colAmount")}</span>
+            <span className="py-col--end">{t("screensB.payouts.colStatus")}</span>
           </div>
 
           {HISTORY.map((r) => (
@@ -91,14 +96,18 @@ export default function Payouts() {
 
         <div className="py-side">
           <section className="py-card">
-            <h2 className="py-card__title">Earnings by course</h2>
+            <h2 className="py-card__title">{t("screensB.payouts.earningsTitle")}</h2>
             {COURSE_EARNINGS.map((c) => (
               <div key={c.title} className="py-course">
                 <div className="py-course__top">
                   <span className="py-course__title">{c.title}</span>
                   <span className="lp-mono py-course__amount">{c.amount}</span>
                 </div>
-                <ProgressBar className="py-course__bar" pct={c.pct} label={`${c.title} earnings`} />
+                <ProgressBar
+                  className="py-course__bar"
+                  pct={c.pct}
+                  label={t("screensB.payouts.earningsBar", { title: c.title })}
+                />
                 <span className="lp-mono py-course__sub">{c.sub}</span>
               </div>
             ))}
@@ -114,9 +123,9 @@ export default function Payouts() {
             </div>
             <ButtonSecondary
               className="py-method-card__btn"
-              onClick={() => showToast("Demo — payout details are fixed here.", "landmark")}
+              onClick={() => showToast(t("screensB.payouts.methodFixed"), "landmark")}
             >
-              Change
+              {t("screensB.payouts.change")}
             </ButtonSecondary>
           </section>
         </div>

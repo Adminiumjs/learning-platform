@@ -5,7 +5,12 @@
  * generated dashboard, so they sit beside the screen rather than behind the
  * `dataSource` seam. The roster they count over is shared data and comes
  * through the seam.
+ *
+ * The bucket labels are chart axis text — interface — so they are getters and
+ * their digits come from `Intl` rather than being typed into a string.
  */
+
+import { number, t } from "../../i18n/ambient";
 
 export interface ProgressBucket {
   label: string;
@@ -15,12 +20,41 @@ export interface ProgressBucket {
   to: number;
 }
 
+/** "0–25%" — the digits are the locale's, the dash is CLDR's range separator. */
+function bucketLabel(from: number, to: number): string {
+  return t("data.teach.bucket", { from: number(from), to: number(to) });
+}
+
 /** The four columns of the "Class progress" chart. */
 export const PROGRESS_BUCKETS: ProgressBucket[] = [
-  { label: "0–25%", from: 0, to: 25 },
-  { label: "25–50%", from: 25, to: 50 },
-  { label: "50–75%", from: 50, to: 75 },
-  { label: "75–100%", from: 75, to: 101 },
+  {
+    get label() {
+      return bucketLabel(0, 25);
+    },
+    from: 0,
+    to: 25,
+  },
+  {
+    get label() {
+      return bucketLabel(25, 50);
+    },
+    from: 25,
+    to: 50,
+  },
+  {
+    get label() {
+      return bucketLabel(50, 75);
+    },
+    from: 50,
+    to: 75,
+  },
+  {
+    get label() {
+      return bucketLabel(75, 100);
+    },
+    from: 75,
+    to: 101,
+  },
 ];
 
 /** Buckets before this index read as "behind" and take the warn tone. */
@@ -33,19 +67,9 @@ export const BAR_MIN_PX = 8;
 /** RSVPs in for this week's critique — in-fiction, like the roster. */
 export const RSVP_YES = 24;
 
-/**
- * Full weekday names, indexed by `Date.getDay()`.
- *
- * `lib/schedule` only carries the three-letter form, and the dashboard's lede
- * wants the recurring plural ("live Thursdays"). Kept here rather than added
- * to the shared engine, which no other screen needs it in.
+/*
+ * A hardcoded `WEEKDAYS_LONG` array used to live here so the dashboard lede
+ * could say "live Thursdays". It was English-only — as every hand-written
+ * weekday list is — and has been replaced by `fmtWeekdayLong` in
+ * `lib/schedule`, which asks `Intl` for the reader's own weekday names.
  */
-export const WEEKDAYS_LONG = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];

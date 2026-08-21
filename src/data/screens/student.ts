@@ -6,7 +6,16 @@
  * does not carry: three submissions, four lines of activity, and the two
  * watch-time figures under the header. None of it is contract data — no other
  * screen reads a single student's activity feed.
+ *
+ * Translation. The assignment names are the curriculum's and stay English; the
+ * app's own narration of what happened to them — "Submitted 2 hours ago",
+ * "Awaiting" — is interface. Dates and ages go through `Intl` rather than
+ * being written as "28 Jul".
  */
+
+import { t } from "../../i18n/ambient";
+import { ago, ratio } from "../format";
+import { fmtDayMonth } from "../../lib/schedule";
 
 /** Tone tokens the submission rows use. Keeps the data file free of markup. */
 export type SubmissionTone = "info" | "pos";
@@ -27,17 +36,90 @@ export interface StudentActivity {
   at: string;
 }
 
+/** The two days this student's earlier work was marked on. */
+const GRADED_TOKENS = new Date(2026, 6, 28);
+const GRADED_CHECKPOINT = new Date(2026, 6, 27);
+
 export const STUDENT_SUBMISSIONS: StudentSubmission[] = [
-  { item: "Type specimen page", at: "Submitted 2h ago", score: "Awaiting", icon: "pen-line", tone: "info" },
-  { item: "Build a token sheet", at: "Graded 28 Jul", score: "19 / 20", icon: "check", tone: "pos" },
-  { item: "Week 2 checkpoint", at: "Graded 27 Jul", score: "9 / 10", icon: "check", tone: "pos" },
+  {
+    item: "Type specimen page",
+    get at() {
+      return t("data.student.submittedAgo", { when: ago(2, "hour") });
+    },
+    get score() {
+      return t("data.student.awaiting");
+    },
+    icon: "pen-line",
+    tone: "info",
+  },
+  {
+    item: "Build a token sheet",
+    get at() {
+      return t("data.student.gradedOn", { date: fmtDayMonth(GRADED_TOKENS) });
+    },
+    get score() {
+      return ratio(19, 20);
+    },
+    icon: "check",
+    tone: "pos",
+  },
+  {
+    item: "Week 2 checkpoint",
+    get at() {
+      return t("data.student.gradedOn", {
+        date: fmtDayMonth(GRADED_CHECKPOINT),
+      });
+    },
+    get score() {
+      return ratio(9, 10);
+    },
+    icon: "check",
+    tone: "pos",
+  },
 ];
 
 export const STUDENT_ACTIVITY: StudentActivity[] = [
-  { icon: "play", text: "Watched Grids and rhythm to 14:02", at: "4h ago" },
-  { icon: "message-circle-question", text: "Asked about breaking the baseline grid", at: "2h ago" },
-  { icon: "message-square-text", text: "Replied in “4px or 8px spacing?”", at: "2 days ago" },
-  { icon: "check", text: "Finished module 02", at: "28 Jul" },
+  {
+    icon: "play",
+    get text() {
+      return t("data.student.activity.watched", {
+        lesson: "Grids and rhythm",
+        at: "14:02",
+      });
+    },
+    get at() {
+      return ago(4, "hour");
+    },
+  },
+  {
+    icon: "message-circle-question",
+    get text() {
+      return t("data.student.activity.asked");
+    },
+    get at() {
+      return ago(2, "hour");
+    },
+  },
+  {
+    icon: "message-square-text",
+    get text() {
+      return t("data.student.activity.replied", {
+        thread: "4px or 8px spacing?",
+      });
+    },
+    get at() {
+      return ago(2, "day");
+    },
+  },
+  {
+    icon: "check",
+    get text() {
+      return t("data.student.activity.finishedModule", { no: "02" });
+    },
+    get at() {
+      return fmtDayMonth(GRADED_TOKENS);
+    },
+  },
 ];
 
 /** Lessons watched. The denominator is `dataSource.totalLessons()`. */

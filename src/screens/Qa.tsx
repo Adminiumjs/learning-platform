@@ -25,18 +25,21 @@ import {
 } from "../components";
 import { dataSource } from "../data/source";
 import type { Question } from "../data/types";
+import { useT } from "../i18n";
+import type { MessageKey } from "../i18n";
 import type { QaFilter } from "../lib/thread";
 import { filterQuestions, questionList } from "../lib/thread";
 import { useAppStore } from "../state/store";
 import "../styles/screen-qa.css";
 
-const FILTERS: { id: QaFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "open", label: "Unanswered" },
-  { id: "mine", label: "Mine" },
+const FILTERS: { id: QaFilter; key: MessageKey }[] = [
+  { id: "all", key: "screensB.qa.filterAll" },
+  { id: "open", key: "screensB.qa.filterOpen" },
+  { id: "mine", key: "screensB.qa.filterMine" },
 ];
 
 export default function Qa() {
+  const t = useT();
   const qaText = useAppStore((s) => s.qaText);
   const filter = useAppStore((s) => s.qaFilter) as QaFilter;
   const qaAdded = useAppStore((s) => s.qaAdded);
@@ -51,8 +54,8 @@ export default function Qa() {
   return (
     <div className="lp-page lp-page--narrow scr-qa">
       <PageHead
-        title="Questions"
-        lede={`${course.title} · cohort 03. Ask anything, however small.`}
+        title={t("screensB.qa.title")}
+        lede={t("screensB.qa.lede", { course: course.title })}
       />
 
       <div className="scr-qa__ask">
@@ -60,17 +63,17 @@ export default function Qa() {
         <TextInput
           value={qaText}
           onChange={(v) => set({ qaText: v })}
-          placeholder="What are you stuck on?"
-          ariaLabel="Ask a question"
+          placeholder={t("screensB.qa.askPlaceholder")}
+          ariaLabel={t("screensB.qa.askAria")}
           className="scr-qa__askinput"
         />
         <ButtonPrimary className="scr-qa__askbtn" onClick={askQuestion}>
-          Ask
+          {t("screensB.qa.ask")}
         </ButtonPrimary>
       </div>
 
       <Callout tone="neutral" icon="info" className="scr-qa__note">
-        Answers in this demo are posted by you — switch to the Instructor view.
+        {t("screensB.qa.demoNote")}
       </Callout>
 
       <ChipRow className="scr-qa__filters">
@@ -80,7 +83,7 @@ export default function Qa() {
             active={filter === f.id}
             onClick={() => set({ qaFilter: f.id })}
           >
-            {f.label}
+            {t(f.key)}
           </Chip>
         ))}
       </ChipRow>
@@ -97,7 +100,9 @@ export default function Qa() {
 /* ------------------------------------------------------------------- card */
 
 function QuestionCard({ question }: { question: Question }) {
+  const t = useT();
   const reply = question.reply;
+  const instructorFirst = dataSource.instructor().name.split(" ")[0];
 
   return (
     <Card interactive className="scr-qa__card">
@@ -112,7 +117,7 @@ function QuestionCard({ question }: { question: Question }) {
           <span className="scr-qa__at">{question.at}</span>
           <span className="scr-qa__lesson">· {question.lesson}</span>
           <Pill tone={reply ? "pos" : "neutral"} className="scr-qa__state">
-            {reply ? "Answered" : "Awaiting answer"}
+            {reply ? t("screensB.qa.answered") : t("screensB.qa.awaiting")}
           </Pill>
         </div>
 
@@ -124,7 +129,7 @@ function QuestionCard({ question }: { question: Question }) {
             <div className="scr-qa__replybody">
               <div className="scr-qa__replymeta">
                 <span className="scr-qa__replywho">{reply.who}</span>
-                <Pill tone="accent">Instructor</Pill>
+                <Pill tone="accent">{t("screensB.qa.instructor")}</Pill>
                 <span className="scr-qa__replyat">{reply.at}</span>
               </div>
               <p className="scr-qa__replytext">{reply.text}</p>
@@ -133,7 +138,7 @@ function QuestionCard({ question }: { question: Question }) {
         ) : (
           <div className="scr-qa__waiting">
             <Icon name="clock" size={14} />
-            Yara usually replies within a day.
+            {t("screensB.qa.repliesWithin", { name: instructorFirst })}
           </div>
         )}
       </div>

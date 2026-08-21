@@ -20,6 +20,7 @@
 
 import { EXAM, EXAM_RULES } from "../data/demo";
 import type { ExamAnswer, ExamQuestion, ExamScore } from "../data/types";
+import { t } from "../i18n/ambient";
 
 /** True when the student has put something usable in the box. */
 export function isAnswered(q: ExamQuestion, got: ExamAnswer): boolean {
@@ -109,11 +110,20 @@ export function canRetake(attemptsUsed: number): boolean {
   return attemptsUsed < EXAM_RULES.attemptsAllowed;
 }
 
-/** "1 attempt left" / "No attempts left". */
+/**
+ * "1 attempt left" / "No attempts left".
+ *
+ * This used to append an "s" when `left !== 1`, which is a rule that holds in
+ * English and almost nowhere else — Czech needs three forms, Arabic six. The
+ * message carries `|`-separated variants instead and the runtime picks one
+ * through `Intl.PluralRules`. Zero keeps its own message rather than falling
+ * out of the plural table, because "no attempts left" is a different sentence
+ * from "0 attempts left".
+ */
 export function attemptsLeftLabel(attemptsUsed: number): string {
   const left = Math.max(0, EXAM_RULES.attemptsAllowed - attemptsUsed);
-  if (left === 0) return "No attempts left";
-  return `${left} attempt${left === 1 ? "" : "s"} left`;
+  if (left === 0) return t("exam.attemptsNone");
+  return t("exam.attemptsLeft", undefined, left);
 }
 
 /**

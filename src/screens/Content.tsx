@@ -24,6 +24,7 @@ import {
   Segmented,
 } from "../components";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { fmtDate, weekStart } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-content.css";
@@ -31,12 +32,8 @@ import "../styles/screen-content.css";
 /** The two release states a lesson can be switched between. */
 type Release = "pub" | "sch";
 
-const RELEASE_OPTIONS: { id: Release; label: string }[] = [
-  { id: "pub", label: "Published" },
-  { id: "sch", label: "Unlocks on" },
-];
-
 export default function Content() {
+  const { t, number } = useI18n();
   const week = useAppStore((s) => s.week);
   const ccDraft = useAppStore((s) => s.ccDraft);
   const rel = useAppStore((s) => s.rel);
@@ -45,12 +42,19 @@ export default function Content() {
 
   const kinds = dataSource.lessonKinds();
 
+  const releaseOptions: { id: Release; label: string }[] = [
+    { id: "pub", label: t("screensA.content.published") },
+    { id: "sch", label: t("screensA.content.unlocksOn") },
+  ];
+
   const toggleDraft = (id: string, title: string, draft: boolean) => {
     /* `ccDraft` is typed as a string map on the store, so the flag is a
        non-empty string rather than the comp's boolean. */
     set({ ccDraft: { ...ccDraft, [id]: draft ? "" : "draft" } });
     showToast(
-      draft ? `“${title}” is live for the cohort.` : `“${title}” hidden from students.`,
+      draft
+        ? t("screensA.content.nowLive", { title })
+        : t("screensA.content.nowHidden", { title }),
       draft ? "globe" : "eye-off",
     );
   };
@@ -58,20 +62,20 @@ export default function Content() {
   const setRelease = (id: string, title: string, next: Release) => {
     set({ rel: { ...rel, [id]: next } });
     /* Only publishing is worth a toast — scheduling is the resting state. */
-    if (next === "pub") showToast(`“${title}” is visible now.`, "globe");
+    if (next === "pub") showToast(t("screensA.content.nowVisible", { title }), "globe");
   };
 
   return (
     <div className="lp-page scr-content">
       <PageHead
-        title="Course content"
-        lede="Drag to reorder. Each lesson releases on its module date unless you publish it early."
+        title={t("screensA.content.title")}
+        lede={t("screensA.content.lede")}
         action={
           <ButtonSecondary
             icon="plus"
-            onClick={() => showToast("Demo — new modules are not saved here.", "plus")}
+            onClick={() => showToast(t("screensA.content.addModuleDemo"), "plus")}
           >
-            Add module
+            {t("screensA.content.addModule")}
           </ButtonSecondary>
         }
       />
@@ -88,7 +92,15 @@ export default function Content() {
                 <span className="cc-mod__num lp-mono">{m.num}</span>
                 <h2 className="cc-mod__title">{m.title}</h2>
                 <span className="cc-mod__sub">
-                  Week {m.week} · {opensOn} · {m.lessons.length} lessons
+                  {t(
+                    "screensA.content.moduleSub",
+                    {
+                      week: number(m.week),
+                      date: opensOn,
+                      count: number(m.lessons.length),
+                    },
+                    m.lessons.length,
+                  )}
                 </span>
                 <button
                   type="button"
@@ -97,7 +109,7 @@ export default function Content() {
                   aria-pressed={draft}
                 >
                   <Icon name={draft ? "pencil" : "globe"} size={13} />
-                  {draft ? "Draft" : "Published"}
+                  {draft ? t("screensA.content.draft") : t("screensA.content.published")}
                 </button>
               </header>
 
@@ -117,13 +129,15 @@ export default function Content() {
                     <span className="cc-lesson__dur lp-mono">{l.dur}</span>
                     <Segmented
                       className="cc-seg"
-                      options={RELEASE_OPTIONS}
+                      options={releaseOptions}
                       value={mode}
                       onChange={(next) => setRelease(l.id, l.title, next)}
-                      label={`Release of ${l.title}`}
+                      label={t("screensA.content.releaseOf", { title: l.title })}
                     />
                     <span className={`cc-release${mode === "pub" ? " cc-release--live" : ""}`}>
-                      {mode === "pub" ? "Live now" : `Students see this on ${opensOn}`}
+                      {mode === "pub"
+                        ? t("screensA.content.liveNow")
+                        : t("screensA.content.studentsSeeOn", { date: opensOn })}
                     </span>
                   </div>
                 );
@@ -132,10 +146,10 @@ export default function Content() {
               <button
                 type="button"
                 className="lp-row cc-add"
-                onClick={() => showToast("Demo — lessons are not added here.", "plus")}
+                onClick={() => showToast(t("screensA.content.addLessonDemo"), "plus")}
               >
                 <Icon name="plus" size={15} />
-                Add a lesson to {m.title}
+                {t("screensA.content.addLessonTo", { module: m.title })}
               </button>
             </section>
           );

@@ -18,8 +18,9 @@
  * the real demo, and a scripted delay would fight it.
  */
 
-import { QUESTIONS, SIMULATED_REPLY } from "../data/demo";
+import { INSTRUCTOR, QUESTIONS, SIMULATED_REPLY, STUDENT } from "../data/demo";
 import type { Question, QuestionReply } from "../data/types";
+import { t } from "../i18n/ambient";
 
 /** Replies the demo has added on top of the seed, keyed by question id. */
 export type ReplyMap = Record<string, QuestionReply | undefined>;
@@ -64,14 +65,20 @@ export function filterQuestions(list: Question[], filter: QaFilter): Question[] 
   }
 }
 
-/** Build the question the student's ask box posts. */
+/**
+ * Build the question the student's ask box posts.
+ *
+ * The author is the seeded student rather than a name typed out here, and the
+ * relative timestamp is a message — it is interface, not content, and reads
+ * "Gerade eben" or "الآن" for a reader who is not English.
+ */
 export function newQuestion(text: string, index: number, lesson: string): Question {
   return {
     id: `new${index}`,
-    who: "Rosa Marchetti",
-    ini: "RM",
+    who: STUDENT.name,
+    ini: STUDENT.initials,
     lesson,
-    at: "Just now",
+    at: t("chrome.time.justNow"),
     mine: true,
     text,
     reply: null,
@@ -81,7 +88,7 @@ export function newQuestion(text: string, index: number, lesson: string): Questi
 /** Build an instructor reply. Used by both the dock and the Q&A inbox. */
 export function instructorReply(text?: string): QuestionReply {
   return text
-    ? { who: "Yara Haddad", ini: "YH", at: "Just now", text }
+    ? { who: INSTRUCTOR.name, ini: INSTRUCTOR.initials, at: t("chrome.time.justNow"), text }
     : { ...SIMULATED_REPLY };
 }
 

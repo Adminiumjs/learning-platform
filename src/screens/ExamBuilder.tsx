@@ -18,9 +18,11 @@
 import { useState } from "react";
 import { ButtonPrimary, ButtonSecondary, Callout, Icon, Pill, Segmented } from "../components";
 import type { SegmentOption } from "../components";
+import { EXAM_RULES } from "../data/demo";
 import { KIND_LABELS, KIND_OPTIONS, OPEN_NOTE, RULE_LABELS } from "../data/screens/exambuilder";
 import { dataSource } from "../data/source";
 import type { ExamQuestion, ExamQuestionKind } from "../data/types";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-exambuilder.css";
 
@@ -28,11 +30,6 @@ const KIND_SEGMENTS: SegmentOption<string>[] = KIND_OPTIONS.map((k) => ({
   id: k.id,
   label: k.label,
 }));
-
-/** "01", "02" — the list's mono index. */
-function ordinal(i: number): string {
-  return String(i + 1).padStart(2, "0");
-}
 
 /**
  * The seeded answer key as a set of option indices.
@@ -47,14 +44,15 @@ function seededKey(q: ExamQuestion): number[] {
 }
 
 export default function ExamBuilder() {
+  const { t, number } = useI18n();
   const ebI = useAppStore((s) => s.ebI);
   const ebText = useAppStore((s) => s.ebText);
   const ebKind = useAppStore((s) => s.ebKind);
   const ebOpt = useAppStore((s) => s.ebOpt);
   const ebSec = useAppStore((s) => s.ebSec);
-  const ebPass = useAppStore((s) => s.ebPass);
-  const ebAttempts = useAppStore((s) => s.ebAttempts);
-  const ebDur = useAppStore((s) => s.ebDur);
+  const ebPassRaw = useAppStore((s) => s.ebPass);
+  const ebAttemptsRaw = useAppStore((s) => s.ebAttempts);
+  const ebDurRaw = useAppStore((s) => s.ebDur);
   const set = useAppStore((s) => s.set);
   const showToast = useAppStore((s) => s.showToast);
   const openModal = useAppStore((s) => s.openModal);
@@ -65,6 +63,10 @@ export default function ExamBuilder() {
   /* Clamped, so a stale index can never read off the end of the list. */
   const i = Math.min(Math.max(ebI, 0), questions.length - 1);
   const q = questions[i];
+
+  /** "01", "02" — the list's mono index, in the reader's own digits. */
+  const ordinal = (n: number): string =>
+    number(n + 1, { minimumIntegerDigits: 2, useGrouping: false });
 
   const kindOf = (x: ExamQuestion): ExamQuestionKind =>
     (ebKind[x.id] as ExamQuestionKind) ?? x.kind;
@@ -88,6 +90,17 @@ export default function ExamBuilder() {
     setRightOverride({ ...rightOverride, [q.id]: next });
   };
 
+  /*
+   * The three rules are stored as `null` until the teacher edits them, so the
+   * seeded values render from `EXAM_RULES`' numbers through `Intl` — "70%" is
+   * "٧٠٪" in Arabic and "45 min" is "45 Min." in German. An edit wins verbatim.
+   */
+  const ebPass = ebPassRaw ?? number(EXAM_RULES.passScore / 100, { style: "percent" });
+  const ebAttempts = ebAttemptsRaw ?? number(EXAM_RULES.attemptsAllowed);
+  const ebDur =
+    ebDurRaw ??
+    number(EXAM_RULES.durationMin, { style: "unit", unit: "minute", unitDisplay: "short" });
+
   const rules: { key: string; label: string; value: string; onChange: (v: string) => void }[] = [
     { key: "pass", label: RULE_LABELS.pass, value: ebPass, onChange: (v) => set({ ebPass: v }) },
     {
@@ -101,38 +114,58 @@ export default function ExamBuilder() {
 
   const confirmDelete = () =>
     openModal({
-      title: `Delete question ${i + 1}?`,
-      body: `The exam drops to ${questions.length - 1} questions and the section weights re-balance.`,
+      title: t("screensA.examBuilder.deleteTitle", { n: number(i + 1) }),
+      body: t(
+        "screensA.examBuilder.deleteBody",
+        { count: number(questions.length - 1) },
+        questions.length - 1,
+      ),
       icon: "trash-2",
-      confirmLabel: "Delete",
+      confirmLabel: t("screensA.examBuilder.deleteConfirm"),
       danger: true,
-      onConfirm: () => showToast("Nothing was deleted — this is a demo.", "info"),
+      onConfirm: () => showToast(t("screensA.examBuilder.deleteDemo"), "info"),
     });
 
   return (
     <div className="lp-page scr-exambuilder">
       <header className="eb-head">
         <div className="eb-head__text">
-          <h1 className="eb-title">Exam builder</h1>
+          <h1 className="eb-title">{t("screensA.examBuilder.title")}</h1>
           <p className="eb-lede">
-            Final exam · {questions.length} questions
-            {examModule ? ` · module ${examModule.num}` : ""}
+            {examModule
+              ? t(
+                  "screensA.examBuilder.ledeWithModule",
+                  { count: number(questions.length), module: examModule.num },
+                  questions.length,
+                )
+              : t(
+                  "screensA.examBuilder.lede",
+                  { count: number(questions.length) },
+                  questions.length,
+                )}
           </p>
         </div>
         <ButtonPrimary
           className="eb-save"
           onClick={() =>
-            showToast(`Exam saved · ${questions.length} questions, pass at ${ebPass}.`, "check")
+            showToast(
+              t(
+                "screensA.examBuilder.savedToast",
+                { count: number(questions.length), pass: ebPass },
+                questions.length,
+              ),
+              "check",
+            )
           }
         >
-          Save exam
+          {t("screensA.examBuilder.save")}
         </ButtonPrimary>
       </header>
 
       <div className="eb-grid">
         <div className="eb-col">
           <section className="lp-list eb-list">
-            <h2 className="eb-list__head">Questions</h2>
+            <h2 className="eb-list__head">{t("screensA.examBuilder.questions")}</h2>
 
             {questions.map((x, ix) => (
               <button
@@ -152,15 +185,15 @@ export default function ExamBuilder() {
             <button
               type="button"
               className="lp-row eb-add"
-              onClick={() => showToast("Demo — new questions are not saved here.", "plus")}
+              onClick={() => showToast(t("screensA.examBuilder.addDemo"), "plus")}
             >
               <Icon name="plus" size={15} />
-              Add a question
+              {t("screensA.examBuilder.addQuestion")}
             </button>
           </section>
 
           <section className="eb-card">
-            <h2 className="eb-card__title">Rules</h2>
+            <h2 className="eb-card__title">{t("screensA.examBuilder.rules")}</h2>
             {rules.map((r) => (
               <label key={r.key} className="eb-rule" htmlFor={`eb-rule-${r.key}`}>
                 <span className="eb-rule__label">{r.label}</span>
@@ -177,14 +210,16 @@ export default function ExamBuilder() {
 
         <section className="eb-card eb-editor">
           <div className="eb-editor__head">
-            <h2 className="eb-card__title">Question {ordinal(i)}</h2>
+            <h2 className="eb-card__title">
+              {t("screensA.examBuilder.questionN", { n: ordinal(i) })}
+            </h2>
             <Pill className="eb-editor__kind" tone="accent">
               {KIND_LABELS[kind]}
             </Pill>
           </div>
 
           <label className="eb-field" htmlFor="eb-text">
-            <span className="eb-field__label">Question</span>
+            <span className="eb-field__label">{t("screensA.examBuilder.question")}</span>
             <textarea
               id="eb-text"
               className="lp-fld eb-text"
@@ -194,21 +229,19 @@ export default function ExamBuilder() {
           </label>
 
           <div className="eb-group">
-            <span className="eb-field__label">Kind</span>
+            <span className="eb-field__label">{t("screensA.examBuilder.kind")}</span>
             <Segmented
               className="eb-group__seg"
               options={KIND_SEGMENTS}
               value={kind}
               onChange={(k) => set({ ebKind: { ...ebKind, [q.id]: k } })}
-              label="Question kind"
+              label={t("screensA.examBuilder.kindLabel")}
             />
           </div>
 
           {hasOptions ? (
             <div className="eb-group">
-              <span className="eb-field__label">
-                Options · tap the circle to mark the right one
-              </span>
+              <span className="eb-field__label">{t("screensA.examBuilder.optionsHint")}</span>
               {(q.opts ?? []).map((o, ix) => {
                 const on = right.includes(ix);
                 const key = `${q.id}-${ix}`;
@@ -218,7 +251,7 @@ export default function ExamBuilder() {
                       type="button"
                       role={kind === "multi" ? "checkbox" : "radio"}
                       aria-checked={on}
-                      aria-label={`Mark option ${ix + 1} correct`}
+                      aria-label={t("screensA.examBuilder.markCorrect", { n: number(ix + 1) })}
                       className={`lp-btn eb-mark${kind === "multi" ? " eb-mark--multi" : ""}${on ? " is-on" : ""}`}
                       onClick={() => mark(ix)}
                     >
@@ -226,7 +259,7 @@ export default function ExamBuilder() {
                     </button>
                     <input
                       className="lp-fld eb-opt__field"
-                      aria-label={`Option ${ix + 1}`}
+                      aria-label={t("screensA.examBuilder.optionN", { n: number(ix + 1) })}
                       value={ebOpt[key] ?? o}
                       onChange={(e) => set({ ebOpt: { ...ebOpt, [key]: e.target.value } })}
                     />
@@ -243,7 +276,7 @@ export default function ExamBuilder() {
           ) : null}
 
           <label className="eb-field" htmlFor="eb-sec">
-            <span className="eb-field__label">Section</span>
+            <span className="eb-field__label">{t("screensA.examBuilder.section")}</span>
             <input
               id="eb-sec"
               className="lp-fld eb-sec"
@@ -254,13 +287,13 @@ export default function ExamBuilder() {
 
           <div className="eb-editor__foot">
             <ButtonSecondary className="eb-delete" onClick={confirmDelete}>
-              Delete question
+              {t("screensA.examBuilder.deleteQuestion")}
             </ButtonSecondary>
             <ButtonPrimary
               className="eb-next"
               onClick={() => set({ ebI: (i + 1) % questions.length })}
             >
-              Next question
+              {t("screensA.examBuilder.nextQuestion")}
             </ButtonPrimary>
           </div>
         </section>

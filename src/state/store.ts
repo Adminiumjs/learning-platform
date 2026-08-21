@@ -33,6 +33,7 @@ import {
   COHORT_WEEKS,
   EXAM_FILL_ESSAY,
   EXAM_RULES,
+  INSTRUCTOR,
   MY_ASSIGNMENT,
   STUDENT,
   TOTAL_LESSONS,
@@ -49,10 +50,19 @@ import type {
   ToastState,
   ViewId,
 } from "../data/types";
+/*
+ * Toast copy is produced inside actions, which are plain functions with no hook
+ * to call — so the store reads the live `t` / `number` off the ambient bridge
+ * `<App>` refreshes on every render. Same lookup table, same `Intl` rules, no
+ * second runtime.
+ */
+import { number as fmtNumber, t } from "../i18n/ambient";
 import { filledAnswers } from "../lib/exam";
 import {
   allLessons,
+  demoNow,
   fmtDate,
+  fmtTime,
   isModuleLocked,
   lessonById,
   playheadPos,
@@ -203,14 +213,30 @@ export interface AppState {
   svRemoved: Record<string, number>;
   cmPick: string;
 
-  /* --- cohort setup --- */
-  csStart: string;
-  csWeeks: string;
-  csDay: string;
+  /*
+   * --- cohort setup ---
+   *
+   * The four fields below are `null` until the teacher types in them, and
+   * `null` means "whatever this is in the reader's language and format".
+   *
+   * They cannot simply be seeded with a string. `INITIAL` is a module-level
+   * object literal, so any value built from `Intl` or `t()` here would be
+   * computed before <App> mounts — frozen into English for the life of the
+   * tab, exactly the trap `data/format.ts` warns about. Worse for `csDay`:
+   * `LIVE_DAYS` is Intl-driven, so a hard-coded "Thu" matched no option in
+   * the other seven locales and the day picker rendered with nothing chosen.
+   *
+   * `null` rather than `""` because an empty string is a real edit — the
+   * teacher clearing the field — and must stay empty rather than snapping
+   * back to the default. The screens resolve `?? <localised default>`.
+   */
+  csStart: string | null;
+  csWeeks: string | null;
+  csDay: string | null;
   csTime: string;
   csTz: string;
   csSeats: number;
-  csPrice: string;
+  csPrice: string | null;
   csWait: boolean;
   csSavedAt: string;
 
@@ -226,9 +252,10 @@ export interface AppState {
   ebOpt: Record<string, string>;
   ebRight: Record<string, number>;
   ebSec: Record<string, string>;
-  ebPass: string;
-  ebAttempts: string;
-  ebDur: string;
+  /* `null` = the seeded rule, in the reader's digits and units. See above. */
+  ebPass: string | null;
+  ebAttempts: string | null;
+  ebDur: string | null;
 
   /* --- certificate --- */
   ctWording: string;
@@ -296,7 +323,8 @@ export interface AppState {
   /* --- course + lesson editor --- */
   edTitle: string;
   edCode: string;
-  edPrice: string;
+  /* `null` = the course's own price, in the reader's currency format. */
+  edPrice: string | null;
   edLevel: string;
   edTint: string;
   edIcon: string;
@@ -479,13 +507,13 @@ const INITIAL: AppState = {
   svRemoved: {},
   cmPick: "",
 
-  csStart: "Mon 7 Sep 2026",
-  csWeeks: "8 weeks",
-  csDay: "Thu",
+  csStart: null,
+  csWeeks: null,
+  csDay: null,
   csTime: "18:00",
   csTz: "CET",
   csSeats: 30,
-  csPrice: "$180",
+  csPrice: null,
   csWait: true,
   csSavedAt: "",
 
@@ -499,9 +527,9 @@ const INITIAL: AppState = {
   ebOpt: {},
   ebRight: {},
   ebSec: {},
-  ebPass: "70%",
-  ebAttempts: "2",
-  ebDur: "45 min",
+  ebPass: null,
+  ebAttempts: null,
+  ebDur: null,
 
   ctWording:
     "completed the eight-week course Design Systems from Scratch, including four graded assignments and a final exam.",
@@ -560,7 +588,7 @@ const INITIAL: AppState = {
 
   edTitle: "Design Systems from Scratch",
   edCode: "DS-101",
-  edPrice: "$180",
+  edPrice: null,
   edLevel: "Intermediate",
   edTint: "#7c3aed",
   edIcon: "layout-grid",
@@ -639,7 +667,7 @@ export const useAppStore = create<Store>((set, get) => ({
 
     if (isModuleLocked(l.mod, s.week, s.mode)) {
       s.showToast(
-        `That one opens ${fmtDate(weekStart(l.mod.week))}. Worth the wait.`,
+        t("chrome.toast.locked", { date: fmtDate(weekStart(l.mod.week)) }),
         "lock",
       );
       return;
@@ -699,22 +727,26 @@ export const useAppStore = create<Store>((set, get) => ({
     const week = Math.min(COHORT_WEEKS, get().week + 1);
     set({ week, elapsed: 0 });
     get().showToast(
-      `Demo clock moved to week ${week} · ${fmtDate(weekStart(week))}`,
+      t("chrome.toast.weekAdvanced", {
+        week: fmtNumber(week),
+        date: fmtDate(weekStart(week)),
+      }),
       "calendar-arrow-up",
     );
   },
 
   resetWeek: () => {
     set({ week: 1, elapsed: 0 });
-    get().showToast(`Back to week 1 · ${fmtDate(weekStart(1))}`, "rotate-ccw");
+    get().showToast(
+      t("chrome.toast.weekReset", { week: fmtNumber(1), date: fmtDate(weekStart(1)) }),
+      "rotate-ccw",
+    );
   },
 
   setMode: (mode) => {
     set({ mode });
     get().showToast(
-      mode === "cohort"
-        ? "Cohort mode: dates, live sessions and locks are on."
-        : "Self-paced mode: every lesson is open.",
+      t(mode === "cohort" ? "chrome.toast.modeCohort" : "chrome.toast.modeSelf"),
       mode === "cohort" ? "users" : "infinity",
     );
   },
@@ -754,29 +786,33 @@ export const useAppStore = create<Store>((set, get) => ({
 
     if (next && !isModuleLocked(next.mod, s.week, s.mode)) {
       set({ done, lesson: next.id, pos: 0, playing: false, tab: "overview" });
-      s.showToast(`Nice — "${current.title}" done.`, "check");
+      /* The lesson title is in-fiction content; only the sentence is translated. */
+      s.showToast(t("chrome.toast.lessonDone", { title: current.title }), "check");
       return;
     }
 
     set({ done });
     s.showToast(
       next
-        ? `Done. The next module opens ${fmtDate(weekStart(next.mod.week))}.`
-        : "That was the last lesson. Go and make something.",
+        ? t("chrome.toast.nextModule", { date: fmtDate(weekStart(next.mod.week)) })
+        : t("chrome.toast.lastLesson"),
       "check",
     );
   },
 
   resetProgress: () => {
     set({ done: {}, lesson: "L1" });
-    get().showToast("Progress reset. Back to lesson one.", "rotate-ccw");
+    get().showToast(t("chrome.toast.progressReset"), "rotate-ccw");
   },
 
   completeAll: () => {
     const done: Record<string, number> = {};
     for (const l of allLessons()) done[l.id] = 1;
     set({ done });
-    get().showToast(`All ${TOTAL_LESSONS} lessons marked complete.`, "check-check");
+    get().showToast(
+      t("chrome.toast.allComplete", { count: fmtNumber(TOTAL_LESSONS) }, TOTAL_LESSONS),
+      "check-check",
+    );
   },
 
   /* -------------------------------------------------------------- Q&A -- */
@@ -785,7 +821,7 @@ export const useAppStore = create<Store>((set, get) => ({
     const s = get();
     const text = s.qaText.trim();
     if (!text) {
-      s.showToast("Type your question first.", "info");
+      s.showToast(t("chrome.toast.askFirst"), "info");
       return;
     }
     const lesson = lessonById(s.lesson)?.title ?? "Grids and rhythm";
@@ -793,19 +829,22 @@ export const useAppStore = create<Store>((set, get) => ({
       qaAdded: [newQuestion(text, s.qaAdded.length, lesson), ...s.qaAdded],
       qaText: "",
     });
-    s.showToast("Posted. Yara answers most questions within a day.", "send");
+    s.showToast(t("chrome.toast.posted", { name: INSTRUCTOR.name }), "send");
   },
 
   simulateAnswer: () => {
     const s = get();
     const result = answerOldest(questionList(s.qaAdded, s.qaReplies), s.qaReplies);
     if (!result) {
-      s.showToast("Every question already has an answer.", "check");
+      s.showToast(t("chrome.toast.allAnswered"), "check");
       return;
     }
     set({ qaReplies: result.replies });
     s.showToast(
-      `Answered "${result.answered.text.slice(0, 34)}…" as Yara.`,
+      t("chrome.toast.answeredAs", {
+        excerpt: result.answered.text.slice(0, 34),
+        name: INSTRUCTOR.name,
+      }),
       "sparkles",
     );
   },
@@ -814,10 +853,18 @@ export const useAppStore = create<Store>((set, get) => ({
 
   submitAssignment: () => {
     const s = get();
-    const at = `${fmtDate(weekStart(s.week))} · 10:20`;
+    /*
+     * "Mon, Aug 3 · 10:20" — 10:20 is the demo clock's own "now", so the
+     * timestamp comes from `demoNow` through `Intl` rather than being spelled
+     * out. A US reader gets "10:20 AM"; an Arabic one gets ١٠:٢٠ ص.
+     */
+    const at = `${fmtDate(weekStart(s.week))} · ${fmtTime(demoNow(s.week))}`;
     set({ asState: "submitted", asAt: at });
-    s.showToast("Submitted. Yara has it.", "check", "Undo", () =>
-      set({ asState: "draft", asAt: null }),
+    s.showToast(
+      t("chrome.toast.submitted", { name: INSTRUCTOR.name }),
+      "check",
+      t("chrome.toast.undo"),
+      () => set({ asState: "draft", asAt: null }),
     );
     scrollTop();
   },
@@ -826,12 +873,16 @@ export const useAppStore = create<Store>((set, get) => ({
   gradeMine: () => {
     const s = get();
     if (s.asState === "draft") {
-      s.showToast("Submit it first — then Yara can grade it.", "info");
+      s.showToast(t("chrome.toast.submitFirst", { name: INSTRUCTOR.name }), "info");
       return;
     }
     set({ asState: "graded", gradedMine: true });
     s.showToast(
-      `Yara graded your specimen: ${MY_ASSIGNMENT.grade} / ${MY_ASSIGNMENT.points}.`,
+      t("chrome.toast.gradedSpecimen", {
+        name: INSTRUCTOR.name,
+        grade: fmtNumber(MY_ASSIGNMENT.grade),
+        points: fmtNumber(MY_ASSIGNMENT.points),
+      }),
       "award",
     );
   },
@@ -843,13 +894,16 @@ export const useAppStore = create<Store>((set, get) => ({
 
   fillExam: () => {
     set({ exAns: filledAnswers(EXAM_FILL_ESSAY), exStarted: true });
-    get().showToast("Answers filled. Submit when you are ready.", "wand-2");
+    get().showToast(t("chrome.toast.answersFilled"), "wand-2");
   },
 
   submitExam: () => {
     set({ exSubmitted: true, exAttempts: get().exAttempts + 1 });
     scrollTop();
-    get().showToast("Exam submitted. The essay goes to Yara.", "file-check");
+    get().showToast(
+      t("chrome.toast.examSubmitted", { name: INSTRUCTOR.name }),
+      "file-check",
+    );
   },
 
   retakeExam: () => set({ exSubmitted: false, exI: 0 }),

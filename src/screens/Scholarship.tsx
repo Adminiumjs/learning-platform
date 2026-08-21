@@ -31,8 +31,13 @@ import {
   SCHOLARSHIP_SITUATIONS,
   SCHOLARSHIP_WORDS,
 } from "../data/screens/scholarship";
+import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-scholarship.css";
+
+/** Funded places per intake — the eyebrow's number. */
+const FUNDED_PLACES = 6;
 
 /** The confirmation replaces a long form, so it starts at the top. */
 function toTop(): void {
@@ -49,6 +54,7 @@ function countWords(text: string): number {
 }
 
 export default function Scholarship() {
+  const { t, number } = useI18n();
   const scDone = useAppStore((s) => s.scDone);
   const scCourse = useAppStore((s) => s.scCourse);
   const scAmount = useAppStore((s) => s.scAmount);
@@ -59,6 +65,8 @@ export default function Scholarship() {
   const go = useAppStore((s) => s.go);
   const showToast = useAppStore((s) => s.showToast);
 
+  const instructorFirst = dataSource.instructor().name.split(" ")[0];
+
   /* ---------------------------------------------------------------- sent -- */
 
   if (scDone) {
@@ -67,17 +75,19 @@ export default function Scholarship() {
         <span className="sch-sent__ico">
           <Icon name="heart-handshake" size={28} />
         </span>
-        <h1 className="sch-sent__title">Application in. Thank you.</h1>
+        <h1 className="sch-sent__title">{t("screensB.scholarship.sentTitle")}</h1>
         <p className="sch-sent__body">
-          Yara reads every one herself, usually on a Sunday. You'll hear either way by{" "}
-          {SCHOLARSHIP_DECISION_DATE} — a no is a no for this cohort only.
+          {t("screensB.scholarship.sentBody", {
+            name: instructorFirst,
+            date: SCHOLARSHIP_DECISION_DATE,
+          })}
         </p>
         <span className="lp-mono sch-sent__ref">
           <Icon name="file-text" size={15} />
           {SCHOLARSHIP_REF}
         </span>
         <ButtonSecondary className="sch-sent__back" onClick={() => go("catalog")}>
-          Back to courses
+          {t("screensB.scholarship.backToCourses")}
         </ButtonSecondary>
       </div>
     );
@@ -89,16 +99,16 @@ export default function Scholarship() {
 
   function submit(): void {
     if (!scSit) {
-      showToast("Pick the line closest to you.", "info");
+      showToast(t("screensB.scholarship.pickSituation"), "info");
       return;
     }
     if (!scText.trim()) {
-      showToast("A few sentences about what you would build.", "info");
+      showToast(t("screensB.scholarship.needSentences"), "info");
       return;
     }
     set({ scDone: true });
     toTop();
-    showToast(`Application sent · ${SCHOLARSHIP_REF}`, "heart-handshake");
+    showToast(t("screensB.scholarship.sentToast", { ref: SCHOLARSHIP_REF }), "heart-handshake");
   }
 
   return (
@@ -106,34 +116,31 @@ export default function Scholarship() {
       <div className="sch-head">
         <div className="sch-eyebrow">
           <Icon name="heart-handshake" size={15} />
-          Cohort 04 · six funded places
+          {t("screensB.scholarship.eyebrow", { total: number(FUNDED_PLACES) }, FUNDED_PLACES)}
         </div>
-        <h1 className="sch-title">Scholarship application</h1>
-        <p className="sch-lede">
-          A fifth of every cohort is funded. No essays about hardship, no proof of income — just
-          tell us where you are and what you'd do with it. Two hundred words is plenty.
-        </p>
+        <h1 className="sch-title">{t("screensB.scholarship.title")}</h1>
+        <p className="sch-lede">{t("screensB.scholarship.lede")}</p>
       </div>
 
       <Callout tone="pos" icon="shield-check" className="sch-safe">
-        Applying costs nothing and never affects your place if you later pay in full.
+        {t("screensB.scholarship.safe")}
       </Callout>
 
       <Card className="sch-form">
         <div className="sch-block">
-          <span className="sch-block__label">Which course?</span>
+          <span className="sch-block__label">{t("screensB.scholarship.whichCourse")}</span>
           <Segmented
             options={SCHOLARSHIP_COURSES}
             value={scCourse}
             onChange={(id) => set({ scCourse: id })}
-            label="Which course?"
+            label={t("screensB.scholarship.whichCourse")}
             className="sch-courses"
           />
         </div>
 
         <div className="sch-block">
           <span className="sch-block__label" id="sch-amount-label">
-            How much would you need covered?
+            {t("screensB.scholarship.howMuch")}
           </span>
           <div className="sch-amounts" role="radiogroup" aria-labelledby="sch-amount-label">
             {SCHOLARSHIP_AMOUNTS.map((a) => (
@@ -145,7 +152,7 @@ export default function Scholarship() {
                 className={`sch-amount${scAmount === a.id ? " is-on" : ""}`}
                 onClick={() => set({ scAmount: a.id })}
               >
-                <span className="lp-mono sch-amount__value">{a.id}</span>
+                <span className="lp-mono sch-amount__value">{a.label}</span>
                 <span className="sch-amount__sub">{a.sub}</span>
               </button>
             ))}
@@ -154,7 +161,7 @@ export default function Scholarship() {
 
         <div className="sch-block">
           <span className="sch-block__label" id="sch-sit-label">
-            Which of these is closest to you?
+            {t("screensB.scholarship.closest")}
           </span>
           <div className="sch-sits" role="radiogroup" aria-labelledby="sch-sit-label">
             {SCHOLARSHIP_SITUATIONS.map((s) => (
@@ -172,47 +179,48 @@ export default function Scholarship() {
 
         <div className="sch-block">
           <label className="sch-block__label" htmlFor="sch-text">
-            What would you build with it?
+            {t("screensB.scholarship.whatBuild")}
             <span
               className={`lp-mono sch-count${words > SCHOLARSHIP_WORDS ? " sch-count--over" : ""}`}
             >
-              {words} / {SCHOLARSHIP_WORDS} words
+              {t("screensB.scholarship.wordCount", {
+                words: number(words),
+                max: number(SCHOLARSHIP_WORDS),
+              })}
             </span>
           </label>
           <TextArea
             id="sch-text"
             value={scText}
             onChange={(v) => set({ scText: v })}
-            placeholder="The thing you'd fix, and who it's for. Plain words are fine."
+            placeholder={t("screensB.scholarship.textPlaceholder")}
             className="sch-text"
           />
         </div>
 
         <div className="sch-forward">
           <span className="sch-forward__text">
-            <span className="sch-forward__title">Pay it forward later</span>
-            <span className="sch-forward__sub">
-              If things change, you can fund a future place. Entirely optional.
-            </span>
+            <span className="sch-forward__title">{t("screensB.scholarship.forwardTitle")}</span>
+            <span className="sch-forward__sub">{t("screensB.scholarship.forwardSub")}</span>
           </span>
           <Toggle
             checked={scForward}
             onChange={(next) => set({ scForward: next })}
-            label="Pay it forward later"
+            label={t("screensB.scholarship.forwardTitle")}
             hideLabel
           />
         </div>
 
         <div className="sch-submit">
           <ButtonPrimary className="sch-send" onClick={submit}>
-            Send application
+            {t("screensB.scholarship.send")}
           </ButtonPrimary>
           <span className="sch-deadline">{SCHOLARSHIP_DEADLINE}</span>
         </div>
       </Card>
 
       <div className="sch-notes">
-        <div className="sch-notes__title">Who this is for</div>
+        <div className="sch-notes__title">{t("screensB.scholarship.notesTitle")}</div>
         {SCHOLARSHIP_NOTES.map((note) => (
           <div className="sch-note" key={note}>
             <Icon name="check" size={15} className="sch-note__ico" />

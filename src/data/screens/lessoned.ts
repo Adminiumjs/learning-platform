@@ -4,8 +4,12 @@
  * The drop-zone copy changes with the lesson's kind, which is the only reason
  * this file exists: it is prompt text, not a record, so it lives beside the
  * screen. The lesson itself comes from the `dataSource` seam.
+ *
+ * Prompt text is interface, so `DROP_COPY` and `RELEASE_OPTIONS` are getters.
+ * The file size, the filename and the release hour are figures and stay put.
  */
 
+import { t } from "../../i18n/ambient";
 import type { LessonKind } from "../types";
 
 /**
@@ -44,28 +48,48 @@ export interface DropCopy {
 export const DROP_COPY: Record<LessonKind, DropCopy> = {
   video: {
     icon: "film",
-    title: "Drop the lesson video here",
-    sub: "MP4 up to 4 GB · we transcode and caption it",
+    get title() {
+      return t("data.lessoned.drop.video.title");
+    },
+    get sub() {
+      return t("data.lessoned.drop.video.sub");
+    },
   },
   reading: {
     icon: "file-text",
-    title: "Drop the lesson file here",
-    sub: "Markdown, PDF or a link",
+    get title() {
+      return t("data.lessoned.drop.file.title");
+    },
+    get sub() {
+      return t("data.lessoned.drop.file.sub");
+    },
   },
   assignment: {
     icon: "paperclip",
-    title: "Drop the lesson file here",
-    sub: "Markdown, PDF or a link",
+    get title() {
+      return t("data.lessoned.drop.file.title");
+    },
+    get sub() {
+      return t("data.lessoned.drop.file.sub");
+    },
   },
   exam: {
     icon: "paperclip",
-    title: "Drop the lesson file here",
-    sub: "Markdown, PDF or a link",
+    get title() {
+      return t("data.lessoned.drop.file.title");
+    },
+    get sub() {
+      return t("data.lessoned.drop.file.sub");
+    },
   },
   live: {
     icon: "paperclip",
-    title: "Drop the lesson file here",
-    sub: "Markdown, PDF or a link",
+    get title() {
+      return t("data.lessoned.drop.file.title");
+    },
+    get sub() {
+      return t("data.lessoned.drop.file.sub");
+    },
   },
 };
 
@@ -75,6 +99,16 @@ export interface ReleaseOption {
 }
 
 export const RELEASE_OPTIONS: ReleaseOption[] = [
-  { id: "pub", label: "Published" },
-  { id: "sch", label: "Unlocks on a date" },
+  {
+    id: "pub",
+    get label() {
+      return t("data.lessoned.release.published");
+    },
+  },
+  {
+    id: "sch",
+    get label() {
+      return t("data.lessoned.release.scheduled");
+    },
+  },
 ];

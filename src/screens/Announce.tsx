@@ -13,10 +13,12 @@
 import { ButtonPrimary, Card, Icon, PageHead, Pill, TextArea, TextInput } from "../components";
 import { dataSource } from "../data/source";
 import type { Announcement } from "../data/types";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-announce.css";
 
 export default function Announce() {
+  const { t, number } = useI18n();
   const anTitle = useAppStore((s) => s.anTitle);
   const anBody = useAppStore((s) => s.anBody);
   const anPin = useAppStore((s) => s.anPin);
@@ -34,7 +36,7 @@ export default function Announce() {
 
   function post(): void {
     if (!anTitle.trim() || !anBody.trim()) {
-      showToast("A title and a few words, then it can go.", "info");
+      showToast(t("screensA.announce.needTitleAndBody"), "info");
       return;
     }
     const next: Announcement = {
@@ -42,35 +44,34 @@ export default function Announce() {
       title: anTitle.trim(),
       body: anBody.trim(),
       pinned: anPin,
-      at: "Just now",
-      sent: `Sending to ${audience} students`,
+      /* Rendered copy, so it is stamped in the reader's language at the moment
+         it is written — the record carries text, not a key. */
+      at: t("screensA.announce.justNow"),
+      sent: t("screensA.announce.sendingTo", { count: number(audience) }, audience),
     };
     set({ annsAdded: [next, ...annsAdded], anTitle: "", anBody: "", anPin: false });
-    showToast("Announcement posted.", "megaphone");
+    showToast(t("screensA.announce.posted"), "megaphone");
   }
 
   return (
     <div className="lp-page scr-announce">
-      <PageHead
-        title="Announcements"
-        lede="Everyone in cohort 03 gets these by email and in the app."
-      />
+      <PageHead title={t("screensA.announce.title")} lede={t("screensA.announce.lede")} />
 
       <div className="an-compose">
         <TextInput
           value={anTitle}
           onChange={(v) => set({ anTitle: v })}
-          placeholder="Title"
+          placeholder={t("screensA.announce.titlePlaceholder")}
           className="an-title"
-          ariaLabel="Announcement title"
+          ariaLabel={t("screensA.announce.titleLabel")}
         />
         <TextArea
           value={anBody}
           onChange={(v) => set({ anBody: v })}
-          placeholder="Write it the way you'd say it out loud."
+          placeholder={t("screensA.announce.bodyPlaceholder")}
           rows={4}
           className="an-body"
-          ariaLabel="Announcement body"
+          ariaLabel={t("screensA.announce.bodyLabel")}
         />
         <div className="an-compose__foot">
           <button
@@ -80,11 +81,13 @@ export default function Announce() {
             aria-pressed={anPin}
           >
             <Icon name="pin" size={14} />
-            {anPin ? "Pinned to the top" : "Pin to the top"}
+            {anPin ? t("screensA.announce.pinnedToTop") : t("screensA.announce.pinToTop")}
           </button>
-          <span className="an-audience">{`Goes to ${audience} students in cohort 03`}</span>
+          <span className="an-audience">
+            {t("screensA.announce.audience", { count: number(audience) }, audience)}
+          </span>
           <ButtonPrimary className="an-post" onClick={post}>
-            Post announcement
+            {t("screensA.announce.post")}
           </ButtonPrimary>
         </div>
       </div>
@@ -94,7 +97,7 @@ export default function Announce() {
           <div className="an-card__top">
             {a.pinned ? (
               <Pill tone="accent" icon="pin" className="an-pinpill">
-                Pinned
+                {t("screensA.announce.pinned")}
               </Pill>
             ) : null}
             <span className="an-card__title">{a.title}</span>
@@ -111,12 +114,14 @@ export default function Announce() {
               className="lp-nav an-card__pin"
               onClick={() =>
                 showToast(
-                  a.pinned ? "Unpinned in the demo only." : "Pinned in the demo only.",
+                  a.pinned
+                    ? t("screensA.announce.unpinnedDemo")
+                    : t("screensA.announce.pinnedDemo"),
                   "pin",
                 )
               }
             >
-              {a.pinned ? "Unpin" : "Pin to top"}
+              {a.pinned ? t("screensA.announce.unpin") : t("screensA.announce.pinShort")}
             </button>
           </div>
         </Card>

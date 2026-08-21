@@ -13,9 +13,13 @@
 import { EmptyState, Icon, PageHead } from "../components";
 import type { SavedNote } from "../data/screens/notes";
 import { DRAFT_NOTE_ID, NOTES } from "../data/screens/notes";
+import { useI18n } from "../i18n";
 import { lessonById, lessonSeconds, mmss, playheadPos } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-notes.css";
+
+/** How many courses the saved notes span — the lede says so. */
+const NOTE_COURSES = 2;
 
 interface NoteGroup {
   num: string;
@@ -35,6 +39,7 @@ function groupByModule(list: SavedNote[]): NoteGroup[] {
 }
 
 export default function Notes() {
+  const { t, number } = useI18n();
   const query = useAppStore((s) => s.ntQuery);
   const deleted = useAppStore((s) => s.ntDeleted);
   const draft = useAppStore((s) => s.notes);
@@ -72,7 +77,7 @@ export default function Notes() {
               playheadPos({ playing, pos, lessonId, elapsed, playAnchor }) *
                 lessonSeconds(lessonId),
             ),
-            at: "Just now",
+            at: t("screensB.notes.justNow"),
             text: draftText,
           },
           ...saved,
@@ -86,12 +91,15 @@ export default function Notes() {
 
   function jump(note: SavedNote) {
     go("classroom");
-    showToast(`Jumped to ${note.stamp} in “${note.lesson}”.`, "play");
+    showToast(
+      t("screensB.notes.jumped", { stamp: note.stamp, lesson: note.lesson }),
+      "play",
+    );
   }
 
   function remove(note: SavedNote) {
     set({ ntDeleted: { ...deleted, [note.id]: 1 } });
-    showToast("Note deleted.", "trash-2", "Undo", () => {
+    showToast(t("screensB.notes.deleted"), "trash-2", t("screensB.notes.undo"), () => {
       const store = useAppStore.getState();
       const undone = { ...store.ntDeleted };
       delete undone[note.id];
@@ -102,8 +110,12 @@ export default function Notes() {
   return (
     <div className="lp-page lp-page--narrow scr-notes">
       <PageHead
-        title="Notes"
-        lede={`${list.length} notes across 2 courses · stamped to the second`}
+        title={t("screensB.notes.title")}
+        lede={t(
+          "screensB.notes.lede",
+          { total: number(list.length), courses: number(NOTE_COURSES) },
+          list.length,
+        )}
         action={
           /* No shared search-field primitive yet, so the icon + bare input
              live here; `:focus-within` gives it the same ring as `lp-fld`. */
@@ -112,8 +124,8 @@ export default function Notes() {
             <input
               className="scr-notes__searchinput"
               value={query}
-              placeholder="Search your notes"
-              aria-label="Search your notes"
+              placeholder={t("screensB.notes.search")}
+              aria-label={t("screensB.notes.search")}
               onChange={(e) => set({ ntQuery: e.target.value })}
             />
           </label>
@@ -149,10 +161,10 @@ export default function Notes() {
                   <button
                     type="button"
                     className="lp-nav scr-notes__action"
-                    onClick={() => showToast("Note copied.", "copy")}
+                    onClick={() => showToast(t("screensB.notes.copied"), "copy")}
                   >
                     <Icon name="copy" size={14} />
-                    Copy
+                    {t("screensB.notes.copy")}
                   </button>
                   <button
                     type="button"
@@ -160,7 +172,7 @@ export default function Notes() {
                     onClick={() => remove(n)}
                   >
                     <Icon name="trash-2" size={14} />
-                    Delete
+                    {t("screensB.notes.delete")}
                   </button>
                 </div>
               </article>
@@ -173,8 +185,8 @@ export default function Notes() {
         <EmptyState
           className="scr-notes__empty"
           icon="notebook-pen"
-          title="No notes match that."
-          body="Notes you take in a lesson land here, stamped to the second."
+          title={t("screensB.notes.emptyTitle")}
+          body={t("screensB.notes.emptyBody")}
         />
       ) : null}
     </div>

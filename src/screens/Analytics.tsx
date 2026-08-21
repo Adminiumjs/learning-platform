@@ -35,6 +35,7 @@ import {
 } from "../data/screens/analytics";
 import type { Bar, Trend } from "../data/screens/analytics";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-analytics.css";
 
@@ -57,6 +58,7 @@ function dropTone(drop: number): Tone {
 }
 
 export default function Analytics() {
+  const { t, number } = useI18n();
   const anRange = useAppStore((s) => s.anRange);
   const week = useAppStore((s) => s.week);
   const set = useAppStore((s) => s.set);
@@ -76,13 +78,21 @@ export default function Analytics() {
   const peak = Math.max(...columns.map((c) => (c.future ? 0 : c.n)), 1);
   const watched = columns.reduce((sum, c) => sum + (c.future ? 0 : c.n), 0);
 
+  /** Percentages are a locale's business too — "44 %" in French, "٤٤٪" in Arabic. */
+  const pct = (value: number): string =>
+    number(value / 100, { style: "percent", maximumFractionDigits: 0 });
+
   return (
     <div className="lp-page scr-analytics">
       <header className="an-head">
         <div className="an-head__text">
-          <h1 className="an-title">Analytics</h1>
+          <h1 className="an-title">{t("screensA.analytics.title")}</h1>
           <p className="an-lede">
-            {dataSource.course("DS-101").title} · cohort 03, week {week} of {cohortWeeks}
+            {t("screensA.analytics.lede", {
+              course: dataSource.course("DS-101").title,
+              week: number(week),
+              total: number(cohortWeeks),
+            })}
           </p>
         </div>
         <Segmented
@@ -90,7 +100,7 @@ export default function Analytics() {
           options={RANGE_OPTIONS}
           value={anRange}
           onChange={(r) => set({ anRange: r })}
-          label="Range"
+          label={t("screensA.analytics.rangeLabel")}
         />
       </header>
 
@@ -113,14 +123,16 @@ export default function Analytics() {
       <div className="an-grid">
         <section className="an-card an-chart">
           <div className="an-chart__head">
-            <h2 className="an-card__title">Lessons watched each week</h2>
-            <span className="lp-mono an-chart__total">{watched} lessons watched</span>
+            <h2 className="an-card__title">{t("screensA.analytics.chartTitle")}</h2>
+            <span className="lp-mono an-chart__total">
+              {t("screensA.analytics.watched", { count: number(watched) }, watched)}
+            </span>
           </div>
 
           <div className="an-bars">
             {columns.map((c) => (
               <div key={c.label} className="an-bar">
-                <span className="lp-mono an-bar__n">{c.future ? "—" : c.n}</span>
+                <span className="lp-mono an-bar__n">{c.future ? "—" : number(c.n)}</span>
                 <span
                   className={`an-bar__fill${c.future ? " an-bar__fill--future" : ""}`}
                   style={{
@@ -138,14 +150,18 @@ export default function Analytics() {
         </section>
 
         <section className="an-card an-sources">
-          <h2 className="an-card__title">Where enrolments come from</h2>
+          <h2 className="an-card__title">{t("screensA.analytics.sourcesTitle")}</h2>
           {SOURCES.map((s) => (
             <div key={s.label} className="an-source">
               <div className="an-source__top">
                 <span className="an-source__label">{s.label}</span>
-                <span className="lp-mono an-source__pct">{s.pct}%</span>
+                <span className="lp-mono an-source__pct">{pct(s.pct)}</span>
               </div>
-              <ProgressBar className="an-source__bar" pct={s.pct} label={`${s.label} share`} />
+              <ProgressBar
+                className="an-source__bar"
+                pct={s.pct}
+                label={t("screensA.analytics.sourceShare", { source: s.label })}
+              />
             </div>
           ))}
         </section>
@@ -153,16 +169,16 @@ export default function Analytics() {
 
       <section className="an-table">
         <header className="an-table__head">
-          <h2 className="an-card__title">Lesson by lesson</h2>
-          <span className="an-table__sort">Sorted by drop-off</span>
+          <h2 className="an-card__title">{t("screensA.analytics.tableTitle")}</h2>
+          <span className="an-table__sort">{t("screensA.analytics.sortedByDrop")}</span>
         </header>
 
         <div className="an-cols an-cols--head">
-          <span>Lesson</span>
-          <span className="an-col--views an-col--end">Views</span>
-          <span className="an-col--end">Completed</span>
-          <span className="an-col--watch an-col--end">Avg watch</span>
-          <span className="an-col--end">Drop-off</span>
+          <span>{t("screensA.analytics.colLesson")}</span>
+          <span className="an-col--views an-col--end">{t("screensA.analytics.colViews")}</span>
+          <span className="an-col--end">{t("screensA.analytics.colCompleted")}</span>
+          <span className="an-col--watch an-col--end">{t("screensA.analytics.colWatch")}</span>
+          <span className="an-col--end">{t("screensA.analytics.colDrop")}</span>
         </div>
 
         {LESSON_STATS.map((r) => (
@@ -171,13 +187,16 @@ export default function Analytics() {
               <span className="an-lesson__title">{r.title}</span>
               <span className="an-lesson__mod">{r.mod}</span>
             </span>
-            <span className="lp-mono an-num an-col--views">{r.views}</span>
+            <span className="lp-mono an-num an-col--views">{number(r.views)}</span>
             <span className="lp-mono an-num">
-              {r.done} ({Math.round((r.done / r.views) * 100)}%)
+              {t("screensA.analytics.completedOf", {
+                done: number(r.done),
+                pct: pct((r.done / r.views) * 100),
+              })}
             </span>
             <span className="lp-mono an-num an-col--watch">{r.watch}</span>
             <span className="an-dropcell">
-              <Pill tone={dropTone(r.drop)}>{r.drop}%</Pill>
+              <Pill tone={dropTone(r.drop)}>{pct(r.drop)}</Pill>
             </span>
           </div>
         ))}

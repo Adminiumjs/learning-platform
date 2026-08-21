@@ -484,8 +484,35 @@
   border-radius: 9px;
   white-space: nowrap;
 }
-.lp-dock__theme {
+/*
+ * Locale picker. `margin-inline-start: auto` used to live on the theme button;
+ * it moves here so the picker and the toggle travel together to the end of the
+ * row — and because it is a logical property, they land on the left in Arabic
+ * without a second rule.
+ */
+.lp-dock__lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-inline-start: auto;
+  block-size: 32px;
+  padding-inline: 10px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg-muted);
+}
+.lp-dock__langsel {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 0;
+  max-inline-size: 130px;
+}
+.lp-dock__theme {
   inline-size: 32px;
   block-size: 32px;
   border-radius: 9px;

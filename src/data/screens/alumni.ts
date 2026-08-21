@@ -3,7 +3,13 @@
  *
  * Page-local on purpose: no other screen reads an alumnus, so this stays out
  * of the shared `dataSource` contract. Copy is in-fiction and verbatim.
+ *
+ * The eight alumni — their names, roles, cities and the one line each agreed
+ * to be listed with — are demo fiction and stay English. The filter row above
+ * them is interface, so it is translated.
  */
+
+import { t } from "../../i18n/ambient";
 
 export interface Alum {
   name: string;
@@ -26,14 +32,31 @@ export interface AlumniFilter {
 }
 
 export const ALUMNI_FILTERS: AlumniFilter[] = [
-  { id: "all", label: "Everyone" },
-  { id: "hiring", label: "Hiring" },
+  {
+    id: "all",
+    get label() {
+      return t("data.alumni.filter.all");
+    },
+  },
+  {
+    id: "hiring",
+    get label() {
+      return t("data.alumni.filter.hiring");
+    },
+  },
+  /* The last three are course titles, which are demo fiction and stay put. */
   { id: "DS-101", label: "Design Systems" },
   { id: "TY-140", label: "Type & Layout" },
   { id: "MO-220", label: "Motion" },
 ];
 
-/** The lede: 184 finished, eight opted in. Both numbers are load-bearing copy. */
+/**
+ * The lede: 184 finished, eight opted in. Both numbers are load-bearing copy.
+ *
+ * A bare module-level string cannot be a getter, so this one is still English
+ * here; the translation lives under `data.alumni.lede` and the screen picks it
+ * up with `t()`. Same story for every `*_LEDE`-shaped constant in this folder.
+ */
 export const ALUMNI_LEDE =
   "184 people have finished a course here. These eight said yes to being listed.";
 

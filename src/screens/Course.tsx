@@ -14,17 +14,19 @@ import { Avatar, ButtonPrimary, Cover, Icon, Pill, ProgressBar } from "../compon
 import type { Tone } from "../components";
 import {
   COHORT,
-  EFFORT,
+  effort,
   INSTRUCTOR_BIO,
   INSTRUCTOR_TAGLINE,
-  LIVE_SLOT,
+  liveSlot,
   PERKS,
   SEATS_LABEL,
   SEATS_TAKEN_PCT,
   SELF_PACED_BLURB,
 } from "../data/screens/course";
+import { levelName } from "../data/format";
 import { dataSource } from "../data/source";
 import type { CourseLevel } from "../data/types";
+import { useI18n } from "../i18n";
 import {
   addDays,
   fmtDate,
@@ -46,6 +48,7 @@ const LEVEL_TONE: Record<CourseLevel, Tone> = {
 };
 
 export default function Course() {
+  const { t, money, number } = useI18n();
   const courseId = useAppStore((s) => s.courseId);
   const week = useAppStore((s) => s.week);
   const mode = useAppStore((s) => s.mode);
@@ -76,7 +79,7 @@ export default function Course() {
       <div className="lp-page scr-course">
         <button type="button" className="lp-nav scr-course__back" onClick={() => go("catalog")}>
           <Icon name="arrow-left" size={15} />
-          All courses
+          {t("screensA.course.allCourses")}
         </button>
 
         <div className="scr-course__grid">
@@ -91,13 +94,19 @@ export default function Course() {
 
             <header>
               <div className="scr-course__pills">
-                <Pill tone={LEVEL_TONE[course.level]}>{course.level}</Pill>
+                <Pill tone={LEVEL_TONE[course.level]}>{levelName(course.level)}</Pill>
                 <Pill
                   tone={cohort ? "accent" : "neutral"}
                   icon={cohort ? "calendar-days" : "infinity"}
                   iconSize={13}
                 >
-                  {cohort ? `Cohort · ${cohortWeeks} weeks` : "Self-paced"}
+                  {cohort
+                    ? t(
+                        "screensA.course.cohortWeeks",
+                        { count: number(cohortWeeks) },
+                        cohortWeeks,
+                      )
+                    : t("screensA.course.selfPaced")}
                 </Pill>
                 <Pill tone="neutral" className="scr-course__code">
                   {course.id}
@@ -108,7 +117,7 @@ export default function Course() {
             </header>
 
             <section className="scr-course__panel">
-              <h2 className="scr-course__panelhead">What you'll learn</h2>
+              <h2 className="scr-course__panelhead">{t("screensA.course.whatYoullLearn")}</h2>
               <div className="scr-course__learn">
                 {dataSource.learningOutcomes().map((l) => (
                   <p key={l.t} className="scr-course__learnrow">
@@ -121,9 +130,13 @@ export default function Course() {
 
             <section>
               <div className="scr-course__currhead">
-                <h2 className="scr-course__currtitle">Curriculum</h2>
+                <h2 className="scr-course__currtitle">{t("screensA.course.curriculum")}</h2>
                 <span className="scr-course__currmeta">
-                  {course.lessons} lessons · {course.dur} · {modules.length} modules
+                  {t("screensA.course.currMeta", {
+                    lessons: number(course.lessons),
+                    dur: course.dur,
+                    modules: number(modules.length),
+                  })}
                 </span>
               </div>
 
@@ -146,13 +159,24 @@ export default function Course() {
                           <span className="scr-course__modtitle">{m.title}</span>
                           <span className="scr-course__modsub">
                             {isCohort(mode)
-                              ? `Week ${m.week} · ${fmtDate(weekStart(m.week))} · `
-                              : ""}
-                            {m.lessons.length} lessons
+                              ? t(
+                                  "screensA.course.modSubCohort",
+                                  {
+                                    week: number(m.week),
+                                    date: fmtDate(weekStart(m.week)),
+                                    count: number(m.lessons.length),
+                                  },
+                                  m.lessons.length,
+                                )
+                              : t(
+                                  "screensA.course.modSubSelf",
+                                  { count: number(m.lessons.length) },
+                                  m.lessons.length,
+                                )}
                           </span>
                         </span>
                         <Pill tone={locked ? "neutral" : "pos"}>
-                          {locked ? unlockLabel(m) : "Open"}
+                          {locked ? unlockLabel(m) : t("screensA.course.open")}
                         </Pill>
                         <Icon
                           name="chevron-right"
@@ -179,7 +203,7 @@ export default function Course() {
                                 />
                                 <span className="scr-course__lessontitle">{l.title}</span>
                                 {preview ? (
-                                  <Pill tone="accent">Preview</Pill>
+                                  <Pill tone="accent">{t("screensA.course.preview")}</Pill>
                                 ) : (
                                   <span className="scr-course__lessontag">
                                     {locked ? unlockLabel(m) : kind.l}
@@ -210,40 +234,40 @@ export default function Course() {
           <aside className="scr-course__rail">
             <div className="scr-course__buy">
               <div className="scr-course__pricerow">
-                <span className="scr-course__price">${course.price}</span>
-                <span className="scr-course__pricenote">one payment</span>
+                <span className="scr-course__price">{money(course.price)}</span>
+                <span className="scr-course__pricenote">{t("screensA.course.onePayment")}</span>
               </div>
 
               {cohort ? (
                 <div className="scr-course__facts">
                   <span className="scr-course__factshead">
                     <Icon name="users" size={15} className="scr-course__factsico" />
-                    Cohort {COHORT.label}
+                    {t("screensA.course.cohortLabel", { label: COHORT.label })}
                   </span>
                   <span className="scr-course__fact">
-                    <span className="scr-course__factk">Starts</span>
+                    <span className="scr-course__factk">{t("screensA.course.starts")}</span>
                     <span className="scr-course__factv lp-mono">{fmtDateLong(weekStart(1))}</span>
                   </span>
                   <span className="scr-course__fact">
-                    <span className="scr-course__factk">Ends</span>
+                    <span className="scr-course__factk">{t("screensA.course.ends")}</span>
                     <span className="scr-course__factv lp-mono">
                       {fmtDateLong(addDays(weekStart(cohortWeeks), 4))}
                     </span>
                   </span>
                   <span className="scr-course__fact">
-                    <span className="scr-course__factk">Live session</span>
-                    <span className="scr-course__factv">{LIVE_SLOT}</span>
+                    <span className="scr-course__factk">{t("screensA.course.liveSession")}</span>
+                    <span className="scr-course__factv">{liveSlot()}</span>
                   </span>
                   <span className="scr-course__fact">
-                    <span className="scr-course__factk">Effort</span>
-                    <span className="scr-course__factv">{EFFORT}</span>
+                    <span className="scr-course__factk">{t("screensA.course.effort")}</span>
+                    <span className="scr-course__factv">{effort()}</span>
                   </span>
                   <div className="scr-course__seats">
                     <ProgressBar
                       className="scr-course__seatbar"
                       pct={SEATS_TAKEN_PCT}
                       tone="warn"
-                      label="Seats taken"
+                      label={t("screensA.course.seatsTaken")}
                     />
                     <span className="scr-course__seatslabel">{SEATS_LABEL}</span>
                   </div>
@@ -252,14 +276,16 @@ export default function Course() {
                 <div className="scr-course__facts scr-course__facts--self">
                   <span className="scr-course__factshead">
                     <Icon name="infinity" size={15} className="scr-course__factsico" />
-                    Self-paced
+                    {t("screensA.course.selfPaced")}
                   </span>
                   {SELF_PACED_BLURB}
                 </div>
               )}
 
               <ButtonPrimary className="scr-course__enrol" onClick={enrol}>
-                {cohort ? `Enrol — cohort ${COHORT.no}` : "Enrol and start today"}
+                {cohort
+                  ? t("screensA.course.enrolCohort", { no: COHORT.no })
+                  : t("screensA.course.enrolToday")}
               </ButtonPrimary>
 
               <div className="scr-course__perks">
@@ -280,12 +306,14 @@ export default function Course() {
           <div className="scr-course__stickytext">
             <span className="scr-course__stickytitle">{course.title}</span>
             <span className="scr-course__stickysub">
-              {cohort ? `Cohort ${COHORT.no} · ${SEATS_LABEL}` : "Self-paced · lifetime access"}
+              {cohort
+                ? t("screensA.course.stickyCohort", { no: COHORT.no, seats: SEATS_LABEL })
+                : t("screensA.course.stickySelf")}
             </span>
           </div>
-          <span className="scr-course__stickyprice">${course.price}</span>
+          <span className="scr-course__stickyprice">{money(course.price)}</span>
           <ButtonPrimary className="scr-course__stickybtn" onClick={enrol}>
-            Enrol
+            {t("screensA.course.enrol")}
           </ButtonPrimary>
         </div>
       </div>

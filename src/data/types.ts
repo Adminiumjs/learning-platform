@@ -99,7 +99,13 @@ export interface Course {
   kind: CourseKind;
   price: number;
   lessons: number;
-  /** Total runtime, pre-formatted ("8h 40m"). */
+  /**
+   * Total runtime, already rendered — "8h 40m", "8 Std. 40 Min.", "٨ س ٤٠ د".
+   *
+   * A GETTER on the seed record, never a stored string: it used to be the
+   * literal "8h 40m", which shipped an English "h" and Latin digits to all
+   * eight locales. The seed now carries `durMin` and this formats it.
+   */
   dur: string;
   /** Per-course tint for the gradient cover. */
   tint: string;
@@ -120,10 +126,27 @@ export interface Lesson {
   id: string;
   title: string;
   kind: LessonKind;
-  /** "18:30" for video, "9 min" for reading, "20 pts" for an assignment. */
+  /**
+   * The chip on the lesson row — "18:30" for a video, "9 min" for a reading,
+   * "20 pts" for an assignment. A GETTER, for the same reason as `Course.dur`:
+   * the minutes marker and the digits both belong to the reader.
+   */
   dur: string;
+  /** Runtime in seconds. Absent on graded work, which is measured in points. */
+  secs?: number;
+  /** What a graded lesson is worth. Absent on everything else. */
+  pts?: number;
   file: string;
 }
+
+/** What the seed in `demo.ts` writes down, before `dur` is attached. */
+export type LessonSeed = Omit<Lesson, "dur">;
+
+/** What the seed writes down for a course, before `dur` is attached. */
+export type CourseSeed = Omit<Course, "dur"> & { durMin: number };
+
+/** A module as the seed writes it — its lessons have no `dur` yet. */
+export type ModuleSeed = Omit<Module, "lessons"> & { lessons: LessonSeed[] };
 
 export interface Module {
   id: string;
@@ -243,8 +266,13 @@ export interface QueuedSubmission {
   kind: string;
   max: number;
   at: string;
-  /** Short queue-list badge: "2h", "late", "essay". */
+  /**
+   * The badge's machine token — "2h", "late", "essay". Grading switches its
+   * tone on `tag === "late"`, so this must NOT move with the language.
+   */
   tag: string;
+  /** The same badge, spelled for the reader. This is what gets drawn. */
+  tagLabel: string;
   work: string;
   files: AttachedFile[];
 }

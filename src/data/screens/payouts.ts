@@ -5,15 +5,31 @@
  * seam and nothing on this screen moves a cent. The figures are written once,
  * in one place, so the headline, the history and the per-course split stay in
  * step with each other.
+ *
+ * Translation. The captions, the deltas and the payment-method name are
+ * interface and are getters. The amounts now go through `Intl` instead of
+ * carrying a hard-coded "$2,840.00", so a German reader sees "2.840,00 $" and
+ * an Egyptian one Arabic-Indic digits. "SEPA" and the masked account number
+ * are not translated — SEPA is a scheme, not a word. `PayoutStatus` stays as
+ * the English token it has always been, because it is the row's state id; its
+ * reader-facing names are `data.payoutStatus.*`.
  */
 
+import { money, number, t } from "../../i18n/ambient";
 import { fmtDateLong } from "../../lib/schedule";
 
 /** The headline figure, and what "Pay out now" would send. */
-export const AVAILABLE = "$2,840.00";
+export const AVAILABLE_AMOUNT = 2840;
+
+/**
+ * A module-level `const` cannot be a getter, so this is formatted once at
+ * load. The screen should prefer `money(AVAILABLE_AMOUNT)`.
+ */
+export const AVAILABLE = money(AVAILABLE_AMOUNT);
 
 /** Payouts land on the first of the month, outside the demo clock's window. */
-export const NEXT_PAYOUT = fmtDateLong(new Date(2026, 7, 1));
+export const NEXT_PAYOUT_ON = new Date(2026, 7, 1);
+export const NEXT_PAYOUT = fmtDateLong(NEXT_PAYOUT_ON);
 
 export interface PayoutStat {
   value: string;
@@ -31,10 +47,51 @@ export interface PayoutStat {
 }
 
 export const STATS: PayoutStat[] = [
-  { value: "$5,400", label: "This month", delta: "+18% on July", positive: true },
-  { value: "$41,290", label: "Lifetime", delta: "Since Feb 2024" },
-  { value: "$126", label: "Per student", delta: "Average, all courses" },
-  { value: "12%", label: "School fee", delta: "Taken before payout" },
+  {
+    get value() {
+      return money(5400);
+    },
+    get label() {
+      return t("data.payouts.stat.thisMonth");
+    },
+    get delta() {
+      return t("data.payouts.stat.thisMonthDelta", { pct: number(18) });
+    },
+    positive: true,
+  },
+  {
+    get value() {
+      return money(41290);
+    },
+    get label() {
+      return t("data.payouts.stat.lifetime");
+    },
+    get delta() {
+      return t("data.payouts.stat.lifetimeDelta");
+    },
+  },
+  {
+    get value() {
+      return money(126);
+    },
+    get label() {
+      return t("data.payouts.stat.perStudent");
+    },
+    get delta() {
+      return t("data.payouts.stat.perStudentDelta");
+    },
+  },
+  {
+    get value() {
+      return t("data.payouts.stat.feePct", { pct: number(12) });
+    },
+    get label() {
+      return t("data.payouts.stat.schoolFee");
+    },
+    get delta() {
+      return t("data.payouts.stat.schoolFeeDelta");
+    },
+  },
 ];
 
 export type PayoutStatus = "Paid" | "Refunded";
@@ -46,13 +103,61 @@ export interface PayoutRow {
   status: PayoutStatus;
 }
 
+/** The masked account every payout went to. A scheme name plus digits. */
+const SEPA = "SEPA ···· 4471";
+
 /** Newest first, which is the only order a ledger is ever read in. */
 export const HISTORY: PayoutRow[] = [
-  { date: "01 Jul 2026", method: "SEPA ···· 4471", amount: "$4,210.00", status: "Paid" },
-  { date: "01 Jun 2026", method: "SEPA ···· 4471", amount: "$3,880.00", status: "Paid" },
-  { date: "01 May 2026", method: "SEPA ···· 4471", amount: "$5,140.00", status: "Paid" },
-  { date: "01 Apr 2026", method: "SEPA ···· 4471", amount: "$2,960.00", status: "Paid" },
-  { date: "12 Mar 2026", method: "SEPA ···· 4471", amount: "$340.00", status: "Refunded" },
+  {
+    get date() {
+      return fmtDateLong(new Date(2026, 6, 1));
+    },
+    method: SEPA,
+    get amount() {
+      return money(4210);
+    },
+    status: "Paid",
+  },
+  {
+    get date() {
+      return fmtDateLong(new Date(2026, 5, 1));
+    },
+    method: SEPA,
+    get amount() {
+      return money(3880);
+    },
+    status: "Paid",
+  },
+  {
+    get date() {
+      return fmtDateLong(new Date(2026, 4, 1));
+    },
+    method: SEPA,
+    get amount() {
+      return money(5140);
+    },
+    status: "Paid",
+  },
+  {
+    get date() {
+      return fmtDateLong(new Date(2026, 3, 1));
+    },
+    method: SEPA,
+    get amount() {
+      return money(2960);
+    },
+    status: "Paid",
+  },
+  {
+    get date() {
+      return fmtDateLong(new Date(2026, 2, 12));
+    },
+    method: SEPA,
+    get amount() {
+      return money(340);
+    },
+    status: "Refunded",
+  },
 ];
 
 export interface CourseEarning {
@@ -66,14 +171,50 @@ export interface CourseEarning {
 export const COURSE_EARNINGS: CourseEarning[] = [
   {
     title: "Design Systems from Scratch",
-    amount: "$3,240",
+    get amount() {
+      return money(3240);
+    },
     pct: 72,
-    sub: "18 enrolments this month",
+    get sub() {
+      return t("data.payouts.enrolmentsThisMonth", { count: number(18) }, 18);
+    },
   },
-  { title: "Type & Layout Fundamentals", amount: "$1,235", pct: 27, sub: "13 enrolments" },
-  { title: "Motion for Interfaces", amount: "$720", pct: 16, sub: "6 enrolments" },
-  { title: "Portfolio Studio", amount: "$205", pct: 5, sub: "Cohort opens in September" },
+  {
+    title: "Type & Layout Fundamentals",
+    get amount() {
+      return money(1235);
+    },
+    pct: 27,
+    get sub() {
+      return t("data.payouts.enrolments", { count: number(13) }, 13);
+    },
+  },
+  {
+    title: "Motion for Interfaces",
+    get amount() {
+      return money(720);
+    },
+    pct: 16,
+    get sub() {
+      return t("data.payouts.enrolments", { count: number(6) }, 6);
+    },
+  },
+  {
+    title: "Portfolio Studio",
+    get amount() {
+      return money(205);
+    },
+    pct: 5,
+    get sub() {
+      return t("data.payouts.cohortOpens");
+    },
+  },
 ];
 
 /** Where the money goes. Fixed in the demo — there is nothing to change it to. */
-export const METHOD = { label: "Bank transfer", detail: "SEPA ···· 4471" } as const;
+export const METHOD = {
+  get label() {
+    return t("data.payouts.bankTransfer");
+  },
+  detail: SEPA,
+};

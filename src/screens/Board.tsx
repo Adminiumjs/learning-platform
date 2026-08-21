@@ -9,6 +9,7 @@
 import { ButtonPrimary, Chip, ChipRow, Icon, Pill, TextArea } from "../components";
 import type { BoardPost, BoardThread } from "../data/screens/board";
 import { BOARD_CATS, BOARD_THREADS } from "../data/screens/board";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-board.css";
 
@@ -43,6 +44,7 @@ function toTop(): void {
 }
 
 export default function Board() {
+  const t = useI18n().t;
   const dbCat = useAppStore((s) => s.dbCat);
   const dbThread = useAppStore((s) => s.dbThread);
   const dbReply = useAppStore((s) => s.dbReply);
@@ -52,7 +54,7 @@ export default function Board() {
   const set = useAppStore((s) => s.set);
   const showToast = useAppStore((s) => s.showToast);
 
-  const open = BOARD_THREADS.find((t) => t.id === dbThread);
+  const open = BOARD_THREADS.find((thread) => thread.id === dbThread);
 
   /* A vote is set membership; the store types the bag as counts, so 1 or gone. */
   const toggleVote = (key: string) => {
@@ -65,7 +67,7 @@ export default function Board() {
   const postReply = () => {
     const text = dbReply.trim();
     if (!text) {
-      showToast("Write something first.", "info");
+      showToast(t("screensA.board.writeFirst"), "info");
       return;
     }
     if (!dbThread) return;
@@ -74,7 +76,7 @@ export default function Board() {
       ini: initials(prName),
       role: "",
       staff: false,
-      at: "Just now",
+      at: t("screensA.board.justNow"),
       votes: 0,
       text,
     };
@@ -82,7 +84,7 @@ export default function Board() {
       dbAdded: { ...dbAdded, [dbThread]: [...addedPosts(dbAdded, dbThread), mine] },
       dbReply: "",
     });
-    showToast("Posted to the thread.", "send");
+    showToast(t("screensA.board.posted"), "send");
   };
 
   return (
@@ -112,7 +114,7 @@ export default function Board() {
             set({ dbThread: id });
             toTop();
           }}
-          onNew={() => showToast("Demo — new threads are not saved here.", "pen-line")}
+          onNew={() => showToast(t("screensA.board.newThreadDemo"), "pen-line")}
         />
       )}
     </div>
@@ -134,7 +136,8 @@ function ListView({
   onOpen: (id: string) => void;
   onNew: () => void;
 }) {
-  const threads = BOARD_THREADS.filter((t) => cat === "all" || t.tag === cat)
+  const { t, number } = useI18n();
+  const threads = BOARD_THREADS.filter((thread) => cat === "all" || thread.tag === cat)
     .slice()
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
@@ -142,13 +145,11 @@ function ListView({
     <>
       <div className="scr-board__head">
         <div>
-          <h1 className="scr-board__title">Discussion</h1>
-          <p className="scr-board__lede">
-            Cohort 03 · the room between sessions. Half of it is people thinking out loud.
-          </p>
+          <h1 className="scr-board__title">{t("screensA.board.title")}</h1>
+          <p className="scr-board__lede">{t("screensA.board.lede")}</p>
         </div>
         <ButtonPrimary className="scr-board__new" icon="pen-line" iconSize={15} onClick={onNew}>
-          New thread
+          {t("screensA.board.newThread")}
         </ButtonPrimary>
       </div>
 
@@ -161,12 +162,12 @@ function ListView({
       </ChipRow>
 
       <div className="lp-list">
-        {threads.map((t) => (
+        {threads.map((thread) => (
           <button
-            key={t.id}
+            key={thread.id}
             type="button"
-            className={`lp-list__row lp-row scr-board__row${t.pinned ? " is-pinned" : ""}`}
-            onClick={() => onOpen(t.id)}
+            className={`lp-list__row lp-row scr-board__row${thread.pinned ? " is-pinned" : ""}`}
+            onClick={() => onOpen(thread.id)}
           >
             {/*
              * Read-only. The comp added `dbVotes[t.id]` to this number, but no
@@ -175,27 +176,27 @@ function ListView({
              */}
             <span className="scr-board__votes lp-mono">
               <Icon name="arrow-big-up" size={15} />
-              {t.votes}
+              {number(thread.votes)}
             </span>
 
             <span className="scr-board__rowbody">
               <span className="scr-board__rowtop">
-                {t.pinned ? (
+                {thread.pinned ? (
                   <Pill tone="accent" icon="pin" iconSize={11}>
-                    Pinned
+                    {t("screensA.board.pinned")}
                   </Pill>
                 ) : null}
-                <span className="scr-board__rowtitle">{t.title}</span>
-                <Pill>{t.tag}</Pill>
+                <span className="scr-board__rowtitle">{thread.title}</span>
+                <Pill>{thread.tag}</Pill>
               </span>
               <span className="scr-board__meta">
-                Started by {t.by} · {t.at}
+                {t("screensA.board.startedBy", { who: thread.by, at: thread.at })}
               </span>
             </span>
 
             <span className="scr-board__replies lp-mono">
               <Icon name="message-square" size={14} />
-              {t.posts.length - 1 + addedPosts(added, t.id).length}
+              {number(thread.posts.length - 1 + addedPosts(added, thread.id).length)}
             </span>
           </button>
         ))}
@@ -229,20 +230,25 @@ function ThreadView({
   onBack: () => void;
   onPost: () => void;
 }) {
+  const { t, number } = useI18n();
   const posts = thread.posts.concat(extra);
 
   return (
     <>
       <button type="button" className="lp-nav scr-board__back" onClick={onBack}>
         <Icon name="arrow-left" size={15} />
-        All threads
+        {t("screensA.board.allThreads")}
       </button>
 
       <div>
         <div className="scr-board__threadtop">
           <Pill>{thread.tag}</Pill>
           <span className="scr-board__threadmeta lp-mono">
-            {posts.length} posts · started {thread.at}
+            {t(
+              "screensA.board.threadMeta",
+              { count: number(posts.length), at: thread.at },
+              posts.length,
+            )}
           </span>
         </div>
         <h1 className="scr-board__threadtitle">{thread.title}</h1>
@@ -269,16 +275,17 @@ function ThreadView({
                     className="lp-nav scr-board__act"
                     onClick={() => onVote(key)}
                     aria-pressed={Boolean(votes[key])}
+                    aria-label={t("screensA.board.upvote")}
                   >
                     <Icon name="arrow-big-up" size={15} />
-                    {p.votes + (votes[key] ? 1 : 0)}
+                    {number(p.votes + (votes[key] ? 1 : 0))}
                   </button>
                   <button
                     type="button"
                     className="lp-nav scr-board__act"
                     onClick={() => onQuote(p.text)}
                   >
-                    Quote
+                    {t("screensA.board.quote")}
                   </button>
                 </div>
               </div>
@@ -295,12 +302,12 @@ function ThreadView({
           <TextArea
             value={reply}
             onChange={onReplyChange}
-            placeholder="Add to the thread…"
-            ariaLabel="Add to the thread"
+            placeholder={t("screensA.board.replyPlaceholder")}
+            ariaLabel={t("screensA.board.replyLabel")}
             className="scr-board__replyfld"
           />
           <ButtonPrimary className="scr-board__send" onClick={onPost}>
-            Reply
+            {t("screensA.board.reply")}
           </ButtonPrimary>
         </div>
       </div>

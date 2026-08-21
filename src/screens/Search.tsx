@@ -16,6 +16,7 @@ import { BOARD_THREADS } from "../data/screens/board";
 import type { SearchType } from "../data/screens/search";
 import { SEARCH_TYPES } from "../data/screens/search";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { allLessons, isModuleLocked } from "../lib/schedule";
 import { questionList } from "../lib/thread";
 import { useAppStore } from "../state/store";
@@ -46,6 +47,7 @@ const CAP_QUERY = 14;
 const CAP_BROWSE = 8;
 
 export default function Search() {
+  const { t, number } = useI18n();
   const query = useAppStore((s) => s.sqQ);
   const type = useAppStore((s) => s.sqType);
   const week = useAppStore((s) => s.week);
@@ -58,6 +60,7 @@ export default function Search() {
   const openLesson = useAppStore((s) => s.openLesson);
 
   const kinds = dataSource.lessonKinds();
+  const instructorFirst = dataSource.instructor().name.split(" ")[0];
 
   const pool: Hit[] = [
     ...dataSource.courses().map<Hit>((c) => ({
@@ -65,16 +68,16 @@ export default function Search() {
       type: "course",
       title: c.title,
       sub: c.blurb,
-      meta: `${c.lessons} lessons`,
+      meta: t("screensB.search.metaLessons", { total: number(c.lessons) }, c.lessons),
       icon: c.icon,
-      tag: "Course",
+      tag: t("screensB.search.tagCourse"),
       open: () => openCourse(c.id),
     })),
     ...allLessons().map<Hit>((l) => ({
       id: `l${l.id}`,
       type: "lesson",
       title: l.title,
-      sub: `Module ${l.mod.num} · ${l.mod.title}`,
+      sub: t("screensB.search.subModule", { num: l.mod.num, title: l.mod.title }),
       meta: l.dur,
       icon: kinds[l.kind].i,
       tag: kinds[l.kind].l,
@@ -92,16 +95,20 @@ export default function Search() {
         if (playable && !isModuleLocked(l.mod, week, mode)) go("classroom");
       },
     })),
-    ...BOARD_THREADS.map<Hit>((t) => ({
-      id: `t${t.id}`,
+    ...BOARD_THREADS.map<Hit>((thread) => ({
+      id: `t${thread.id}`,
       type: "thread",
-      title: t.title,
-      sub: t.posts[0].text.split("\n")[0],
-      meta: `${t.posts.length} posts`,
+      title: thread.title,
+      sub: thread.posts[0].text.split("\n")[0],
+      meta: t(
+        "screensB.search.metaPosts",
+        { total: number(thread.posts.length) },
+        thread.posts.length,
+      ),
       icon: "message-square-text",
-      tag: "Thread",
+      tag: t("screensB.search.tagThread"),
       open: () => {
-        set({ dbThread: t.id });
+        set({ dbThread: thread.id });
         go("board");
       },
     })),
@@ -109,10 +116,10 @@ export default function Search() {
       id: `q${q.id}`,
       type: "qa",
       title: q.text,
-      sub: `${q.who} · ${q.lesson}`,
-      meta: q.reply ? "Answered" : "Open",
+      sub: t("screensB.search.subQuestion", { who: q.who, lesson: q.lesson }),
+      meta: q.reply ? t("screensB.search.metaAnswered") : t("screensB.search.metaOpen"),
       icon: "message-circle-question",
-      tag: "Q&A",
+      tag: t("screensB.search.tagQa"),
       open: () => go("qa"),
     })),
   ];
@@ -124,13 +131,31 @@ export default function Search() {
     : typed;
 
   const shown = matches.slice(0, needle ? CAP_QUERY : CAP_BROWSE);
-  /* The comp counted every match but rendered at most fourteen rows, so the
-     label could promise thirty-seven results and show fourteen. It now says
-     what is actually on the page when the two differ. */
-  const count =
-    shown.length < matches.length
-      ? `${shown.length} of ${matches.length} results`
-      : `${matches.length} ${matches.length === 1 ? "result" : "results"}`;
+  /*
+   * The comp counted every match but rendered at most fourteen rows, so the
+   * label could promise thirty-seven results and show fourteen. It now says
+   * what is actually on the page when the two differ — and the "for …" clause
+   * is part of each whole sentence rather than a fragment glued on the end,
+   * so the query can sit wherever the language wants it.
+   */
+  const capped = shown.length < matches.length;
+  const typedQuery = query.trim();
+  const countKey = capped
+    ? needle
+      ? "screensB.search.resultsCappedFor"
+      : "screensB.search.resultsCapped"
+    : needle
+      ? "screensB.search.resultsFor"
+      : "screensB.search.results";
+  const count = t(
+    countKey,
+    {
+      shown: number(shown.length),
+      total: number(matches.length),
+      query: typedQuery,
+    },
+    matches.length,
+  );
 
   return (
     <div className="lp-page scr-search">
@@ -139,8 +164,8 @@ export default function Search() {
         <input
           className="sq-box__input"
           value={query}
-          placeholder="Search courses, lessons, threads, questions"
-          aria-label="Search"
+          placeholder={t("screensB.search.placeholder")}
+          aria-label={t("screensB.search.aria")}
           onChange={(e) => set({ sqQ: e.target.value })}
           /* The comp printed an "esc" key cap with nothing behind it. Wired. */
           onKeyDown={(e) => {
@@ -151,20 +176,17 @@ export default function Search() {
       </label>
 
       <ChipRow className="sq-types">
-        {SEARCH_TYPES.map((t) => (
+        {SEARCH_TYPES.map((st) => (
           <Chip
-            key={t.id}
-            active={type === t.id}
-            onClick={() => set({ sqType: t.id })}
+            key={st.id}
+            active={type === st.id}
+            onClick={() => set({ sqType: st.id })}
             className="sq-type"
           >
-            {t.label}
+            {st.label}
           </Chip>
         ))}
-        <span className="sq-count">
-          {count}
-          {needle ? ` for “${query.trim()}”` : ""}
-        </span>
+        <span className="sq-count">{count}</span>
       </ChipRow>
 
       {shown.length > 0 ? (
@@ -193,12 +215,14 @@ export default function Search() {
       ) : (
         <div className="sq-empty">
           <Icon name="search-x" size={26} className="sq-empty__ico" />
-          <div className="sq-empty__title">Nothing for “{query.trim()}”.</div>
+          <div className="sq-empty__title">
+            {t("screensB.search.emptyTitle", { query: typedQuery })}
+          </div>
           <div className="sq-empty__body">
-            Try a shorter word, or ask it as a question — Yara answers most within a day.
+            {t("screensB.search.emptyBody", { name: instructorFirst })}
           </div>
           <ButtonSecondary className="sq-empty__btn" onClick={() => go("qa")}>
-            Ask a question
+            {t("screensB.search.askQuestion")}
           </ButtonSecondary>
         </div>
       )}

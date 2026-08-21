@@ -8,7 +8,15 @@
  * The names are roster names on purpose. Tomás and Marcus both appear in
  * `dataSource.students()`, and Marcus is the one sitting at 27% that the
  * roster flags as behind — the two screens are describing the same person.
+ *
+ * Translation. What the four of them wrote is fiction and stays English. The
+ * thread list's own two columns are not: `at` is an age, now formatted by
+ * `Intl` from a number of hours or days, and `standing` is the roster's verdict
+ * on the student, which is vocabulary this app owns.
  */
+
+import { number, t } from "../../i18n/ambient";
+import { shortUnit } from "../format";
 
 export interface ChatMessage {
   /** True when Yara wrote it — her bubbles sit on the end side, in accent. */
@@ -41,9 +49,13 @@ export const CONVERSATIONS: Conversation[] = [
     id: "m1",
     who: "Tomás Lindqvist",
     ini: "TL",
-    at: "2h",
+    get at() {
+      return shortUnit(2, "hour");
+    },
     unread: true,
-    standing: "on track",
+    get standing() {
+      return t("data.messages.standing.onTrack");
+    },
     msgs: [
       {
         me: false,
@@ -66,9 +78,13 @@ export const CONVERSATIONS: Conversation[] = [
     id: "m2",
     who: "Marcus Feld",
     ini: "MF",
-    at: "3d",
+    get at() {
+      return shortUnit(3, "day");
+    },
     unread: true,
-    standing: "27% through · behind",
+    get standing() {
+      return t("data.messages.standing.behind", { pct: number(27) });
+    },
     msgs: [
       {
         me: true,
@@ -86,9 +102,13 @@ export const CONVERSATIONS: Conversation[] = [
     id: "m3",
     who: "Priya Raman",
     ini: "PR",
-    at: "1w",
+    get at() {
+      return shortUnit(1, "week");
+    },
     unread: false,
-    standing: "on track",
+    get standing() {
+      return t("data.messages.standing.onTrack");
+    },
     msgs: [
       {
         me: false,
@@ -106,9 +126,13 @@ export const CONVERSATIONS: Conversation[] = [
     id: "m4",
     who: "Freya Nilsen",
     ini: "FN",
-    at: "2w",
+    get at() {
+      return shortUnit(2, "week");
+    },
     unread: false,
-    standing: "on track",
+    get standing() {
+      return t("data.messages.standing.onTrack");
+    },
     msgs: [
       {
         me: false,

@@ -4,8 +4,15 @@
  * The six setup steps, the payout facts and the house rules. All of it is the
  * marketplace talking to a new instructor, so it belongs to this screen and
  * not to the `dataSource` seam.
+ *
+ * All of it is also interface — a checklist, a facts table and four house
+ * rules — so all of it is translated. The two `meta` chips that quote a course
+ * code ("PF-310 · draft") keep the code and translate the word beside it.
  */
 
+import { money, number, t } from "../../i18n/ambient";
+import type { MessageKey } from "../../i18n/messages";
+import { lazyStrings } from "../format";
 import type { ViewId } from "../types";
 
 export interface OnboardStep {
@@ -23,48 +30,97 @@ export interface OnboardStep {
 export const ONBOARD_STEPS: OnboardStep[] = [
   {
     k: "profile",
-    title: "Write your teaching bio",
-    body: "Two or three sentences. What you have shipped, and what you are opinionated about.",
-    cta: "Write it",
+    get title() {
+      return t("data.teachonboard.bio.title");
+    },
+    get body() {
+      return t("data.teachonboard.bio.body");
+    },
+    get cta() {
+      return t("data.teachonboard.bio.cta");
+    },
     go: "profile",
-    meta: "Shown on every course page",
+    get meta() {
+      return t("data.teachonboard.bio.meta");
+    },
   },
   {
     k: "course",
-    title: "Set up your first course",
-    body: "Title, summary, level and a cover. You can change all of it later.",
-    cta: "Course settings",
+    get title() {
+      return t("data.teachonboard.course.title");
+    },
+    get body() {
+      return t("data.teachonboard.course.body");
+    },
+    get cta() {
+      return t("data.teachonboard.course.cta");
+    },
     go: "editor",
-    meta: "PF-310 · draft",
+    get meta() {
+      return t("data.teachonboard.draft", { id: "PF-310" });
+    },
   },
   {
     k: "lessons",
-    title: "Add at least three lessons",
-    body: "Enough for students to judge the shape of it. Upload as you go.",
-    cta: "Add lessons",
+    get title() {
+      return t("data.teachonboard.lessons.title");
+    },
+    get body() {
+      return t("data.teachonboard.lessons.body");
+    },
+    get cta() {
+      return t("data.teachonboard.lessons.cta");
+    },
     go: "content",
-    meta: "4 of 12 lessons drafted",
+    get meta() {
+      return t("data.teachonboard.lessons.meta", {
+        done: number(4),
+        total: number(12),
+      });
+    },
   },
   {
     k: "cohort",
-    title: "Choose your dates",
-    body: "Pick a start date and a weekly session slot you can actually keep.",
-    cta: "Cohort setup",
+    get title() {
+      return t("data.teachonboard.cohort.title");
+    },
+    get body() {
+      return t("data.teachonboard.cohort.body");
+    },
+    get cta() {
+      return t("data.teachonboard.cohort.cta");
+    },
     go: "cohort",
-    meta: "Cohort 04 · draft",
+    get meta() {
+      return t("data.teachonboard.cohort.meta", {
+        no: number(4, { minimumIntegerDigits: 2, useGrouping: false }),
+      });
+    },
   },
   {
     k: "payouts",
-    title: "Add your payout details",
-    body: "A bank account and a tax number. We pay on the first of the month.",
-    cta: "Payouts",
+    get title() {
+      return t("data.teachonboard.payouts.title");
+    },
+    get body() {
+      return t("data.teachonboard.payouts.body");
+    },
+    get cta() {
+      return t("data.teachonboard.payouts.cta");
+    },
     go: "payouts",
   },
   {
     k: "review",
-    title: "Send it for review",
-    body: "Nadia reads every new course before it goes live. Usually two working days.",
-    cta: "Review notes",
+    get title() {
+      return t("data.teachonboard.review.title");
+    },
+    get body() {
+      return t("data.teachonboard.review.body");
+    },
+    get cta() {
+      return t("data.teachonboard.review.cta");
+    },
     go: "teach",
   },
 ];
@@ -78,15 +134,50 @@ export interface PayRow {
 }
 
 export const ONBOARD_PAY: PayRow[] = [
-  { icon: "percent", label: "Your share", value: "88% of every enrolment" },
-  { icon: "calendar", label: "Paid", value: "1st of the month" },
-  { icon: "banknote", label: "Minimum payout", value: "$50", mono: true },
+  {
+    icon: "percent",
+    get label() {
+      return t("data.teachonboard.pay.share");
+    },
+    get value() {
+      return t("data.teachonboard.pay.shareValue", { pct: number(88) });
+    },
+  },
+  {
+    icon: "calendar",
+    get label() {
+      return t("data.teachonboard.pay.paid");
+    },
+    get value() {
+      return t("data.teachonboard.pay.paidValue");
+    },
+  },
+  {
+    icon: "banknote",
+    get label() {
+      return t("data.teachonboard.pay.minimum");
+    },
+    get value() {
+      return money(50);
+    },
+    mono: true,
+  },
 ];
 
-/** The four promises an instructor makes by teaching here. */
-export const ONBOARD_RULES: string[] = [
-  "Answer questions within two working days. If you cannot, tell the cohort why.",
-  "Record the live session or write up what was said. Nobody should lose a week to a sick child.",
-  "Grade within a week of the deadline, with words as well as a number.",
-  "No upsells inside a lesson. They paid already.",
-];
+/**
+ * The four promises an instructor makes by teaching here.
+ *
+ * Written out as literal keys so all four are checked against every bundle;
+ * a key assembled from the index would only fail in front of a reader.
+ */
+const ONBOARD_RULE_KEYS = [
+  "data.teachonboard.rule.1",
+  "data.teachonboard.rule.2",
+  "data.teachonboard.rule.3",
+  "data.teachonboard.rule.4",
+] as const satisfies readonly MessageKey[];
+
+export const ONBOARD_RULES: string[] = lazyStrings(
+  ONBOARD_RULE_KEYS.length,
+  (i) => t(ONBOARD_RULE_KEYS[i]),
+);

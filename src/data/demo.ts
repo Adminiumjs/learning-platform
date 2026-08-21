@@ -14,17 +14,39 @@
  *
  * Everything below is demo fiction under /demo/**, exempt from the launch
  * copy sweep (18 §3.4). Prices, seat counts and order numbers are props.
+ *
+ * Translation. The fiction stays English — course titles, blurbs, the exam
+ * paper, the students' names and every word they wrote. What does NOT stay
+ * English is the handful of fields that are really UI vocabulary wearing a
+ * record's clothes: the three roles and the five lesson-kind labels. Those are
+ * getters (see `./format` for why), so they follow the reader's language.
+ *
+ * The collections `source.ts` hands out through `structuredClone` — questions,
+ * submissions, announcements — DO carry getters for their timestamps, and that
+ * is safe because every one of those accessors is called per render:
+ * `dataSource.submissions()` and `.announcements()` clone on each call, and
+ * `lib/thread.ts`'s `questionList` re-spreads `QUESTIONS` on each call. The
+ * clone therefore happens after <App> has pushed the live locale into the
+ * ambient bridge, and the value it freezes is this render's, not module load's.
+ * A getter added to a collection that is cloned ONCE at start-up would freeze
+ * in English — that is the trap, not getters as such.
  */
 
+import { locale, number, t } from "../i18n/ambient";
+import { ago, clock, shortUnit } from "./format";
 import type {
   Announcement,
   Course,
+  CourseSeed,
   EnrolledCourse,
   ExamQuestion,
+  Lesson,
   LessonKind,
   LessonKindMeta,
   LessonMeta,
+  LessonSeed,
   Module,
+  ModuleSeed,
   Question,
   QueuedSubmission,
   StudentRow,
@@ -35,21 +57,28 @@ import type {
 export const INSTRUCTOR = {
   name: "Yara Haddad",
   initials: "YH",
-  role: "Instructor",
-} as const;
+  /** A job title, not a name — so it is translated. */
+  get role() {
+    return t("data.role.instructor");
+  },
+};
 
 export const ASSISTANT = {
   name: "Nadia Brandt",
   initials: "NB",
-  role: "Teaching assistant",
-} as const;
+  get role() {
+    return t("data.role.assistant");
+  },
+};
 
 export const STUDENT = {
   name: "Rosa Marchetti",
   initials: "RM",
-  role: "Student",
+  get role() {
+    return t("data.role.student");
+  },
   email: "rosa@marchetti.studio",
-} as const;
+};
 
 /* ------------------------------------------------------------------ dates */
 
@@ -68,9 +97,91 @@ export const COHORT_WEEKS = 8;
 /** Total lessons in the cohort course — the progress denominator. */
 export const TOTAL_LESSONS = 22;
 
+/* ------------------------------------------------------------ timestamps */
+
+/*
+ * The seed used to write its timestamps out in English — "2h ago", "Yesterday
+ * 21:04", "Mon 3 Aug · 09:12", "Just now". They are now derived: relative ones
+ * from `Intl.RelativeTimeFormat` via `../format`'s `ago`, absolute ones from a
+ * real instant on the demo clock. CLDR owns the phrasing, so Arabic gets its
+ * dual ("منذ ساعتين") without anyone here knowing Arabic has a dual.
+ */
+
+/** A day on the demo clock: `week` (1-based) plus a 0–6 offset from Monday. */
+function cohortDay(week: number, dayOffset: number): Date {
+  const d = new Date(COHORT_WEEK_ONE.year, COHORT_WEEK_ONE.month, COHORT_WEEK_ONE.day);
+  d.setDate(d.getDate() + 7 * (Math.max(1, week) - 1) + dayOffset);
+  return d;
+}
+
+/**
+ * "Mon 3 Aug · 09:12" — a dated stamp in the reader's own field order.
+ *
+ * Built with `Intl` here rather than borrowed from `lib/schedule.ts`: that
+ * module imports this one, so reaching back would be a cycle.
+ */
+function stamp(day: Date, hour: number, minute: number): string {
+  const date = new Intl.DateTimeFormat(locale(), {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).format(day);
+  return `${date} · ${clock(hour, minute)}`;
+}
+
+/* --------------------------------------------------------- duration chips */
+
+/*
+ * `dur` is the one field on a course or a lesson that is INTERFACE rather
+ * than fiction. The titles, blurbs and lesson names below stay English on
+ * purpose (18 §3.4); "8h 40m", "9 min" and "20 pts" never should have — the
+ * unit markers are English words and the digits are Latin.
+ *
+ * The seed now carries numbers (`durMin`, `secs`, `pts`) and the two helpers
+ * below attach `dur` as a GETTER, so it is formatted at render — after <App>
+ * has pushed the live locale into the ambient bridge — and not frozen into
+ * English at module load. Same trap `data/format.ts` documents.
+ */
+
+/** "8h 40m" / "8 Std. 40 Min." / "٨ س ٤٠ د" — a course's total runtime. */
+function withCourseDur(seed: CourseSeed): Course {
+  return {
+    ...seed,
+    get dur() {
+      const h = Math.floor(seed.durMin / 60);
+      const m = seed.durMin % 60;
+      return `${shortUnit(h, "hour")} ${shortUnit(m, "minute")}`;
+    },
+  };
+}
+
+/** The chip on a lesson row: mm:ss for video, minutes for prose, points for graded work. */
+function withLessonDur(seed: LessonSeed): Lesson {
+  return {
+    ...seed,
+    get dur() {
+      if (seed.pts !== undefined) {
+        return t("data.lesson.points", { count: number(seed.pts) }, seed.pts);
+      }
+      const s = seed.secs ?? 0;
+      /* Video is scrubbed to the second, so it keeps a clock. Everything else
+         is read or attended, and a round minute count is what the comp shows.
+         `short` not `narrow` here — the comp's chip is "9 min", where a course
+         total's tighter "8h 40m" wants the narrow form. */
+      return seed.kind === "video"
+        ? clock(Math.floor(s / 60), s % 60)
+        : number(Math.round(s / 60), {
+            style: "unit",
+            unit: "minute",
+            unitDisplay: "short",
+          });
+    },
+  };
+}
+
 /* ---------------------------------------------------------------- catalog */
 
-export const COURSES: Course[] = [
+const COURSE_SEED: CourseSeed[] = [
   {
     id: "DS-101",
     title: "Design Systems from Scratch",
@@ -79,7 +190,7 @@ export const COURSES: Course[] = [
     kind: "cohort",
     price: 180,
     lessons: 22,
-    dur: "8h 40m",
+    durMin: 520,
     tint: "#7c3aed",
     icon: "layout-grid",
     file: "ds101_cover.png",
@@ -96,7 +207,7 @@ export const COURSES: Course[] = [
     kind: "self",
     price: 95,
     lessons: 18,
-    dur: "6h 05m",
+    durMin: 365,
     tint: "#2563eb",
     icon: "type",
     file: "ty140_cover.png",
@@ -113,7 +224,7 @@ export const COURSES: Course[] = [
     kind: "self",
     price: 120,
     lessons: 14,
-    dur: "5h 20m",
+    durMin: 320,
     tint: "#0d9488",
     icon: "orbit",
     file: "mo220_cover.png",
@@ -130,7 +241,7 @@ export const COURSES: Course[] = [
     kind: "cohort",
     price: 150,
     lessons: 12,
-    dur: "4h 30m",
+    durMin: 270,
     tint: "#e11d48",
     icon: "briefcase",
     file: "pf310_cover.png",
@@ -140,6 +251,8 @@ export const COURSES: Course[] = [
       "Six weeks of writing, editing and cutting until three case studies say exactly what you did and why it mattered.",
   },
 ];
+
+export const COURSES: Course[] = COURSE_SEED.map(withCourseDur);
 
 /** "What you'll learn" for the cohort course. */
 export const LEARN: { t: string }[] = [
@@ -153,18 +266,48 @@ export const LEARN: { t: string }[] = [
 
 /* ------------------------------------------------------------- curriculum */
 
-export const MODULES: Module[] = [
+const MODULE_SEED: ModuleSeed[] = [
   {
     id: "m1",
     num: "01",
     title: "Foundations",
     week: 1,
     lessons: [
-      { id: "L1", title: "Why systems win", kind: "video", dur: "8:20", file: "lesson_01_why.mp4" },
-      { id: "L2", title: "Inventory your UI", kind: "video", dur: "12:40", file: "lesson_02_inventory.mp4" },
-      { id: "L3", title: "Naming things", kind: "reading", dur: "9 min", file: "naming_things.md" },
-      { id: "L4", title: "Primitives vs components", kind: "video", dur: "14:05", file: "lesson_04_primitives.mp4" },
-      { id: "L5", title: "Audit walkthrough", kind: "video", dur: "11:30", file: "lesson_05_audit.mp4" },
+      {
+        id: "L1",
+        title: "Why systems win",
+        kind: "video",
+        secs: 500,
+        file: "lesson_01_why.mp4",
+      },
+      {
+        id: "L2",
+        title: "Inventory your UI",
+        kind: "video",
+        secs: 760,
+        file: "lesson_02_inventory.mp4",
+      },
+      {
+        id: "L3",
+        title: "Naming things",
+        kind: "reading",
+        secs: 540,
+        file: "naming_things.md",
+      },
+      {
+        id: "L4",
+        title: "Primitives vs components",
+        kind: "video",
+        secs: 845,
+        file: "lesson_04_primitives.mp4",
+      },
+      {
+        id: "L5",
+        title: "Audit walkthrough",
+        kind: "video",
+        secs: 690,
+        file: "lesson_05_audit.mp4",
+      },
     ],
   },
   {
@@ -173,11 +316,41 @@ export const MODULES: Module[] = [
     title: "Colour and tokens",
     week: 2,
     lessons: [
-      { id: "L6", title: "Colour that scales", kind: "video", dur: "15:10", file: "lesson_06_colour.mp4" },
-      { id: "L7", title: "Token layers", kind: "video", dur: "13:25", file: "lesson_07_tokens.mp4" },
-      { id: "L8", title: "Contrast in practice", kind: "reading", dur: "7 min", file: "contrast_notes.md" },
-      { id: "L9", title: "Dark mode without a rewrite", kind: "video", dur: "16:40", file: "lesson_09_dark.mp4" },
-      { id: "L10", title: "Assignment: build a token sheet", kind: "assignment", dur: "20 pts", file: "brief_tokens.pdf" },
+      {
+        id: "L6",
+        title: "Colour that scales",
+        kind: "video",
+        secs: 910,
+        file: "lesson_06_colour.mp4",
+      },
+      {
+        id: "L7",
+        title: "Token layers",
+        kind: "video",
+        secs: 805,
+        file: "lesson_07_tokens.mp4",
+      },
+      {
+        id: "L8",
+        title: "Contrast in practice",
+        kind: "reading",
+        secs: 420,
+        file: "contrast_notes.md",
+      },
+      {
+        id: "L9",
+        title: "Dark mode without a rewrite",
+        kind: "video",
+        secs: 1000,
+        file: "lesson_09_dark.mp4",
+      },
+      {
+        id: "L10",
+        title: "Assignment: build a token sheet",
+        kind: "assignment",
+        pts: 20,
+        file: "brief_tokens.pdf",
+      },
     ],
   },
   {
@@ -186,11 +359,41 @@ export const MODULES: Module[] = [
     title: "Type and spacing",
     week: 3,
     lessons: [
-      { id: "L11", title: "A type scale you can defend", kind: "video", dur: "12:15", file: "lesson_11_scale.mp4" },
-      { id: "L12", title: "Grids and rhythm", kind: "video", dur: "18:30", file: "lesson_03_grids.mp4" },
-      { id: "L13", title: "Spacing tokens", kind: "reading", dur: "6 min", file: "spacing_tokens.md" },
-      { id: "L14", title: "Live: critique of your specimens", kind: "live", dur: "60 min", file: "session_wk3.ics" },
-      { id: "L15", title: "Assignment: type specimen page", kind: "assignment", dur: "20 pts", file: "brief_specimen.pdf" },
+      {
+        id: "L11",
+        title: "A type scale you can defend",
+        kind: "video",
+        secs: 735,
+        file: "lesson_11_scale.mp4",
+      },
+      {
+        id: "L12",
+        title: "Grids and rhythm",
+        kind: "video",
+        secs: 1110,
+        file: "lesson_03_grids.mp4",
+      },
+      {
+        id: "L13",
+        title: "Spacing tokens",
+        kind: "reading",
+        secs: 360,
+        file: "spacing_tokens.md",
+      },
+      {
+        id: "L14",
+        title: "Live: critique of your specimens",
+        kind: "live",
+        secs: 3600,
+        file: "session_wk3.ics",
+      },
+      {
+        id: "L15",
+        title: "Assignment: type specimen page",
+        kind: "assignment",
+        pts: 20,
+        file: "brief_specimen.pdf",
+      },
     ],
   },
   {
@@ -199,10 +402,34 @@ export const MODULES: Module[] = [
     title: "Components in practice",
     week: 5,
     lessons: [
-      { id: "L16", title: "Buttons, properly", kind: "video", dur: "14:00", file: "lesson_16_buttons.mp4" },
-      { id: "L17", title: "Forms and states", kind: "video", dur: "19:20", file: "lesson_17_forms.mp4" },
-      { id: "L18", title: "Accessibility notes", kind: "reading", dur: "8 min", file: "a11y_notes.md" },
-      { id: "L19", title: "Assignment: component spec", kind: "assignment", dur: "25 pts", file: "brief_spec.pdf" },
+      {
+        id: "L16",
+        title: "Buttons, properly",
+        kind: "video",
+        secs: 840,
+        file: "lesson_16_buttons.mp4",
+      },
+      {
+        id: "L17",
+        title: "Forms and states",
+        kind: "video",
+        secs: 1160,
+        file: "lesson_17_forms.mp4",
+      },
+      {
+        id: "L18",
+        title: "Accessibility notes",
+        kind: "reading",
+        secs: 480,
+        file: "a11y_notes.md",
+      },
+      {
+        id: "L19",
+        title: "Assignment: component spec",
+        kind: "assignment",
+        pts: 25,
+        file: "brief_spec.pdf",
+      },
     ],
   },
   {
@@ -211,20 +438,73 @@ export const MODULES: Module[] = [
     title: "Ship and document",
     week: 7,
     lessons: [
-      { id: "L20", title: "Docs that get read", kind: "video", dur: "11:45", file: "lesson_20_docs.mp4" },
-      { id: "L21", title: "Handoff checklist", kind: "reading", dur: "5 min", file: "handoff.md" },
-      { id: "L22", title: "Final exam", kind: "exam", dur: "45 min", file: "exam_final.json" },
+      {
+        id: "L20",
+        title: "Docs that get read",
+        kind: "video",
+        secs: 705,
+        file: "lesson_20_docs.mp4",
+      },
+      {
+        id: "L21",
+        title: "Handoff checklist",
+        kind: "reading",
+        secs: 300,
+        file: "handoff.md",
+      },
+      {
+        id: "L22",
+        title: "Final exam",
+        kind: "exam",
+        secs: 2700,
+        file: "exam_final.json",
+      },
     ],
   },
 ];
 
-/** Icon + label per lesson kind. */
+export const MODULES: Module[] = MODULE_SEED.map((m) => ({
+  ...m,
+  lessons: m.lessons.map(withLessonDur),
+}));
+
+/**
+ * Icon + label per lesson kind.
+ *
+ * `l` is the human label and is translated; the record's key is the machine
+ * token every screen switches on and never changes.
+ */
 export const KIND: Record<LessonKind, LessonKindMeta> = {
-  video: { i: "play", l: "Video" },
-  reading: { i: "book-open", l: "Reading" },
-  assignment: { i: "pen-line", l: "Assignment" },
-  exam: { i: "file-check", l: "Exam" },
-  live: { i: "radio", l: "Live" },
+  video: {
+    i: "play",
+    get l() {
+      return t("data.lessonKind.video");
+    },
+  },
+  reading: {
+    i: "book-open",
+    get l() {
+      return t("data.lessonKind.reading");
+    },
+  },
+  assignment: {
+    i: "pen-line",
+    get l() {
+      return t("data.lessonKind.assignment");
+    },
+  },
+  exam: {
+    i: "file-check",
+    get l() {
+      return t("data.lessonKind.exam");
+    },
+  },
+  live: {
+    i: "radio",
+    get l() {
+      return t("data.lessonKind.live");
+    },
+  },
 };
 
 /** Long-form content for the lessons the classroom can open. */
@@ -234,12 +514,17 @@ export const LESSON_META: Record<string, LessonMeta> = {
       "Rhythm is what makes a page feel settled before anyone reads a word. We build a spacing scale from the type scale — not the other way round — then lay a 12-column grid over three real screens and watch where it fights us. By the end you'll have a grid you can hand to an engineer without an apology.",
     points: [
       { t: "Derive spacing from your line-height, not from a round number" },
-      { t: "Where a 12-column grid helps, and where it quietly ruins a dashboard" },
+      {
+        t: "Where a 12-column grid helps, and where it quietly ruins a dashboard",
+      },
       { t: "Vertical rhythm across cards, tables and long-form text" },
     ],
     files: [{ n: "grid_starter.fig" }, { n: "spacing_scale.json" }],
     transcript: [
-      { t: "00:00", s: "Let me start with the thing nobody says out loud: most grids are decoration." },
+      {
+        t: "00:00",
+        s: "Let me start with the thing nobody says out loud: most grids are decoration.",
+      },
       {
         t: "01:48",
         s: "A grid earns its place when it makes a decision for you. If you're still nudging things after you've drawn it, it isn't a grid — it's a background image.",
@@ -272,7 +557,9 @@ export const QUESTIONS: Question[] = [
     who: "Tomás Lindqvist",
     ini: "TL",
     lesson: "Grids and rhythm",
-    at: "2h ago",
+    get at() {
+      return ago(2, "hour");
+    },
     mine: false,
     text: "When you say the baseline grid is a suggestion — at what point does breaking it stop being a choice and start being a mess?",
   },
@@ -281,7 +568,9 @@ export const QUESTIONS: Question[] = [
     who: "Priya Raman",
     ini: "PR",
     lesson: "Spacing tokens",
-    at: "5h ago",
+    get at() {
+      return ago(5, "hour");
+    },
     mine: false,
     text: "Our engineers want spacing in a 4px scale, but the design file is on 8. Do I hand over both, or pick a fight?",
   },
@@ -290,13 +579,17 @@ export const QUESTIONS: Question[] = [
     who: "Rosa Marchetti",
     ini: "RM",
     lesson: "A type scale you can defend",
-    at: "Yesterday 21:04",
+    get at() {
+      return `${ago(1, "day")} ${clock(21, 4)}`;
+    },
     mine: true,
     text: "I have a 13px caption that only exists because a table needed it. Is that a real size or am I fooling myself?",
     reply: {
       who: "Yara Haddad",
       ini: "YH",
-      at: "Today 08:12",
+      get at() {
+        return `${ago(0, "day")} ${clock(8, 12)}`;
+      },
       text: "It's real if the table is real. Give it a name that says the job — caption, or table-dense — and write down where it's allowed. A size with a job is a decision; a size without one is debris.",
     },
   },
@@ -305,13 +598,17 @@ export const QUESTIONS: Question[] = [
     who: "Ben Ahlgren",
     ini: "BA",
     lesson: "Dark mode without a rewrite",
-    at: "2 days ago",
+    get at() {
+      return ago(2, "day");
+    },
     mine: false,
     text: "Do you keep the same accent hue in dark mode, or lighten it? Mine looks muddy on the dark surface.",
     reply: {
       who: "Yara Haddad",
       ini: "YH",
-      at: "2 days ago",
+      get at() {
+        return ago(2, "day");
+      },
       text: "Lighten it, always. Same hue, more light — that's why our indigo becomes a much paler blue in dark. Then check contrast against the text sitting on top, not against the background.",
     },
   },
@@ -320,13 +617,17 @@ export const QUESTIONS: Question[] = [
     who: "Chidera Obi",
     ini: "CO",
     lesson: "Token layers",
-    at: "4 days ago",
+    get at() {
+      return ago(4, "day");
+    },
     mine: false,
     text: "How many token layers is too many? I've got primitive, semantic and component and it already feels like a lot.",
     reply: {
       who: "Nadia Brandt",
       ini: "NB",
-      at: "4 days ago",
+      get at() {
+        return ago(4, "day");
+      },
       text: "Three is the sweet spot and you have exactly three. Add a fourth only when you can name the thing it protects you from.",
     },
   },
@@ -335,13 +636,17 @@ export const QUESTIONS: Question[] = [
     who: "Mette Sørensen",
     ini: "MS",
     lesson: "Inventory your UI",
-    at: "1 week ago",
+    get at() {
+      return ago(1, "week");
+    },
     mine: false,
     text: "My audit spreadsheet has 340 rows and I've lost the will to live. How do you know when the audit is done?",
     reply: {
       who: "Yara Haddad",
       ini: "YH",
-      at: "1 week ago",
+      get at() {
+        return ago(1, "week");
+      },
       text: "When new screens stop producing new rows. That usually happens far earlier than people expect — around screen fifteen. Stop there and start grouping.",
     },
   },
@@ -351,7 +656,9 @@ export const QUESTIONS: Question[] = [
 export const SIMULATED_REPLY = {
   who: "Yara Haddad",
   ini: "YH",
-  at: "Just now",
+  get at() {
+    return t("chrome.time.justNow");
+  },
   text: "Good question — and the honest answer is that it depends on who reads it next. Write down the rule you land on, put it in the docs, and we'll pressure-test it on Thursday.",
 } as const;
 
@@ -476,10 +783,17 @@ export const SUBMISSIONS: QueuedSubmission[] = [
     who: "Tomás Lindqvist",
     ini: "TL",
     item: "Type specimen page",
-    kind: "Assignment",
+    get kind() {
+      return t("data.submissionKind.assignment");
+    },
     max: 20,
-    at: "2h ago",
+    get at() {
+      return ago(2, "hour");
+    },
     tag: "2h",
+    get tagLabel() {
+      return shortUnit(2, "hour");
+    },
     work: "Five sizes, all from the 1.25 scale. I wrote the job of each one underneath, which was harder than setting the type.\n\nThe caption is the one I'm least sure about — it only exists for table rows, and I can't tell if that's a real need or me protecting a decision I already made.",
     files: [{ n: "specimen_lindqvist.pdf" }, { n: "scale.json" }],
   },
@@ -488,10 +802,17 @@ export const SUBMISSIONS: QueuedSubmission[] = [
     who: "Priya Raman",
     ini: "PR",
     item: "Type specimen page",
-    kind: "Assignment",
+    get kind() {
+      return t("data.submissionKind.assignment");
+    },
     max: 20,
-    at: "5h ago",
+    get at() {
+      return ago(5, "hour");
+    },
     tag: "5h",
+    get tagLabel() {
+      return shortUnit(5, "hour");
+    },
     work: "I built the scale twice: once on 1.2 and once on 1.333, then set the same paragraph in both. The 1.2 version is calmer and I think that suits a dashboard.\n\nWhat I couldn't solve is the display size on mobile — it wraps to three lines and looks silly.",
     files: [{ n: "specimen_raman.pdf" }],
   },
@@ -500,10 +821,17 @@ export const SUBMISSIONS: QueuedSubmission[] = [
     who: "Ben Ahlgren",
     ini: "BA",
     item: "Build a token sheet",
-    kind: "Assignment · late",
+    get kind() {
+      return t("data.submissionKind.assignmentLate");
+    },
     max: 20,
-    at: "Yesterday",
+    get at() {
+      return ago(1, "day");
+    },
     tag: "late",
+    get tagLabel() {
+      return t("data.submissionTag.late");
+    },
     work: "Late, sorry — work got loud. Primitive, semantic and component layers, with the dark mode aliases mapped in the semantic layer as you suggested.\n\nI stripped 27 greys down to 6. It hurt and then it didn't.",
     files: [{ n: "tokens_ahlgren.json" }, { n: "before_after.png" }],
   },
@@ -512,10 +840,17 @@ export const SUBMISSIONS: QueuedSubmission[] = [
     who: "Chidera Obi",
     ini: "CO",
     item: "Final exam · essay answer",
-    kind: "Essay",
+    get kind() {
+      return t("data.submissionKind.essay");
+    },
     max: 10,
-    at: "3h ago",
+    get at() {
+      return ago(3, "hour");
+    },
     tag: "essay",
+    get tagLabel() {
+      return t("data.submissionTag.essay");
+    },
     work: "Skipping documentation is borrowing time at a terrible rate. The team saves two days now and pays three weeks later, when the same dropdown gets rebuilt by someone who never saw the original.\n\nMy case would be small: one page per component, written while the decision is fresh. Not a manual — a note to the next person, who is usually you in four months.",
     files: [],
   },
@@ -528,7 +863,9 @@ export const ANNOUNCEMENTS: Announcement[] = [
     id: "a1",
     title: "Week 3 is open",
     pinned: true,
-    at: "Mon 3 Aug · 09:12",
+    get at() {
+      return stamp(cohortDay(3, 0), 9, 12);
+    },
     sent: "Sent to 30 students",
     body: "Grids and rhythm is up, and the specimen brief is attached to lesson 15. Bring something rough on Thursday — rough is the point. If you are behind on week 2, do the token sheet first; everything this week leans on it.",
   },
@@ -536,7 +873,9 @@ export const ANNOUNCEMENTS: Announcement[] = [
     id: "a2",
     title: "Office hours move to Thursday",
     pinned: false,
-    at: "Fri 31 Jul · 17:40",
+    get at() {
+      return stamp(cohortDay(2, 4), 17, 40);
+    },
     sent: "Sent to 30 students",
     body: "From this week our live session sits at 18:00 CET on Thursdays so the folks in Lagos and São Paulo can make it. Recordings still go up the same evening.",
   },

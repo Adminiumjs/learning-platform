@@ -7,6 +7,11 @@
  * `dataSource.announcements()`, while this is the short teaser the dashboard
  * sidebar shows next to the course list. Its date is not seeded — the screen
  * stamps it from the demo clock.
+ *
+ * The announcement is Yara writing to her cohort and stays English with the
+ * rest of the fiction. The greeting is the app talking; it is a module-level
+ * `const` and so cannot be a getter, but its translation is filed under
+ * `data.learning.greeting` and takes the student's first name as `{name}`.
  */
 
 export const LEARNING_GREETING =

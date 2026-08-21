@@ -14,10 +14,12 @@ import {
   isAbsent,
   type CompareOption,
 } from "../data/screens/compare";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-compare.css";
 
 export default function Compare() {
+  const t = useI18n().t;
   const cmPick = useAppStore((s) => s.cmPick);
   const set = useAppStore((s) => s.set);
   const openCourse = useAppStore((s) => s.openCourse);
@@ -32,11 +34,8 @@ export default function Compare() {
   return (
     <div className="lp-page scr-compare">
       <div className="cp-intro">
-        <h1 className="cp-intro__title">Self-paced or cohort?</h1>
-        <p className="cp-intro__lede">
-          Same material, same teacher. The difference is whether anyone is waiting for you
-          on Thursday.
-        </p>
+        <h1 className="cp-intro__title">{t("screensA.compare.title")}</h1>
+        <p className="cp-intro__lede">{t("screensA.compare.lede")}</p>
       </div>
 
       <div className="cp-cols">
@@ -53,7 +52,7 @@ export default function Compare() {
                   /* Solid accent, not the soft `accent` tone — it has to read on
                      the accent-washed card behind it. */
                   <Pill tone="accent" className="cp-pick">
-                    Your pick
+                    {t("screensA.compare.yourPick")}
                   </Pill>
                 ) : null}
               </div>
@@ -80,8 +79,8 @@ export default function Compare() {
       <div className="cp-table">
         <div className="cp-table__head">
           <span />
-          <span>Self-paced</span>
-          <span>Cohort</span>
+          <span>{t("screensA.compare.colSelf")}</span>
+          <span>{t("screensA.compare.colCohort")}</span>
         </div>
         {COMPARE_ROWS.map((r) => (
           <div key={r.k} className="lp-row cp-table__row">

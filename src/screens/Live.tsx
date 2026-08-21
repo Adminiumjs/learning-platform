@@ -13,7 +13,8 @@
 
 import { ButtonPrimary, ButtonSecondary, Cover, Icon, PageHead, Pill } from "../components";
 import { dataSource } from "../data/source";
-import { countdown, fmtDateLong, liveDate } from "../lib/schedule";
+import { useI18n } from "../i18n";
+import { addMinutes, countdown, fmtDateLong, fmtTime, fmtWeekdayLong, liveDate } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-live.css";
 
@@ -21,6 +22,8 @@ import "../styles/screen-live.css";
 const RSVP_YES = 24;
 /** The recording runs short of the hour booked; it always does. */
 const RECORDING_MIN = 58;
+/** How long before the hour the room unlocks. */
+const DOORS_OPEN_MIN = 10;
 
 interface Fact {
   icon: string;
@@ -31,6 +34,7 @@ interface Fact {
 }
 
 export default function Live() {
+  const { t, number } = useI18n();
   const week = useAppStore((s) => s.week);
   const elapsed = useAppStore((s) => s.elapsed);
   const joined = useAppStore((s) => s.lvJoined);
@@ -42,17 +46,51 @@ export default function Live() {
   const instructor = dataSource.instructor();
   const assistant = dataSource.assistant();
 
-  const endHour = session.hour + Math.round(session.durationMin / 60);
-  const when = `${fmtDateLong(liveDate(week, session.dayOffset, session.hour))} · ${session.hour}:00–${endHour}:00 ${session.timezone}`;
+  /* Both ends are real instants, so the reader's own clock decides 18:00 vs
+     6:00 PM rather than this file interpolating `${session.hour}:00`. */
+  const start = liveDate(week, session.dayOffset, session.hour);
+  const when = t("screensB.live.when", {
+    date: fmtDateLong(start),
+    start: fmtTime(start),
+    end: fmtTime(addMinutes(start, session.durationMin)),
+    tz: session.timezone,
+  });
+
+  /** "10 minutes" in the reader's language, not a hardcoded English clause. */
+  const doorsOpen = number(DOORS_OPEN_MIN, {
+    style: "unit",
+    unit: "minute",
+    unitDisplay: "long",
+  });
 
   const facts: Fact[] = [
-    { icon: "calendar", k: "When", v: when },
-    { icon: "user-round", k: "Hosted by", v: `${instructor.name}, with ${assistant.name}` },
-    { icon: "users", k: "Who is coming", v: `${RSVP_YES} of ${seats} said yes`, mono: true },
+    { icon: "calendar", k: t("screensB.live.factWhen"), v: when },
+    {
+      icon: "user-round",
+      k: t("screensB.live.factHost"),
+      v: t("screensB.live.hostValue", {
+        instructor: instructor.name,
+        assistant: assistant.name,
+      }),
+    },
+    {
+      icon: "users",
+      k: t("screensB.live.factWho"),
+      v: t("screensB.live.whoValue", { yes: number(RSVP_YES), total: number(seats) }),
+      mono: true,
+    },
     {
       icon: "video",
-      k: "Where",
-      v: joined ? `Recording · ${RECORDING_MIN} min` : "Link opens 10 minutes before",
+      k: t("screensB.live.factWhere"),
+      v: joined
+        ? t("screensB.live.whereRecording", {
+            length: number(RECORDING_MIN, {
+              style: "unit",
+              unit: "minute",
+              unitDisplay: "short",
+            }),
+          })
+        : t("screensB.live.whereBefore", { lead: doorsOpen }),
     },
   ];
 
@@ -64,7 +102,7 @@ export default function Live() {
         eyebrow={
           <span className="lv-eyebrow">
             <Icon name="radio" size={15} />
-            Week {week} live session
+            {t("screensB.live.eyebrow", { week: number(week) })}
           </span>
         }
         title={session.title}
@@ -81,7 +119,7 @@ export default function Live() {
         className="lv-cover"
       >
         <Pill tone={joined ? "info" : "pos"} className="lv-state">
-          {joined ? "Recording available" : "Starts soon"}
+          {joined ? t("screensB.live.stateRecorded") : t("screensB.live.stateSoon")}
         </Pill>
       </Cover>
 
@@ -98,7 +136,7 @@ export default function Live() {
           <div className="lv-count">
             <Icon name="timer" size={18} className="lv-count__ico" />
             <span className="lv-count__clock lp-mono">{countdown(week, elapsed)}</span>
-            <span className="lv-count__to">until we start</span>
+            <span className="lv-count__to">{t("screensB.live.untilStart")}</span>
           </div>
         )}
 
@@ -108,30 +146,32 @@ export default function Live() {
             onClick={() =>
               showToast(
                 joined
-                  ? "Demo recording — the player is a shell."
-                  : "The room opens 10 minutes before. See you Thursday.",
+                  ? t("screensB.live.toastRecording")
+                  : t("screensB.live.toastDoors", {
+                      lead: doorsOpen,
+                      weekday: fmtWeekdayLong(start),
+                    }),
                 "video",
               )
             }
           >
-            {joined ? "Watch the recording" : "Join the session"}
+            {joined ? t("screensB.live.watchRecording") : t("screensB.live.join")}
           </ButtonPrimary>
 
           <ButtonSecondary
             icon="calendar-plus"
-            onClick={() => showToast(`${calendarFile} — demo file.`, "calendar-plus")}
+            onClick={() =>
+              showToast(t("screensB.live.toastCalendar", { file: calendarFile }), "calendar-plus")
+            }
           >
-            Add to calendar
+            {t("screensB.live.addToCalendar")}
           </ButtonSecondary>
         </div>
       </div>
 
       <div className="lv-bring">
-        <div className="lv-bring__title">What to bring</div>
-        <p className="lv-bring__body">
-          One specimen page, however rough, and the one decision you can't settle. We'll look at
-          six of them together and everyone leaves with a next step.
-        </p>
+        <div className="lv-bring__title">{t("screensB.live.bringTitle")}</div>
+        <p className="lv-bring__body">{t("screensB.live.bringBody")}</p>
       </div>
     </div>
   );

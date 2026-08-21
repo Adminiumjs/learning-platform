@@ -9,10 +9,12 @@
 
 import { ButtonPrimary, Icon, PageHead, Pill } from "../components";
 import { EMPTY_CARDS } from "../data/screens/empty";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-empty.css";
 
 export default function Empty() {
+  const t = useI18n().t;
   const go = useAppStore((s) => s.go);
   const setPersona = useAppStore((s) => s.setPersona);
 
@@ -20,8 +22,8 @@ export default function Empty() {
     <div className="lp-page scr-empty">
       <PageHead
         className="es-head"
-        title="Empty states"
-        lede="The first five minutes, and the quiet weeks. Every one gives you something to do next."
+        title={t("screensA.empty.title")}
+        lede={t("screensA.empty.lede")}
       />
 
       <div className="es-grid">

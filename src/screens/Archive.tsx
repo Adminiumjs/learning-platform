@@ -22,25 +22,32 @@ import type { Tone } from "../components";
 import { ARCHIVE_FILTERS, ARCHIVE_KEPT, ARCHIVE_SHELF } from "../data/screens/archive";
 import { dataSource } from "../data/source";
 import type { EnrolledCourse } from "../data/types";
+import { useI18n, type MessageKey } from "../i18n";
 import { progressPct } from "../lib/schedule";
 import { useAppStore } from "../state/store";
 import "../styles/screen-archive.css";
 
-/** How each enrolment state presents itself on the shelf. */
-const STATE_PILL: Record<EnrolledCourse["state"], { tone: Tone; label: string }> = {
-  active: { tone: "accent", label: "In progress" },
-  paused: { tone: "warn", label: "Paused" },
-  retired: { tone: "neutral", label: "Retired" },
+/**
+ * How each enrolment state presents itself on the shelf.
+ *
+ * The label is a message key rather than a word: this table is module scope,
+ * where no hook can run, so the lookup happens at the render site.
+ */
+const STATE_PILL: Record<EnrolledCourse["state"], { tone: Tone; key: MessageKey }> = {
+  active: { tone: "accent", key: "screensA.archive.stateActive" },
+  paused: { tone: "warn", key: "screensA.archive.statePaused" },
+  retired: { tone: "neutral", key: "screensA.archive.stateRetired" },
 };
 
-/** What each state's primary button offers to do next. */
-const STATE_CTA: Record<EnrolledCourse["state"], string> = {
-  active: "Continue",
-  paused: "Pick it up",
-  retired: "Revisit",
+/** What each state's primary button offers to do next — keys, same reason. */
+const STATE_CTA: Record<EnrolledCourse["state"], MessageKey> = {
+  active: "screensA.archive.ctaActive",
+  paused: "screensA.archive.ctaPaused",
+  retired: "screensA.archive.ctaRetired",
 };
 
 export default function Archive() {
+  const { t, number } = useI18n();
   const arFilter = useAppStore((s) => s.arFilter);
   const week = useAppStore((s) => s.week);
   const done = useAppStore((s) => s.done);
@@ -73,8 +80,8 @@ export default function Archive() {
     <div className="lp-page scr-archive">
       <PageHead
         className="ar-head"
-        title="Archive"
-        lede={`${shelf.length} courses on your shelf · one finished last year, two on the go`}
+        title={t("screensA.archive.title")}
+        lede={t("screensA.archive.lede", { count: number(shelf.length) }, shelf.length)}
         action={
           <ChipRow>
             {ARCHIVE_FILTERS.map((f) => (
@@ -106,17 +113,19 @@ export default function Archive() {
               <div className="ar-card__main">
                 <div className="ar-card__titlerow">
                   <span className="ar-card__title">{course.title}</span>
-                  <Pill tone={pill.tone}>{pill.label}</Pill>
+                  <Pill tone={pill.tone}>{t(pill.key)}</Pill>
                 </div>
                 <div className="ar-card__meta">{entry.meta(course)}</div>
                 <div className="ar-card__progress">
                   <ProgressBar
                     pct={pct}
                     tone={pct === 100 ? "pos" : "accent"}
-                    label={`${course.title} progress`}
+                    label={t("screensA.archive.progressLabel", { course: course.title })}
                     className="ar-card__bar"
                   />
-                  <span className="lp-mono ar-card__pct">{pct}%</span>
+                  <span className="lp-mono ar-card__pct">
+                    {number(pct / 100, { style: "percent", maximumFractionDigits: 0 })}
+                  </span>
                 </div>
               </div>
 
@@ -130,20 +139,25 @@ export default function Archive() {
                     onClick={() =>
                       entry.cert
                         ? go("certificate")
-                        : showToast("Finish it and the certificate is yours.", "lock")
+                        : showToast(t("screensA.archive.certLocked"), "lock")
                     }
                   >
-                    {entry.cert ? "Certificate" : "No certificate"}
+                    {entry.cert
+                      ? t("screensA.archive.certificate")
+                      : t("screensA.archive.noCertificate")}
                   </ButtonSecondary>
                   <ButtonPrimary
                     className="ar-cta"
                     onClick={() =>
                       course.id === "DS-101"
                         ? go("classroom")
-                        : showToast(`“${course.title}” reopens where you left it.`, "play")
+                        : showToast(
+                            t("screensA.archive.reopens", { course: course.title }),
+                            "play",
+                          )
                     }
                   >
-                    {STATE_CTA[course.state]}
+                    {t(STATE_CTA[course.state])}
                   </ButtonPrimary>
                 </div>
               </div>
@@ -155,8 +169,8 @@ export default function Archive() {
       <div className="lp-list ar-kept">
         <div className="ar-kept__head">
           <Icon name="folder-clock" size={16} className="ar-kept__ico" />
-          <span className="ar-kept__title">Kept from finished courses</span>
-          <span className="ar-kept__note">Yours to keep, forever</span>
+          <span className="ar-kept__title">{t("screensA.archive.keptTitle")}</span>
+          <span className="ar-kept__note">{t("screensA.archive.keptNote")}</span>
         </div>
         {ARCHIVE_KEPT.map((k) => (
           <button

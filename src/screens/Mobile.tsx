@@ -40,6 +40,7 @@ import {
   MOBILE_TABS,
 } from "../data/screens/mobile";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import {
   countdown,
   doneCount,
@@ -55,8 +56,11 @@ import "../styles/screen-mobile.css";
 
 /** How many threads fit on the phone's discussion tab. */
 const THREAD_COUNT = 4;
+/** What the account row's "Downloads" readout already holds on the device. */
+const DOWNLOADED_LESSONS = 3;
 
 export default function Mobile() {
+  const { t, number } = useI18n();
   const week = useAppStore((s) => s.week);
   const done = useAppStore((s) => s.done);
   const lessonId = useAppStore((s) => s.lesson);
@@ -99,7 +103,8 @@ export default function Mobile() {
   const thisWeek = [...modules].reverse().find((m) => m.week <= week) ?? modules[0];
 
   const heads = MOBILE_HEADS[tab];
-  const kicker = heads.kicker ?? `Week ${week} of ${weeks}`;
+  const kicker =
+    heads.kicker ?? t("screensB.mobile.kicker", { week: number(week), weeks: number(weeks) });
 
   const threads = BOARD_THREADS.slice(0, THREAD_COUNT);
 
@@ -162,17 +167,23 @@ export default function Mobile() {
                 </div>
 
                 <div className="mb-continue">
-                  <div className="mb-eyebrow">Continue</div>
+                  <div className="mb-eyebrow">{t("screensB.mobile.continue")}</div>
                   <div className="mb-continue__title">{lesson.title}</div>
                   <div className="mb-continue__row">
-                    <ProgressBar pct={pct} className="mb-continue__bar" label="Course progress" />
-                    <span className="mb-continue__pct lp-mono">{pct}%</span>
+                    <ProgressBar
+                      pct={pct}
+                      className="mb-continue__bar"
+                      label={t("screensB.mobile.courseProgress")}
+                    />
+                    <span className="mb-continue__pct lp-mono">
+                      {number(pct / 100, { style: "percent" })}
+                    </span>
                   </div>
                 </div>
 
                 <div className="mb-week">
                   <div className="mb-week__head">
-                    <span className="mb-week__title">This week</span>
+                    <span className="mb-week__title">{t("screensB.mobile.thisWeek")}</span>
                     <span className="mb-week__date lp-mono">{fmtDate(weekStart(week))}</span>
                   </div>
 
@@ -198,10 +209,10 @@ export default function Mobile() {
                           <span className="mb-lesson__title">{l.title}</span>
                           <span className="mb-lesson__sub">
                             {isDone
-                              ? `Completed · ${l.dur}`
+                              ? t("screensB.mobile.lessonDone", { dur: l.dur })
                               : isCurrent
-                                ? `In progress · ${l.dur}`
-                                : `${kind.l} · ${l.dur}`}
+                                ? t("screensB.mobile.lessonCurrent", { dur: l.dur })
+                                : t("screensB.mobile.lessonKind", { kind: kind.l, dur: l.dur })}
                           </span>
                         </span>
                         <Icon
@@ -217,15 +228,15 @@ export default function Mobile() {
                 <div className="mb-live">
                   <Icon name="radio" size={19} className="mb-live__ico" />
                   <span className="mb-live__text">
-                    <span className="mb-live__title">Live critique</span>
+                    <span className="mb-live__title">{t("screensB.mobile.liveTitle")}</span>
                     <span className="mb-live__count lp-mono">{countdown(week, elapsed)}</span>
                   </span>
                   <button
                     type="button"
                     className="lp-btn mb-live__cta"
-                    onClick={() => showToast("We will buzz you an hour before.", "bell")}
+                    onClick={() => showToast(t("screensB.mobile.remindToast"), "bell")}
                   >
-                    Remind me
+                    {t("screensB.mobile.remindMe")}
                   </button>
                 </div>
               </>
@@ -250,11 +261,11 @@ export default function Mobile() {
                     <span className="mb-thread__foot">
                       <span className="mb-thread__stat">
                         <Icon name="arrow-big-up" size={13} />
-                        {t.votes}
+                        {number(t.votes)}
                       </span>
                       <span className="mb-thread__stat">
                         <Icon name="message-square" size={13} />
-                        {t.posts.length - 1}
+                        {number(t.posts.length - 1)}
                       </span>
                       <span className="mb-thread__by">{t.by}</span>
                     </span>
@@ -265,11 +276,19 @@ export default function Mobile() {
             {tab === "you" ? (
               <>
                 <div className="mb-you">
-                  <ProgressRing pct={pct} size="sm" label="Course complete" />
+                  <ProgressRing
+                    pct={pct}
+                    size="sm"
+                    label={t("screensB.mobile.courseComplete")}
+                  />
                   <div className="mb-you__text">
                     <div className="mb-you__name">{student.name}</div>
                     <div className="mb-you__sub">
-                      Cohort 03 · {finished} of {totalLessons} lessons · {MOBILE_STREAK}
+                      {t("screensB.mobile.youSub", {
+                        done: number(finished),
+                        total: number(totalLessons),
+                        streak: MOBILE_STREAK,
+                      })}
                     </div>
                   </div>
                 </div>
@@ -292,13 +311,23 @@ export default function Mobile() {
                       onClick={() =>
                         r.view
                           ? go(r.view)
-                          : showToast("Three lessons are on this phone already.", "download")
+                          : showToast(
+                              t(
+                                "screensB.mobile.downloadsToast",
+                                { total: number(DOWNLOADED_LESSONS) },
+                                DOWNLOADED_LESSONS,
+                              ),
+                              "download",
+                            )
                       }
                     >
                       <Icon name={r.icon} size={16} className="mb-row__ico" />
                       <span className="mb-row__label">{r.label}</span>
                       <span className="mb-row__value">
-                        {r.value ?? (finished >= totalLessons ? "Ready" : "Locked")}
+                        {r.value ??
+                          (finished >= totalLessons
+                            ? t("screensB.mobile.ready")
+                            : t("screensB.mobile.locked"))}
                       </span>
                       <Icon name="chevron-right" size={15} className="mb-row__ico" />
                     </button>
@@ -325,14 +354,14 @@ export default function Mobile() {
                 type="button"
                 className="lp-btn mb-mini__btn"
                 onClick={togglePlay}
-                aria-label="Pause"
+                aria-label={t("screensB.mobile.pause")}
               >
                 <Icon name="pause" size={15} />
               </button>
             </div>
           ) : null}
 
-          <div className="mb-tabs" role="tablist" aria-label="App sections">
+          <div className="mb-tabs" role="tablist" aria-label={t("screensB.mobile.tabsAria")}>
             {MOBILE_TABS.map((t) => (
               <button
                 key={t.id}

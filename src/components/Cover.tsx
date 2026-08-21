@@ -17,6 +17,7 @@
  */
 
 import type { CSSProperties, ReactNode } from "react";
+import { useI18n } from "../i18n";
 import { Icon } from "./Icon";
 
 export interface CoverProps {
@@ -102,7 +103,16 @@ export interface PlayerShellProps {
 export function PlayerShell({
   tint, icon, filename, playing, onTogglePlay, pos, onScrub, time, className,
 }: PlayerShellProps) {
+  const { t, dir } = useI18n();
   const pct = `${(Math.max(0, Math.min(1, pos)) * 100).toFixed(2)}%`;
+  /*
+   * The fill and the knob are already logical (`inlineSize` / `insetInlineStart`),
+   * but a pointer coordinate is physical in every direction. In RTL the start of
+   * the bar is its right edge, so the fraction is measured from there — and the
+   * arrow keys swap, because "forward" follows the text, not the screen.
+   */
+  const rtl = dir === "rtl";
+  const playLabel = t(playing ? "chrome.player.pause" : "chrome.player.play");
 
   return (
     <div
@@ -115,7 +125,7 @@ export function PlayerShell({
         type="button"
         className={`lp-player__play${playing ? " is-playing" : ""}`}
         onClick={onTogglePlay}
-        aria-label={playing ? "Pause" : "Play"}
+        aria-label={playLabel}
       >
         <Icon name={playing ? "pause" : "play"} size={30} />
       </button>
@@ -125,7 +135,7 @@ export function PlayerShell({
           type="button"
           className="lp-player__toggle"
           onClick={onTogglePlay}
-          aria-label={playing ? "Pause" : "Play"}
+          aria-label={playLabel}
         >
           <Icon name={playing ? "pause" : "play"} size={15} />
         </button>
@@ -133,18 +143,21 @@ export function PlayerShell({
         <div
           className="lp-player__scrub"
           role="slider"
-          aria-label="Seek"
+          aria-label={t("chrome.player.seek")}
           aria-valuenow={Math.round(pos * 100)}
           aria-valuemin={0}
           aria-valuemax={100}
           tabIndex={0}
           onClick={(e) => {
             const r = e.currentTarget.getBoundingClientRect();
-            onScrub((e.clientX - r.left) / r.width);
+            const from = rtl ? r.right - e.clientX : e.clientX - r.left;
+            onScrub(from / r.width);
           }}
           onKeyDown={(e) => {
-            if (e.key === "ArrowRight") onScrub(Math.min(1, pos + 0.05));
-            if (e.key === "ArrowLeft") onScrub(Math.max(0, pos - 0.05));
+            const forward = rtl ? "ArrowLeft" : "ArrowRight";
+            const back = rtl ? "ArrowRight" : "ArrowLeft";
+            if (e.key === forward) onScrub(Math.min(1, pos + 0.05));
+            if (e.key === back) onScrub(Math.max(0, pos - 0.05));
           }}
         >
           <span className="lp-player__fill" style={{ inlineSize: pct }} />

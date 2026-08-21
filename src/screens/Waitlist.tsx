@@ -13,8 +13,12 @@
 import { Avatar, ButtonPrimary, ButtonSecondary, PageHead } from "../components";
 import { COHORT_04_OPENS, COHORT_04_SOLD, WAITLIST } from "../data/screens/waitlist";
 import { dataSource } from "../data/source";
+import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
 import "../styles/screen-waitlist.css";
+
+/** How long an offered seat is held before it goes back on the list. */
+const HOLD_HOURS = 48;
 
 function initials(name: string): string {
   return name
@@ -25,41 +29,56 @@ function initials(name: string): string {
 }
 
 export default function Waitlist() {
+  const { t, number } = useI18n();
   const wlInvited = useAppStore((s) => s.wlInvited);
   const set = useAppStore((s) => s.set);
   const showToast = useAppStore((s) => s.showToast);
 
   const seats = dataSource.cohortCapacity();
   const invitedCount = Object.keys(wlInvited).length;
+  const hold = number(HOLD_HOURS, { style: "unit", unit: "hour", unitDisplay: "long" });
 
   function invite(name: string): void {
     if (wlInvited[name]) return;
     set({ wlInvited: { ...wlInvited, [name]: 1 } });
-    showToast(`Seat offered to ${name} · held 48 hours.`, "send");
+    showToast(t("screensB.waitlist.offered", { name, hold }), "send");
   }
 
   function inviteAll(): void {
     const all: Record<string, number> = {};
     for (const p of WAITLIST) all[p.name] = 1;
     set({ wlInvited: all });
-    showToast(`${WAITLIST.length} invitations sent.`, "send");
+    showToast(
+      t("screensB.waitlist.allSent", { total: number(WAITLIST.length) }, WAITLIST.length),
+      "send",
+    );
   }
 
   const stats = [
-    { label: "On the list", value: String(WAITLIST.length) },
-    { label: "Invited", value: String(invitedCount) },
-    { label: "Seats already sold", value: `${COHORT_04_SOLD} of ${seats}` },
+    { label: t("screensB.waitlist.statWaiting"), value: number(WAITLIST.length) },
+    { label: t("screensB.waitlist.statInvited"), value: number(invitedCount) },
+    {
+      label: t("screensB.waitlist.statSold"),
+      value: t("screensB.waitlist.soldValue", {
+        sold: number(COHORT_04_SOLD),
+        total: number(seats),
+      }),
+    },
   ];
 
   return (
     <div className="lp-page scr-waitlist">
       <PageHead
         className="wl-head"
-        title="Waitlist"
-        lede={`${WAITLIST.length} waiting for cohort 04 · opens ${COHORT_04_OPENS}`}
+        title={t("screensB.waitlist.title")}
+        lede={t(
+          "screensB.waitlist.lede",
+          { total: number(WAITLIST.length), date: COHORT_04_OPENS },
+          WAITLIST.length,
+        )}
         action={
           <ButtonPrimary icon="send" iconSize={15} className="wl-all" onClick={inviteAll}>
-            Invite everyone
+            {t("screensB.waitlist.inviteAll")}
           </ButtonPrimary>
         }
       />
@@ -75,10 +94,10 @@ export default function Waitlist() {
 
       <div className="lp-list wl-table">
         <div className="wl-row wl-row--head">
-          <span>Person</span>
-          <span className="wl-col--soft">Joined</span>
-          <span className="wl-col--soft">Why</span>
-          <span className="wl-row__end">Action</span>
+          <span>{t("screensB.waitlist.colPerson")}</span>
+          <span className="wl-col--soft">{t("screensB.waitlist.colJoined")}</span>
+          <span className="wl-col--soft">{t("screensB.waitlist.colWhy")}</span>
+          <span className="wl-row__end">{t("screensB.waitlist.colAction")}</span>
         </div>
 
         {WAITLIST.map((p) => {
@@ -103,7 +122,7 @@ export default function Waitlist() {
                   className={`wl-invite${done ? " wl-invite--done" : ""}`}
                   onClick={() => invite(p.name)}
                 >
-                  {done ? "Invited" : "Invite"}
+                  {done ? t("screensB.waitlist.invited") : t("screensB.waitlist.invite")}
                 </ButtonSecondary>
               </span>
             </div>
