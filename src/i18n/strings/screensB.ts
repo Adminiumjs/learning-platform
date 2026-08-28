@@ -312,7 +312,7 @@ export const screensB = {
     'screensB.reviews.writeReview': 'Write a review',
     'screensB.reviews.yourReview': 'Your review',
 
-    'screensB.rooms.calendarToast': 'Added to your calendar · {when}',
+    'screensB.rooms.calendarToast': 'Demo — nothing is added to a calendar · {when}',
     'screensB.rooms.ctaComing': 'I will come',
     'screensB.rooms.ctaIn': 'You are in',
     'screensB.rooms.ctaJoin': 'Join',
@@ -427,7 +427,7 @@ export const screensB = {
     'screensB.seats.inviteHead': 'Invite someone',
     'screensB.seats.inviteNote':
       'They get an email with a seat attached. Unclaimed invites free up after {days}.',
-    'screensB.seats.inviteSent': 'Invite sent. The seat is held for {days}.',
+    'screensB.seats.inviteSent': 'Demo — no email goes out. The seat shows as held for {days}.',
     'screensB.seats.lede': '{org} · buy a block of seats and hand them out as people join.',
     'screensB.seats.needEmail': 'An email address first.',
     'screensB.seats.oneFewer': 'One fewer seat',
@@ -882,7 +882,7 @@ export const screensB = {
     'screensB.reviews.writeReview': 'Bewertung schreiben',
     'screensB.reviews.yourReview': 'Deine Bewertung',
 
-    'screensB.rooms.calendarToast': 'Im Kalender eingetragen · {when}',
+    'screensB.rooms.calendarToast': 'Demo — es wird nichts in einen Kalender eingetragen · {when}',
     'screensB.rooms.ctaComing': 'Ich komme',
     'screensB.rooms.ctaIn': 'Du bist drin',
     'screensB.rooms.ctaJoin': 'Beitreten',
@@ -998,7 +998,7 @@ export const screensB = {
     'screensB.seats.inviteHead': 'Jemanden einladen',
     'screensB.seats.inviteNote':
       'Sie bekommen eine Mail mit Platz. Nicht eingelöste Einladungen werden nach {days} frei.',
-    'screensB.seats.inviteSent': 'Einladung gesendet. Der Platz bleibt {days} reserviert.',
+    'screensB.seats.inviteSent': 'Demo — es wird keine Mail verschickt. Der Platz wird {days} lang als reserviert angezeigt.',
     'screensB.seats.lede':
       '{org} · kauf einen Block Plätze und gib sie aus, wie Leute dazukommen.',
     'screensB.seats.needEmail': 'Erst eine E-Mail-Adresse.',
@@ -1455,7 +1455,7 @@ export const screensB = {
     'screensB.reviews.writeReview': 'Écrire un avis',
     'screensB.reviews.yourReview': 'Votre avis',
 
-    'screensB.rooms.calendarToast': 'Ajouté à votre calendrier · {when}',
+    'screensB.rooms.calendarToast': 'Démo — rien n’est ajouté à un calendrier · {when}',
     'screensB.rooms.ctaComing': 'Je viendrai',
     'screensB.rooms.ctaIn': 'Vous y êtes',
     'screensB.rooms.ctaJoin': 'Rejoindre',
@@ -1571,7 +1571,7 @@ export const screensB = {
     'screensB.seats.inviteHead': 'Inviter quelqu’un',
     'screensB.seats.inviteNote':
       'La personne reçoit un e-mail avec une place. Les invitations non utilisées se libèrent après {days}.',
-    'screensB.seats.inviteSent': 'Invitation envoyée. La place est gardée {days}.',
+    'screensB.seats.inviteSent': 'Démo — aucun e-mail n’est envoyé. La place s’affiche comme gardée {days}.',
     'screensB.seats.lede':
       '{org} · achetez un bloc de places et distribuez-les à mesure que les gens arrivent.',
     'screensB.seats.needEmail': 'Une adresse e-mail d’abord.',
@@ -2031,7 +2031,7 @@ export const screensB = {
     'screensB.reviews.writeReview': 'Napsat hodnocení',
     'screensB.reviews.yourReview': 'Vaše hodnocení',
 
-    'screensB.rooms.calendarToast': 'Přidáno do kalendáře · {when}',
+    'screensB.rooms.calendarToast': 'Ukázka — do kalendáře se nic nepřidá · {when}',
     'screensB.rooms.ctaComing': 'Přijdu',
     'screensB.rooms.ctaIn': 'Jste uvnitř',
     'screensB.rooms.ctaJoin': 'Připojit se',
@@ -2147,7 +2147,7 @@ export const screensB = {
     'screensB.seats.inviteHead': 'Pozvat někoho',
     'screensB.seats.inviteNote':
       'Přijde jim e-mail s místem. Nevyužité pozvánky se po {days} uvolní.',
-    'screensB.seats.inviteSent': 'Pozvánka odeslána. Místo držíme {days}.',
+    'screensB.seats.inviteSent': 'Ukázka — žádný e-mail se neodesílá. Místo se zobrazuje jako držené {days}.',
     'screensB.seats.lede':
       '{org} · kupte blok míst a rozdávejte je, jak lidé přicházejí.',
     'screensB.seats.needEmail': 'Nejdřív e-mailovou adresu.',
@@ -2606,7 +2606,7 @@ export const screensB = {
     'screensB.reviews.writeReview': 'Skriv en anmeldelse',
     'screensB.reviews.yourReview': 'Din anmeldelse',
 
-    'screensB.rooms.calendarToast': 'Lagt i din kalender · {when}',
+    'screensB.rooms.calendarToast': 'Demo — der bliver ikke lagt noget i en kalender · {when}',
     'screensB.rooms.ctaComing': 'Jeg kommer',
     'screensB.rooms.ctaIn': 'Du er med',
     'screensB.rooms.ctaJoin': 'Deltag',
@@ -2722,7 +2722,7 @@ export const screensB = {
     'screensB.seats.inviteHead': 'Inviter nogen',
     'screensB.seats.inviteNote':
       'De får en mail med en plads. Uindløste invitationer frigives efter {days}.',
-    'screensB.seats.inviteSent': 'Invitation sendt. Pladsen holdes i {days}.',
+    'screensB.seats.inviteSent': 'Demo — der sendes ingen mail. Pladsen vises som holdt i {days}.',
     'screensB.seats.lede': '{org} · køb en blok pladser og del dem ud, efterhånden som folk kommer til.',
     'screensB.seats.needEmail': 'En e-mailadresse først.',
     'screensB.seats.oneFewer': 'Én plads færre',
@@ -3157,7 +3157,7 @@ export const screensB = {
     'screensB.reviews.writeReview': '写评价',
     'screensB.reviews.yourReview': '你的评价',
 
-    'screensB.rooms.calendarToast': '已加入日历 · {when}',
+    'screensB.rooms.calendarToast': '演示 — 不会写入任何日历 · {when}',
     'screensB.rooms.ctaComing': '我会来',
     'screensB.rooms.ctaIn': '你已在房间',
     'screensB.rooms.ctaJoin': '加入',
@@ -3259,7 +3259,7 @@ export const screensB = {
     'screensB.seats.inviteAria': '受邀人的邮箱地址',
     'screensB.seats.inviteHead': '邀请成员',
     'screensB.seats.inviteNote': '对方会收到带席位的邮件。未认领的邀请 {days} 后自动释放。',
-    'screensB.seats.inviteSent': '邀请已发送，席位保留 {days}。',
+    'screensB.seats.inviteSent': '演示 — 不会发出任何邮件。席位仅显示为保留 {days}。',
     'screensB.seats.lede': '{org} · 批量购买席位，随着成员加入逐个分配。',
     'screensB.seats.needEmail': '请先填写邮箱地址。',
     'screensB.seats.oneFewer': '减少一个席位',
@@ -3685,7 +3685,7 @@ export const screensB = {
     'screensB.reviews.writeReview': '寫評價',
     'screensB.reviews.yourReview': '你的評價',
 
-    'screensB.rooms.calendarToast': '已加入行事曆 · {when}',
+    'screensB.rooms.calendarToast': '示範 — 不會寫入任何行事曆 · {when}',
     'screensB.rooms.ctaComing': '我會來',
     'screensB.rooms.ctaIn': '你已在裡面',
     'screensB.rooms.ctaJoin': '加入',
@@ -3787,7 +3787,7 @@ export const screensB = {
     'screensB.seats.inviteAria': '受邀人的電子郵件地址',
     'screensB.seats.inviteHead': '邀請成員',
     'screensB.seats.inviteNote': '對方會收到附帶席次的信。未認領的邀請 {days} 後自動釋出。',
-    'screensB.seats.inviteSent': '邀請已送出，席次保留 {days}。',
+    'screensB.seats.inviteSent': '示範 — 不會寄出任何信。席次僅顯示為保留 {days}。',
     'screensB.seats.lede': '{org} · 一次買下一批席次，隨著成員加入逐一發放。',
     'screensB.seats.needEmail': '請先填電子郵件地址。',
     'screensB.seats.oneFewer': '少一個席次',
@@ -4233,7 +4233,7 @@ export const screensB = {
     'screensB.reviews.writeReview': 'اكتب تقييمًا',
     'screensB.reviews.yourReview': 'تقييمك',
 
-    'screensB.rooms.calendarToast': 'أُضيف إلى تقويمك · {when}',
+    'screensB.rooms.calendarToast': 'عرض توضيحي — لا يُضاف شيء إلى أي تقويم · {when}',
     'screensB.rooms.ctaComing': 'سأحضر',
     'screensB.rooms.ctaIn': 'أنت بالداخل',
     'screensB.rooms.ctaJoin': 'انضم',
@@ -4352,7 +4352,7 @@ export const screensB = {
     'screensB.seats.inviteHead': 'ادعُ شخصًا',
     'screensB.seats.inviteNote':
       'تصلهم رسالة بها مقعد. الدعوات غير المستخدمة تتحرر بعد {days}.',
-    'screensB.seats.inviteSent': 'أُرسلت الدعوة. المقعد محجوز لمدة {days}.',
+    'screensB.seats.inviteSent': 'عرض توضيحي — لا تُرسَل أي رسالة. يُعرَض المقعد محجوزًا لمدة {days}.',
     'screensB.seats.lede': '{org} · اشترِ حزمة مقاعد ووزّعها كلما انضم أحد.',
     'screensB.seats.needEmail': 'أدخل بريدًا إلكترونيًا أولًا.',
     'screensB.seats.oneFewer': 'مقعد أقل',
