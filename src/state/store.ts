@@ -28,17 +28,10 @@
  */
 
 import { create } from "zustand";
-import {
-  ANNOUNCEMENTS,
-  COHORT_WEEKS,
-  EXAM_FILL_ESSAY,
-  EXAM_RULES,
-  INSTRUCTOR,
-  MY_ASSIGNMENT,
-  STUDENT,
-  TOTAL_LESSONS,
-} from "../data/demo";
+import { EXAM_FILL_ESSAY } from "../data/demo";
+import { dataSource } from "../data/source";
 import type {
+  Announcement,
   AttachedFile,
   CourseMode,
   ExamAnswer,
@@ -177,7 +170,7 @@ export interface AppState {
   anTitle: string;
   anBody: string;
   anPin: boolean;
-  annsAdded: typeof ANNOUNCEMENTS;
+  annsAdded: Announcement[];
   roFilter: string;
 
   /* --- profile --- */
@@ -422,11 +415,11 @@ const INITIAL: AppState = {
   ckDone: false,
   ckBusy: false,
   ckError: false,
-  ckEmail: STUDENT.email,
+  ckEmail: dataSource.student().email,
   ckCard: "4242 4242 4242 4242",
   ckExp: "04 / 29",
   ckCvc: "318",
-  ckName: STUDENT.name,
+  ckName: dataSource.student().name,
 
   /* Eleven of 22 lessons done — halfway, mid-cohort, mid-use. */
   done: {
@@ -447,8 +440,8 @@ const INITIAL: AppState = {
   qaReplies: {},
   qaAdded: [],
 
-  asText: MY_ASSIGNMENT.body,
-  asFiles: [...MY_ASSIGNMENT.files],
+  asText: dataSource.myAssignment().body,
+  asFiles: [...dataSource.myAssignment().files],
   asState: "draft",
   asAt: null,
   gradedMine: false,
@@ -457,7 +450,7 @@ const INITIAL: AppState = {
   exI: 0,
   exAns: {},
   exSubmitted: false,
-  exLeft: EXAM_RULES.durationSec,
+  exLeft: dataSource.examRules().durationSec,
   exAttempts: 0,
 
   lvJoined: false,
@@ -478,8 +471,8 @@ const INITIAL: AppState = {
   annsAdded: [],
   roFilter: "co",
 
-  prName: STUDENT.name,
-  prEmail: STUDENT.email,
+  prName: dataSource.student().name,
+  prEmail: dataSource.student().email,
   prTz: "Europe/Rome",
   prLink: "marchetti.studio",
   prBio:
@@ -565,7 +558,7 @@ const INITIAL: AppState = {
   alConnected: {},
   alListed: false,
 
-  siEmail: STUDENT.email,
+  siEmail: dataSource.student().email,
   siPass: "demo1234",
   siBusy: false,
   obStep: 0,
@@ -724,7 +717,7 @@ export const useAppStore = create<Store>((set, get) => ({
   /* ------------------------------------------------- the demo clock -- */
 
   advanceWeek: () => {
-    const week = Math.min(COHORT_WEEKS, get().week + 1);
+    const week = Math.min(dataSource.cohortWeeks(), get().week + 1);
     set({ week, elapsed: 0 });
     get().showToast(
       t("chrome.toast.weekAdvanced", {
@@ -810,7 +803,7 @@ export const useAppStore = create<Store>((set, get) => ({
     for (const l of allLessons()) done[l.id] = 1;
     set({ done });
     get().showToast(
-      t("chrome.toast.allComplete", { count: fmtNumber(TOTAL_LESSONS) }, TOTAL_LESSONS),
+      t("chrome.toast.allComplete", { count: fmtNumber(dataSource.totalLessons()) }, dataSource.totalLessons()),
       "check-check",
     );
   },
@@ -829,7 +822,7 @@ export const useAppStore = create<Store>((set, get) => ({
       qaAdded: [newQuestion(text, s.qaAdded.length, lesson), ...s.qaAdded],
       qaText: "",
     });
-    s.showToast(t("chrome.toast.posted", { name: INSTRUCTOR.name }), "send");
+    s.showToast(t("chrome.toast.posted", { name: dataSource.instructor().name }), "send");
   },
 
   simulateAnswer: () => {
@@ -843,7 +836,7 @@ export const useAppStore = create<Store>((set, get) => ({
     s.showToast(
       t("chrome.toast.answeredAs", {
         excerpt: result.answered.text.slice(0, 34),
-        name: INSTRUCTOR.name,
+        name: dataSource.instructor().name,
       }),
       "sparkles",
     );
@@ -861,7 +854,7 @@ export const useAppStore = create<Store>((set, get) => ({
     const at = `${fmtDate(weekStart(s.week))} · ${fmtTime(demoNow(s.week))}`;
     set({ asState: "submitted", asAt: at });
     s.showToast(
-      t("chrome.toast.submitted", { name: INSTRUCTOR.name }),
+      t("chrome.toast.submitted", { name: dataSource.instructor().name }),
       "check",
       t("chrome.toast.undo"),
       () => set({ asState: "draft", asAt: null }),
@@ -873,15 +866,15 @@ export const useAppStore = create<Store>((set, get) => ({
   gradeMine: () => {
     const s = get();
     if (s.asState === "draft") {
-      s.showToast(t("chrome.toast.submitFirst", { name: INSTRUCTOR.name }), "info");
+      s.showToast(t("chrome.toast.submitFirst", { name: dataSource.instructor().name }), "info");
       return;
     }
     set({ asState: "graded", gradedMine: true });
     s.showToast(
       t("chrome.toast.gradedSpecimen", {
-        name: INSTRUCTOR.name,
-        grade: fmtNumber(MY_ASSIGNMENT.grade),
-        points: fmtNumber(MY_ASSIGNMENT.points),
+        name: dataSource.instructor().name,
+        grade: fmtNumber(dataSource.myAssignment().grade),
+        points: fmtNumber(dataSource.myAssignment().points),
       }),
       "award",
     );
@@ -890,7 +883,7 @@ export const useAppStore = create<Store>((set, get) => ({
   /* ------------------------------------------------------------- exam -- */
 
   startExam: () =>
-    set({ exStarted: true, exI: 0, exLeft: EXAM_RULES.durationSec }),
+    set({ exStarted: true, exI: 0, exLeft: dataSource.examRules().durationSec }),
 
   fillExam: () => {
     set({ exAns: filledAnswers(EXAM_FILL_ESSAY), exStarted: true });
@@ -901,7 +894,7 @@ export const useAppStore = create<Store>((set, get) => ({
     set({ exSubmitted: true, exAttempts: get().exAttempts + 1 });
     scrollTop();
     get().showToast(
-      t("chrome.toast.examSubmitted", { name: INSTRUCTOR.name }),
+      t("chrome.toast.examSubmitted", { name: dataSource.instructor().name }),
       "file-check",
     );
   },

@@ -22,7 +22,6 @@
  */
 
 import { useMemo } from "react";
-import { EXAM_RULES, MY_ASSIGNMENT } from "../data/demo";
 import { dataSource } from "../data/source";
 import type { CourseMode, DockAction, Persona } from "../data/types";
 import { LOCALES, LOCALE_TAGS, useI18n, type LocaleTag, type MessageKey } from "../i18n";
@@ -239,7 +238,7 @@ function useDockActions(): DockAction[] {
                 exSubmitted: false,
                 exI: 0,
                 exAns: {},
-                exLeft: EXAM_RULES.durationSec,
+                exLeft: dataSource.examRules().durationSec,
                 exAttempts: 0,
               }),
           },
@@ -389,8 +388,8 @@ function useDockActions(): DockAction[] {
               gradeMine();
               showToast(
                 t("chrome.dock.gradedToast", {
-                  grade: number(MY_ASSIGNMENT.grade),
-                  points: number(MY_ASSIGNMENT.points),
+                  grade: number(dataSource.myAssignment().grade),
+                  points: number(dataSource.myAssignment().points),
                 }),
                 "award",
               );

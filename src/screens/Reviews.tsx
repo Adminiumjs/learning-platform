@@ -11,7 +11,6 @@
  */
 
 import { Avatar, ButtonPrimary, Chip, ChipRow, Icon, PageHead, Pill, ProgressBar, TextArea } from "../components";
-import { TOTAL_LESSONS } from "../data/demo";
 import type { Review } from "../data/screens/reviews";
 import { REVIEWS, REVIEW_FILTERS, STAR_LABELS } from "../data/screens/reviews";
 import { dataSource } from "../data/source";
@@ -152,7 +151,7 @@ export default function Reviews() {
 
       <div className="lp-cardbox rv-form">
         <div className="rv-form__title">
-          {doneCount(done) >= TOTAL_LESSONS
+          {doneCount(done) >= dataSource.totalLessons()
             ? t("screensB.reviews.yourReview")
             : t("screensB.reviews.writeReview")}
         </div>

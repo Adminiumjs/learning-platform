@@ -18,7 +18,8 @@
  * the real demo, and a scripted delay would fight it.
  */
 
-import { INSTRUCTOR, QUESTIONS, SIMULATED_REPLY, STUDENT } from "../data/demo";
+import { SIMULATED_REPLY } from "../data/demo";
+import { dataSource } from "../data/source";
 import type { Question, QuestionReply } from "../data/types";
 import { t } from "../i18n/ambient";
 
@@ -30,7 +31,7 @@ export type ReplyMap = Record<string, QuestionReply | undefined>;
  * then the seeded questions with any simulated reply merged in.
  */
 export function questionList(added: Question[], replies: ReplyMap): Question[] {
-  const base = QUESTIONS.map((q) => ({
+  const base = dataSource.seedQuestions().map((q) => ({
     ...q,
     reply: replies[q.id] ?? q.reply ?? null,
   }));
@@ -75,8 +76,8 @@ export function filterQuestions(list: Question[], filter: QaFilter): Question[] 
 export function newQuestion(text: string, index: number, lesson: string): Question {
   return {
     id: `new${index}`,
-    who: STUDENT.name,
-    ini: STUDENT.initials,
+    who: dataSource.student().name,
+    ini: dataSource.student().initials,
     lesson,
     at: t("chrome.time.justNow"),
     mine: true,
@@ -88,7 +89,7 @@ export function newQuestion(text: string, index: number, lesson: string): Questi
 /** Build an instructor reply. Used by both the dock and the Q&A inbox. */
 export function instructorReply(text?: string): QuestionReply {
   return text
-    ? { who: INSTRUCTOR.name, ini: INSTRUCTOR.initials, at: t("chrome.time.justNow"), text }
+    ? { who: dataSource.instructor().name, ini: dataSource.instructor().initials, at: t("chrome.time.justNow"), text }
     : { ...SIMULATED_REPLY };
 }
 

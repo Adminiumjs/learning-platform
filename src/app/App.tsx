@@ -16,6 +16,8 @@
  */
 
 import { useEffect } from "react";
+
+import { isConnected } from "../data/source";
 import {
   DemoDock,
   Footer,
@@ -250,7 +252,7 @@ export function App() {
 
   return (
     <>
-      <DemoDock />
+      {!isConnected() && <DemoDock />}
       <div className="lp-app">
         <Header />
         <MobileSheet />

@@ -18,7 +18,6 @@
 import { useState } from "react";
 import { ButtonPrimary, ButtonSecondary, Callout, Icon, Pill, Segmented } from "../components";
 import type { SegmentOption } from "../components";
-import { EXAM_RULES } from "../data/demo";
 import { KIND_LABELS, KIND_OPTIONS, OPEN_NOTE, RULE_LABELS } from "../data/screens/exambuilder";
 import { dataSource } from "../data/source";
 import type { ExamQuestion, ExamQuestionKind } from "../data/types";
@@ -92,14 +91,14 @@ export default function ExamBuilder() {
 
   /*
    * The three rules are stored as `null` until the teacher edits them, so the
-   * seeded values render from `EXAM_RULES`' numbers through `Intl` — "70%" is
+   * seeded values render from `dataSource.examRules()`' numbers through `Intl` — "70%" is
    * "٧٠٪" in Arabic and "45 min" is "45 Min." in German. An edit wins verbatim.
    */
-  const ebPass = ebPassRaw ?? number(EXAM_RULES.passScore / 100, { style: "percent" });
-  const ebAttempts = ebAttemptsRaw ?? number(EXAM_RULES.attemptsAllowed);
+  const ebPass = ebPassRaw ?? number(dataSource.examRules().passScore / 100, { style: "percent" });
+  const ebAttempts = ebAttemptsRaw ?? number(dataSource.examRules().attemptsAllowed);
   const ebDur =
     ebDurRaw ??
-    number(EXAM_RULES.durationMin, { style: "unit", unit: "minute", unitDisplay: "short" });
+    number(dataSource.examRules().durationMin, { style: "unit", unit: "minute", unitDisplay: "short" });
 
   const rules: { key: string; label: string; value: string; onChange: (v: string) => void }[] = [
     { key: "pass", label: RULE_LABELS.pass, value: ebPass, onChange: (v) => set({ ebPass: v }) },

@@ -18,7 +18,7 @@
  * There is no proctoring here and there never will be (spec 20 §8).
  */
 
-import { EXAM, EXAM_RULES } from "../data/demo";
+import { dataSource } from "../data/source";
 import type { ExamAnswer, ExamQuestion, ExamScore } from "../data/types";
 import { t } from "../i18n/ambient";
 
@@ -64,7 +64,7 @@ export function scoreExam(answers: Record<number, ExamAnswer>): ExamScore {
   let total = 0;
   const bySec: ExamScore["bySec"] = {};
 
-  for (const q of EXAM) {
+  for (const q of dataSource.exam()) {
     if (q.kind === "essay") continue;
     total++;
 
@@ -86,17 +86,17 @@ export function scoreExam(answers: Record<number, ExamAnswer>): ExamScore {
 
 /** Did the attempt clear the pass mark? */
 export function hasPassed(score: ExamScore): boolean {
-  return score.pct >= EXAM_RULES.passScore;
+  return score.pct >= dataSource.examRules().passScore;
 }
 
 /** Questions with nothing entered — the count the submit dialog warns about. */
 export function unansweredCount(answers: Record<number, ExamAnswer>): number {
-  return EXAM.filter((q) => !isAnswered(q, answers[q.id])).length;
+  return dataSource.exam().filter((q) => !isAnswered(q, answers[q.id])).length;
 }
 
 /** True while the essay is waiting on the instructor. */
 export function essayPending(answers: Record<number, ExamAnswer>): boolean {
-  const essay = EXAM.find((q) => q.kind === "essay");
+  const essay = dataSource.exam().find((q) => q.kind === "essay");
   return Boolean(essay && isAnswered(essay, answers[essay.id]));
 }
 
@@ -107,7 +107,7 @@ export function essayPending(answers: Record<number, ExamAnswer>): boolean {
  * once and then refuses. A course configured with 1 refuses immediately.
  */
 export function canRetake(attemptsUsed: number): boolean {
-  return attemptsUsed < EXAM_RULES.attemptsAllowed;
+  return attemptsUsed < dataSource.examRules().attemptsAllowed;
 }
 
 /**
@@ -121,7 +121,7 @@ export function canRetake(attemptsUsed: number): boolean {
  * from "0 attempts left".
  */
 export function attemptsLeftLabel(attemptsUsed: number): string {
-  const left = Math.max(0, EXAM_RULES.attemptsAllowed - attemptsUsed);
+  const left = Math.max(0, dataSource.examRules().attemptsAllowed - attemptsUsed);
   if (left === 0) return t("exam.attemptsNone");
   return t("exam.attemptsLeft", undefined, left);
 }
@@ -135,7 +135,7 @@ export function attemptsLeftLabel(attemptsUsed: number): string {
  */
 export function filledAnswers(essay: string): Record<number, ExamAnswer> {
   const out: Record<number, ExamAnswer> = {};
-  for (const q of EXAM) {
+  for (const q of dataSource.exam()) {
     switch (q.kind) {
       case "single":
         out[q.id] = q.id === 7 ? 0 : (q.a as number);

@@ -15,7 +15,6 @@
 import type { ReactNode } from "react";
 import { Icon, PageHead, Pill, StatGrid, StatTile } from "../components";
 import type { Tone } from "../components";
-import { COHORT_WEEKS } from "../data/demo";
 import {
   BAR_MAX_PX,
   BAR_MIN_PX,
@@ -182,7 +181,7 @@ export default function Teach() {
         title={dataSource.course("DS-101").title}
         lede={t("screensB.teach.lede", {
           week: number(week),
-          weeks: number(COHORT_WEEKS),
+          weeks: number(dataSource.cohortWeeks()),
           students: number(seats),
           weekday: fmtWeekdayLong(live),
           time: fmtTime(live),

@@ -19,7 +19,6 @@ import {
   ProgressRing,
   TextArea,
 } from "../components";
-import { ASSISTANT } from "../data/demo";
 import { conversationIndexFor } from "../data/screens/messages";
 import {
   AVG_WATCH_TIME,
@@ -194,7 +193,7 @@ export default function StudentDetail() {
               value={sdNote}
               onChange={(v) => set({ sdNote: v })}
               placeholder={t("screensB.studentDetail.notePlaceholder", {
-                name: ASSISTANT.name.split(" ")[0],
+                name: dataSource.assistant().name.split(" ")[0],
               })}
               rows={3}
               className="sd-note__field"

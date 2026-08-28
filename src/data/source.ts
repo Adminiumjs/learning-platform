@@ -37,11 +37,62 @@ import type {
   StudentRow,
 } from "./types";
 
+/**
+ * ── SIX RETURN TYPES USED TO SAY `typeof demo.X`, AND THAT IS A SEAM THAT
+ *    CANNOT BE SWAPPED ───────────────────────────────────────────────────────
+ *
+ * `demo.INSTRUCTOR`, `demo.EXAM_RULES`, `demo.MY_ASSIGNMENT` and
+ * `demo.LIVE_SESSION` are `as const` literals, so `typeof` them declared — in
+ * the TYPE SYSTEM — that the instructor IS Yara Haddad, the exam IS 45 minutes
+ * and the live session IS "Critique: your type specimens". A second
+ * implementation could not return anything else without a type error. The seam
+ * looked complete and was structurally unswappable, which is the exact failure
+ * it exists to prevent, hiding in a return type.
+ */
+export interface Person {
+  name: string;
+  initials: string;
+  /** A job title, not a name — so it is translated. */
+  readonly role: string;
+}
+
+export interface StudentIdentity extends Person {
+  email: string;
+}
+
+export interface ExamRules {
+  durationMin: number;
+  /** Seconds on the clock. */
+  durationSec: number;
+  questions: number;
+  attemptsAllowed: number;
+  passScore: number;
+}
+
+export interface MyAssignment {
+  title: string;
+  points: number;
+  /** What the instructor awards when the demo grades it. */
+  grade: number;
+  body: string;
+  files: readonly { n: string }[];
+  briefFiles: readonly { n: string }[];
+}
+
+export interface LiveSession {
+  title: string;
+  /** Day offset from the week's Monday, and the hour it starts. */
+  dayOffset: number;
+  hour: number;
+  durationMin: number;
+  timezone: string;
+}
+
 export interface DataSource {
   /* identity */
-  instructor(): typeof demo.INSTRUCTOR;
-  assistant(): typeof demo.ASSISTANT;
-  student(): typeof demo.STUDENT;
+  instructor(): Person;
+  assistant(): Person;
+  student(): StudentIdentity;
 
   /* catalogue */
   courses(): Course[];
@@ -61,10 +112,10 @@ export interface DataSource {
 
   /* exams */
   exam(): ExamQuestion[];
-  examRules(): typeof demo.EXAM_RULES;
+  examRules(): ExamRules;
 
   /* the student's own work */
-  myAssignment(): typeof demo.MY_ASSIGNMENT;
+  myAssignment(): MyAssignment;
 
   /* instructor queues */
   submissions(): QueuedSubmission[];
@@ -82,7 +133,7 @@ export interface DataSource {
   nextOrderNo(): string;
 
   /* schedule */
-  liveSession(): typeof demo.LIVE_SESSION;
+  liveSession(): LiveSession;
   cohortWeeks(): number;
   totalLessons(): number;
 }
@@ -152,7 +203,18 @@ export function getDataSource(): DataSource {
   return active;
 }
 
-/** Swap the seam (tests, or a future real backend). */
+/** Swap the seam (tests, or a real backend). */
 export function setDataSource(next: DataSource): void {
   active = next;
+}
+
+/**
+ * True once a real backend is behind the seam.
+ *
+ * Read by the demo dock, which advances the drip clock, fills exam answers and
+ * grades submissions: against a real cohort those controls either lie or do
+ * damage, so it does not render.
+ */
+export function isConnected(): boolean {
+  return active !== demoDataSource;
 }

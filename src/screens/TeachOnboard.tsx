@@ -16,7 +16,7 @@ import {
   Icon,
   ProgressRing,
 } from "../components";
-import { ASSISTANT } from "../data/demo";
+import { dataSource } from "../data/source";
 import { ONBOARD_PAY, ONBOARD_RULES, ONBOARD_STEPS } from "../data/screens/teachonboard";
 import { useI18n } from "../i18n";
 import { useAppStore } from "../state/store";
@@ -36,7 +36,7 @@ export default function TeachOnboard() {
   const total = ONBOARD_STEPS.length;
   const pct = Math.round((doneCount / total) * 100);
   const ready = doneCount === total;
-  const reviewer = ASSISTANT.name.split(" ")[0];
+  const reviewer = dataSource.assistant().name.split(" ")[0];
 
   function toggle(k: string, on: boolean): void {
     set({ ioDone: { ...ioDone, [k]: !on } });
