@@ -144,7 +144,7 @@ function stamp(day: Date, hour: number, minute: number): string {
  */
 
 /** "8h 40m" / "8 Std. 40 Min." / "٨ س ٤٠ د" — a course's total runtime. */
-function withCourseDur(seed: CourseSeed): Course {
+export function withCourseDur(seed: CourseSeed): Course {
   return {
     ...seed,
     get dur() {
@@ -156,7 +156,7 @@ function withCourseDur(seed: CourseSeed): Course {
 }
 
 /** The chip on a lesson row: mm:ss for video, minutes for prose, points for graded work. */
-function withLessonDur(seed: LessonSeed): Lesson {
+export function withLessonDur(seed: LessonSeed): Lesson {
   return {
     ...seed,
     get dur() {
