@@ -804,6 +804,9 @@
         "group": "manifest:lms",
         "icon": "book-open",
         "order": 2
+      },
+      "bindings": {
+        "rows": "courses"
       }
     },
     {
@@ -817,6 +820,9 @@
         "group": "manifest:lms",
         "icon": "calendar-days",
         "order": 3
+      },
+      "bindings": {
+        "rows": "cohorts"
       }
     },
     {
@@ -830,6 +836,9 @@
         "group": "manifest:lms",
         "icon": "clipboard-check",
         "order": 4
+      },
+      "bindings": {
+        "rows": "submissions"
       }
     },
     {
@@ -843,6 +852,9 @@
         "group": "manifest:lms",
         "icon": "messages-square",
         "order": 5
+      },
+      "bindings": {
+        "rows": "comments"
       }
     },
     {
@@ -869,11 +881,14 @@
         "group": "manifest:lms",
         "icon": "users",
         "order": 7
+      },
+      "bindings": {
+        "rows": "students"
       }
     },
     {
       "ref": "lms-media",
-      "template": "page-files",
+      "template": "page-crud",
       "title": {
         "key": "mft.lms.page.media",
         "fallback": "Media"
@@ -882,6 +897,9 @@
         "group": "manifest:lms",
         "icon": "folder",
         "order": 8
+      },
+      "bindings": {
+        "rows": "lessons"
       }
     },
     {
@@ -895,6 +913,9 @@
         "group": "manifest:lms",
         "icon": "receipt",
         "order": 9
+      },
+      "bindings": {
+        "rows": "orders"
       }
     }
   ],
