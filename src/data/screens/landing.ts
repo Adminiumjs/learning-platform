@@ -7,7 +7,7 @@
  *
  * Translation. This page is almost entirely the course describing itself —
  * the pains, the week summaries, the FAQ and Yara's biography are demo fiction
- * under 18 §3.4 and stay English. What is interface is the furniture around
+ * and stay English. What is interface is the furniture around
  * them: the three stat captions and the "Week 01" label on each card.
  */
 

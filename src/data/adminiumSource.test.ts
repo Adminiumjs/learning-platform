@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 /**
- * Connected mode (28-public-surface.md §5.2, 28-T28 wave 3).
+ * Connected mode.
  *
  * ── WHY THIS DRIVES A REAL CLIENT ──────────────────────────────────────────
  * `createPublicClient` takes an injectable `fetch`, so these run the SHIPPED
@@ -10,7 +10,7 @@
  *
  * ── THE THREE THAT MATTER MOST HERE ────────────────────────────────────────
  *  1. A CUSTOMER-side key reads the catalogue and nothing about a person. This
- *     is §4's staff/customer split as a branch rather than as documentation,
+ *     is the staff/customer split as a branch rather than as documentation,
  *     and getting it backwards puts a cohort's names and grades on a public
  *     course page.
  *  2. The exam's ANSWER KEY never travels, on either side. The demo ships it
@@ -226,7 +226,7 @@ describe("the catalogue", () => {
     expect(course.price).toBe(240);
     expect(course.lessons).toBe(3);
     expect(course.teacher).toBe("Yara Haddad");
-    // WS-I G-2: no cover-file column, so the mono chip is derived.
+    // G-2: no cover-file column, so the mono chip is derived.
     expect(course.file).toBe("design-systems.webp");
   });
 
@@ -275,7 +275,7 @@ describe("the grading queue and the cohort list", () => {
   it("derives last-active and a grade average from what was submitted", async () => {
     const snap = await snapshot();
     const [rosa, kwame] = snap!.students;
-    // WS-I G-4: there is no "last active" column.
+    // G-4: there is no "last active" column.
     expect(rosa).toEqual(["Rosa Marchetti", 50, "2026-06-30", 90]);
     // Nothing graded yet, and nothing submitted before the ungraded one.
     expect(kwame![3]).toBe(0);
@@ -299,7 +299,7 @@ describe("what a connected build refuses to carry over", () => {
     expect(connected.enrolledCourse("DS-101")).toBeUndefined();
     expect(connected.nextOrderNo()).toBe("");
     expect(connected.myAssignment().title).toBe("");
-    // WS-I G-3: `LESSON_META` is keyed by the SEED's lesson ids, which no
+    // G-3: `LESSON_META` is keyed by the SEED's lesson ids, which no
     // connected lesson has. Empty beats another lesson's transcript.
     expect(connected.lessonMeta("300")).toEqual({
       overview: "", points: [], files: [], transcript: [],
@@ -309,7 +309,7 @@ describe("what a connected build refuses to carry over", () => {
   it("keeps the app's own copy, which no database has anything to say about", async () => {
     const connected = snapshotSource((await snapshot())!);
     // Icons and labels for the five lesson kinds, and the landing page's
-    // outcomes: code and copy, not rows. WS-I G-5.
+    // outcomes: code and copy, not rows. G-5.
     expect(Object.keys(connected.lessonKinds())).toContain("video");
     expect(connected.learningOutcomes().length).toBeGreaterThan(0);
   });

@@ -2,7 +2,7 @@
  * Content — the curriculum, as the instructor sees it.
  *
  * Every module and lesson comes from the same `dataSource` the student's
- * classroom reads, so the release switches here are the other end of the D6
+ * classroom reads, so the release switches here are the other end of the
  * drip: a lesson set to "Unlocks on" tells the student its module date, and
  * "Published" opens it now.
  *

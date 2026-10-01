@@ -1,7 +1,7 @@
 /*
  * Cover — the procedural "image" system.
  *
- * The app loads no bitmaps and plays no video (spec 20 D9). Every course
+ * The app loads no bitmaps and plays no video. Every course
  * cover, lesson thumbnail and player surface is three stacked gradients
  * derived from a per-course hex tint, with an oversized Lucide icon and a
  * mono filename chip so it reads as media without pretending to be any.

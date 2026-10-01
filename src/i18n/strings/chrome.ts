@@ -12,7 +12,7 @@
  * plural). Everything added since is namespaced `chrome.` so that four agents
  * writing four area files cannot collide in the flat key space.
  *
- * What is NOT here, on purpose (18-marketplace-launch.md §3.4): in-fiction demo
+ * What is NOT here, on purpose: in-fiction demo
  * content. Course and lesson titles, the discussion posts the dock simulates,
  * quiz text, and people's names are the demo's *content* — the academy is
  * English-language, and its interface is what a reader's locale changes. Names

@@ -1,5 +1,5 @@
 /*
- * Inbox — the instructor's side of the Q&A thread (spec 20 D8).
+ * Inbox — the instructor's side of the Q&A thread.
  *
  * The working set is every question with no answer, plus the ones answered in
  * this session so the reply stays on screen instead of vanishing the instant

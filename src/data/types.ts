@@ -156,7 +156,7 @@ export interface Module {
   /**
    * The cohort week this module unlocks in (1-based). In cohort mode a module
    * is locked while `week > demoClock.week`; in self-paced mode nothing locks.
-   * This is the whole of the D6 drip rule — see `lib/schedule.ts`.
+   * This is the whole of the drip rule — see `lib/schedule.ts`.
    */
   week: number;
   lessons: Lesson[];
@@ -218,7 +218,7 @@ export type ExamQuestionKind = "single" | "multi" | "short" | "essay";
  *   single → the index of the right option
  *   multi  → the set of right option indices (exact match required)
  *   short  → accepted answers, compared case/whitespace-insensitively
- *   essay  → no key at all; always routed to a human (D7)
+ *   essay  → no key at all; always routed to a human
  */
 export interface ExamQuestion {
   id: number;

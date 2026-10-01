@@ -2,7 +2,7 @@
  * Live session — the week's scheduled critique.
  *
  * One column: the session's cover, a fact card, and what to bring. Everything
- * dated reads the demo clock (spec 20 D6), so advancing the week in the dock
+ * dated reads the demo clock, so advancing the week in the dock
  * moves the date and the countdown together.
  *
  * The screen has two states, before and after. `lvJoined` is the switch, and

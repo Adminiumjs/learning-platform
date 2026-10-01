@@ -7,7 +7,7 @@
  * that, so a download survives navigating away and back.
  *
  * Nothing is actually written anywhere — there are no media files in this app
- * at all (spec 20 D9). The sizes are copy, and the storage readout is arithmetic
+ * at all. The sizes are copy, and the storage readout is arithmetic
  * over how many rows are marked done.
  */
 

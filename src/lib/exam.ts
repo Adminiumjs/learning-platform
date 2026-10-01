@@ -1,5 +1,5 @@
 /*
- * The exam engine (spec 20 D7).
+ * The exam engine.
  *
  * Pure and testable: scoring takes the answer map and returns a result. The
  * attempt window and the timer read the demo clock, never `Date.now()`.
@@ -15,7 +15,7 @@
  *           mechanism that routes the attempt into the instructor's grading
  *           queue — the thing that closes the loop between the two personas.
  *
- * There is no proctoring here and there never will be (spec 20 §8).
+ * There is no proctoring here and there never will be.
  */
 
 import { dataSource } from "../data/source";
@@ -101,7 +101,7 @@ export function essayPending(answers: Record<number, ExamAnswer>): boolean {
 }
 
 /**
- * D7: is another attempt allowed?
+ * Is another attempt allowed?
  *
  * `attemptsAllowed` is 2 in the seed, so the result screen offers a retake
  * once and then refuses. A course configured with 1 refuses immediately.

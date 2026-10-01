@@ -1,5 +1,5 @@
 /*
- * The exam engine (spec 20 D7).
+ * The exam engine.
  *
  * The two rules worth guarding hardest:
  *

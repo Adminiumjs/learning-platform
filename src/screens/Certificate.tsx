@@ -6,8 +6,8 @@
  * behind a frosted lock panel that names what is still missing. "Finish
  * everything" in the demo dock flips it.
  *
- * The sheet is rendered, not an image — same reason the covers are gradients
- * (spec 20 D9). Nothing here downloads.
+ * The sheet is rendered, not an image — same reason the covers are gradients.
+ * Nothing here downloads.
  */
 
 import { ButtonPrimary, ButtonSecondary, Icon, PageHead, Pill } from "../components";

@@ -13,7 +13,7 @@
  * "would this be a row in the customer's database?": if yes it belongs here.
  *
  * Everything below is demo fiction under /demo/**, exempt from the launch
- * copy sweep (18 §3.4). Prices, seat counts and order numbers are props.
+ * copy sweep. Prices, seat counts and order numbers are props.
  *
  * Translation. The fiction stays English — course titles, blurbs, the exam
  * paper, the students' names and every word they wrote. What does NOT stay
@@ -87,7 +87,7 @@ export const STUDENT = {
  *
  * The demo clock counts weeks from here; nothing in the app reads the real
  * `Date.now()` for anything a viewer can see, so a lesson that is locked is
- * locked on every machine on every day (D6). See `lib/schedule.ts`.
+ * locked on every machine on every day. See `lib/schedule.ts`.
  */
 export const COHORT_WEEK_ONE = { year: 2026, month: 6, day: 20 } as const;
 
@@ -134,7 +134,7 @@ function stamp(day: Date, hour: number, minute: number): string {
 /*
  * `dur` is the one field on a course or a lesson that is INTERFACE rather
  * than fiction. The titles, blurbs and lesson names below stay English on
- * purpose (18 §3.4); "8h 40m", "9 min" and "20 pts" never should have — the
+ * purpose; "8h 40m", "9 min" and "20 pts" never should have — the
  * unit markers are English words and the digits are Latin.
  *
  * The seed now carries numbers (`durMin`, `secs`, `pts`) and the two helpers
@@ -749,7 +749,7 @@ export const EXAM: ExamQuestion[] = [
   },
 ];
 
-/** Exam rules — the intro card and the D7 attempt/pass logic both read these. */
+/** Exam rules — the intro card and the attempt/pass logic both read these. */
 export const EXAM_RULES = {
   durationMin: 45,
   /** Seconds on the clock. */

@@ -2,7 +2,7 @@
  * Page-local seed for downloads.
  *
  * Sizes are presentational — a real platform would report them per encoded
- * file, and there are no files here at all (spec 20 D9: no media, no network).
+ * file, and there are no files here at all (no media, no network).
  * The lessons themselves come from the DataSource; only the numbers this one
  * page invents live here.
  *

@@ -12,7 +12,7 @@
  *     from tokens.css, rather than a `themeVars` object rebuilt on render.
  *
  *   • The demo clock is first-class: `week` (1–8) drives every date, lock and
- *     due date in the app, and only the dock moves it (spec 20 D6).
+ *     due date in the app, and only the dock moves it.
  *
  *   • `elapsed` is the one real ticking value — seconds since mount. It feeds
  *     the live-session countdown, the lesson player head and the exam timer.
@@ -95,7 +95,7 @@ export interface AppState {
   toast: ToastState | null;
   modal: ModalState | null;
 
-  /* --- the demo clock (D6) --- */
+  /* --- the demo clock --- */
   mode: CourseMode;
   week: number;
   /** Seconds since mount. The only real ticking value. */
@@ -129,7 +129,7 @@ export interface AppState {
   notes: string;
   noteSaved: string;
 
-  /* --- Q&A (D8) --- */
+  /* --- Q&A --- */
   qaText: string;
   qaFilter: string;
   qaReplies: ReplyMap;
@@ -142,7 +142,7 @@ export interface AppState {
   asAt: string | null;
   gradedMine: boolean;
 
-  /* --- exam (D7) --- */
+  /* --- exam --- */
   exStarted: boolean;
   exI: number;
   exAns: Record<number, ExamAnswer>;
@@ -358,7 +358,7 @@ export interface AppActions {
   syncSystemTheme: (theme: ThemeName) => void;
   reload: () => void;
 
-  /* --- the demo clock (D6) --- */
+  /* --- the demo clock --- */
   advanceWeek: () => void;
   resetWeek: () => void;
   setMode: (mode: CourseMode) => void;
@@ -370,7 +370,7 @@ export interface AppActions {
   resetProgress: () => void;
   completeAll: () => void;
 
-  /* --- Q&A (D8) --- */
+  /* --- Q&A --- */
   askQuestion: () => void;
   simulateAnswer: () => void;
 
@@ -378,7 +378,7 @@ export interface AppActions {
   submitAssignment: () => void;
   gradeMine: () => void;
 
-  /* --- exam (D7) --- */
+  /* --- exam --- */
   startExam: () => void;
   fillExam: () => void;
   submitExam: () => void;
@@ -649,8 +649,8 @@ export const useAppStore = create<Store>((set, get) => ({
   /**
    * Open a lesson from the sidebar.
    *
-   * Three things can happen: a locked lesson refuses with its unlock date
-   * (D6), a lesson whose kind has its own screen routes there, and everything
+   * Three things can happen: a locked lesson refuses with its unlock date,
+   * a lesson whose kind has its own screen routes there, and everything
    * else loads into the player.
    */
   openLesson: (id) => {

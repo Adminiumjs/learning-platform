@@ -1,5 +1,5 @@
 /*
- * Exam — the final assessment (comp §8).
+ * Exam — the final assessment.
  *
  * Three states, driven by two store flags: the intro card (`!exStarted`), the
  * attempt (`exStarted && !exSubmitted`) and the result (`exSubmitted`).
@@ -143,7 +143,7 @@ export default function Exam() {
     const score = scoreExam(exAns);
     const passed = hasPassed(score);
     /*
-     * D7: attempts are capped. The comp hardcoded "You have one attempt left"
+     * Attempts are capped. The comp hardcoded "You have one attempt left"
      * and let its retake button run forever; both now read the real count, so
      * a course configured with one attempt refuses the second outright.
      */
@@ -207,7 +207,7 @@ export default function Exam() {
                 </div>
               );
             })}
-            {/* The essay never auto-scores — this row is the D7 handoff to Yara. */}
+            {/* The essay never auto-scores — this row is the handoff to Yara. */}
             <div className="scr-ex__essayrow">
               <Icon name="hourglass" size={17} className="scr-ex__essayico" />
               <span className="scr-ex__essaytext">{t("screensA.exam.essayPending")}</span>

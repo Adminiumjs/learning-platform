@@ -3,7 +3,7 @@
  *
  * The classroom's Q&A tab is the same thread rendered small; this is the
  * whole board. Filtering and the "is it answered?" rule both come from
- * lib/thread (spec 20 D8) rather than being re-derived here, so the pill on a
+ * lib/thread rather than being re-derived here, so the pill on a
  * card and the count in the instructor's inbox can never disagree.
  *
  * The demo has no second user: an answer arrives when someone switches to the

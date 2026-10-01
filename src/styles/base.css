@@ -6,8 +6,8 @@
  *
  *   • Fonts are self-hosted woff2, not a Google Fonts <link>, and icons come
  *     from `lucide-react` rather than the UMD bundle on unpkg. The demo is
- *     served from adminium.dev and must make zero external requests
- *     (spec 18 D9), and a deployed copy must work behind a firewall.
+ *     served from adminium.dev and must make zero external requests,
+ *     and a deployed copy must work behind a firewall.
  *
  *   • Every layout switch the comp made by measuring `window.innerWidth` in
  *     JS is a real CSS media query here. The comp's thresholds are

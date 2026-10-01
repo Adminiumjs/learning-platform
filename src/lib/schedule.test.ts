@@ -1,5 +1,5 @@
 /*
- * The drip / unlock engine (spec 20 D6).
+ * The drip / unlock engine.
  *
  * These tests exist because the drip is the app's signature behaviour and the
  * easiest thing to break silently: an off-by-one in the week comparison, or a

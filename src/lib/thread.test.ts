@@ -1,5 +1,5 @@
 /*
- * Q&A threading (spec 20 D8).
+ * Q&A threading.
  *
  * The rule these tests protect: `answered` is *derived* from whether a
  * question carries a reply, never stored on the question. Store it and it

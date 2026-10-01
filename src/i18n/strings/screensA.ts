@@ -7,7 +7,7 @@
  *
  * In-fiction demo content is deliberately absent: course and lesson titles,
  * people's names, question text, announcement bodies and the alumni one-liners
- * stay English everywhere (18-marketplace-launch.md §3.4). What is here is the
+ * stay English everywhere. What is here is the
  * interface around them.
  *
  * Plural messages carry `|`-separated variants in the locale's own CLDR order:

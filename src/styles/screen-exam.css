@@ -511,7 +511,7 @@
 
 /*
  * The attempts counter beside the result buttons. It reads the real count
- * (D7) rather than the comp's hardcoded "one attempt left", so a course
+ * rather than the comp's hardcoded "one attempt left", so a course
  * configured with a single attempt says so instead of offering a retake.
  */
 .scr-ex__attempts {

@@ -6,7 +6,7 @@
  * their column headings are `data`.
  *
  * In-fiction demo content (course and lesson titles, people's names, the
- * discussion posts, the review text) stays English by 18 §3.4 and is passed in
+ * discussion posts, the review text) stays English and is passed in
  * as a `{placeholder}` rather than being written into a message.
  */
 import type { LocaleTag } from '../locales';

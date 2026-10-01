@@ -1,5 +1,5 @@
 /*
- * The demo dock (spec 20 §4.5).
+ * The demo dock.
  *
  * This is the demo. It sits above the app — no device frame, because this is
  * a responsive web app rather than a terminal — and carries, left to right:
@@ -12,12 +12,12 @@
  *     drip system on and off;
  *   • the demo-clock controls. "Advance one week" is the single most
  *     important button in the app — it is what makes a locked lesson visibly
- *     unlock inside a sixty-second demo (D6);
+ *     unlock inside a sixty-second demo;
  *   • a theme toggle;
  *   • screen chips for the active persona;
  *   • per-screen context actions.
  *
- * Unbuilt screens would simply have no chip (§1.1: never a dead button). All
+ * Unbuilt screens would simply have no chip (never a dead button). All
  * 54 are built, so all 54 are listed.
  */
 
@@ -279,7 +279,7 @@ function useDockActions(): DockAction[] {
                * The assistant's identity comes off the data seam rather than
                * being spelled out here, so her name and role badge stay in one
                * place. The post body itself is in-fiction demo content and is
-               * deliberately not a message key (18 §3.4).
+               * deliberately not a message key.
                */
               const ta = dataSource.assistant();
               const id = dbThread ?? "t2";

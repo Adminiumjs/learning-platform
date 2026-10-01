@@ -1,5 +1,5 @@
 /*
- * Assignment — the student's own graded work (comp §7).
+ * Assignment — the student's own graded work.
  *
  * One brief and three mutually exclusive states below it: `draft` is an
  * editable form, `submitted` is a receipt you can reopen, `graded` is Yara's

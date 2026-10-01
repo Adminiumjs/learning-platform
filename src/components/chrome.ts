@@ -78,8 +78,8 @@ export const FOOTER_LINKS: { label: MessageKey; view: ViewId }[] = [
 /**
  * Every screen, grouped by persona, in the order the dock lists them.
  *
- * A screen with no entry here has no chip — which is how spec 20 §1.1 asks
- * for unbuilt screens to be handled: hidden, never a dead button. All 54 are
+ * A screen with no entry here has no chip — which is how unbuilt screens
+ * are meant to be handled: hidden, never a dead button. All 54 are
  * built, so all 54 are listed.
  */
 export const STUDENT_SCREENS: DockScreenItem[] = [

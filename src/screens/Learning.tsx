@@ -5,7 +5,7 @@
  * due on the right: the next live session with a running countdown, this
  * week's work, and the latest announcement.
  *
- * Everything dated here reads the demo clock (spec 20 D6), so advancing the
+ * Everything dated here reads the demo clock, so advancing the
  * week in the dock moves the countdown, the deadline and the announcement
  * stamp together — the only screen-level value that ticks is `elapsed`.
  */

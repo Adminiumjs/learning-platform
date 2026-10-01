@@ -1,5 +1,5 @@
 /*
- * Q&A threading (spec 20 D8).
+ * Q&A threading.
  *
  * Comments hang off a lesson (contextual Q&A) or off the cohort (the class
  * discussion board). The shape is deliberately shallow: a parent and one
@@ -38,7 +38,7 @@ export function questionList(added: Question[], replies: ReplyMap): Question[] {
   return [...added, ...base];
 }
 
-/** D8: a question is answered once it carries a reply. */
+/** A question is answered once it carries a reply. */
 export function isAnswered(q: Question): boolean {
   return Boolean(q.reply);
 }

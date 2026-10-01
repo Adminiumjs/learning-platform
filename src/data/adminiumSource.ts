@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 /**
- * A `DataSource` backed by a real Adminium instance (28-public-surface.md §5.2,
- * 28-T28 wave 3).
+ * A `DataSource` backed by a real Adminium instance.
  *
  * ── READS DO NOT BECOME ASYNC ──────────────────────────────────────────────
  * `loadSnapshot` fetches the whole read-set once, before React mounts, and
@@ -9,7 +8,7 @@
  * store, the schedule engine and all fifty-four screens are untouched.
  *
  * ── THE SIDE OF THE KEY DECIDES WHAT IS READ, AND THAT IS THE POINT ────────
- * §4's staff/customer split is not documentation here, it is a branch. A
+ * The staff/customer split is not documentation here, it is a branch. A
  * CUSTOMER-side scope is one an operator hands out, so it reads the CATALOGUE
  * — courses, modules, lessons, instructors, the cohort's schedule and its
  * announcements — and nothing about a person. A STAFF-side scope additionally
@@ -24,16 +23,16 @@
  * who can open the page can read the key. So connected mode carries questions
  * WITHOUT `a`, and the consequence is stated rather than hidden — client-side
  * grading has nothing to compare against and reports nothing. Grading belongs
- * to a server, which is 28-T36's work for this repo (and D7 already routes
- * essays to a human).
+ * to a server, which is work still to come for this repo (and the exam engine
+ * already routes essays to a human).
  *
  * ── IDENTITY IS NOT SOLVED, SO THE STUDENT'S OWN THINGS ARE EMPTY ──────────
  * `student()`, `myAssignment()`, `enrolled()` and `nextOrderNo()` describe ONE
  * signed-in learner. Nothing here knows who is reading, so they come back blank
  * rather than showing somebody else's purchases. They return when the claim
- * flow lands (§3.4, gated on O2).
+ * flow lands.
  *
- * ── WHAT THE SCHEMA CANNOT SAY (WS-I gaps, marked not hidden) ──────────────
+ * ── WHAT THE SCHEMA CANNOT SAY (schema gaps, marked not hidden) ────────────
  * G-1 `courses.code` is the app's id and is TEXT — the good pattern. Everything
  *     below it (modules, lessons, students, submissions) is a `serial`, so
  *     those are row ids stringified: internally consistent, not portable.
@@ -393,7 +392,7 @@ export async function loadSnapshot(client: PublicClient): Promise<Snapshot | nul
             ...(l.kind === "assignment" || l.kind === "exam"
               ? { pts: assignments.find((a) => a.lesson_id === l.id)?.points ?? 0 }
               : { secs: l.duration_min * 60 }),
-            // WS-I G-2: no file column, so the mono chip is derived.
+            // G-2: no file column, so the mono chip is derived.
             file: `${slugify(l.title)}.mp4`,
           }));
         const mod: Module = {
@@ -425,7 +424,7 @@ export async function loadSnapshot(client: PublicClient): Promise<Snapshot | nul
     const mappedCourses: Course[] = published.map((row) => {
       const teacher = teacherOf.get(row.instructor_id);
       return withCourseDur({
-        // WS-I G-1: `code` is TEXT and is the app's own id — the good pattern.
+        // G-1: `code` is TEXT and is the app's own id — the good pattern.
         id: row.code,
         title: row.title,
         cat: row.category as CourseCategory,
@@ -436,7 +435,7 @@ export async function loadSnapshot(client: PublicClient): Promise<Snapshot | nul
         durMin: minutesOf.get(row.id) ?? 0,
         tint: row.tint,
         icon: row.icon,
-        // WS-I G-2: presentation, derived from the slug.
+        // G-2: presentation, derived from the slug.
         file: `${row.slug}.webp`,
         teacher: teacher?.name ?? "",
         teacherIni: teacher?.initials ?? "",
@@ -529,7 +528,7 @@ export async function loadSnapshot(client: PublicClient): Promise<Snapshot | nul
         [
           student.name,
           e.progress_pct,
-          // WS-I G-4: no "last active" column. A student who has submitted
+          // G-4: no "last active" column. A student who has submitted
           // nothing reads as an em dash rather than as "just now".
           seen === undefined ? "—" : toTenantDay(seen, tz),
           grades === undefined ? 0 : Math.round(grades.total / grades.count),
@@ -652,7 +651,7 @@ function hourOf(iso: string, timezone: string): number {
   );
 }
 
-/** "Type specimen page" → "type-specimen-page". WS-I G-2: presentation only. */
+/** "Type specimen page" → "type-specimen-page". G-2: presentation only. */
 function slugify(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -668,7 +667,7 @@ export function snapshotSource(snap: Snapshot): DataSource {
 
     courses: () => snap.courses,
     course: (id) => snap.courses.find((c) => c.id === id) ?? snap.courses[0] ?? demo.COURSES[0],
-    // WS-I G-5: app copy, no table.
+    // G-5: app copy, no table.
     learningOutcomes: () => demo.LEARN,
 
     modules: () => snap.modules,
@@ -676,7 +675,7 @@ export function snapshotSource(snap: Snapshot): DataSource {
     lesson: (id) => (id ? flat().find((l) => l.id === id) : undefined),
     // Icons and labels for the five kinds: code, not rows.
     lessonKinds: () => demo.KIND,
-    // WS-I G-3: keyed by the SEED's lesson ids, which no connected lesson has.
+    // G-3: keyed by the SEED's lesson ids, which no connected lesson has.
     // Empty rather than another lesson's transcript.
     lessonMeta: () => ({ overview: "", points: [], files: [], transcript: [] }),
 

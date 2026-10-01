@@ -1,5 +1,5 @@
 /*
- * Grades — the student's gradebook (comp §9).
+ * Grades — the student's gradebook.
  *
  * Five weighted items and a certificate card. Every row reads live state: the
  * demo clock decides whether the week-4 quiz has happened, `asState` decides

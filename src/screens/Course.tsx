@@ -6,7 +6,7 @@
  * sticky above it, and "What you'll learn" drops to one column below 720px.
  *
  * The curriculum is the real one — `isModuleLocked` decides what is open on
- * the demo clock (D6), so flipping the dock to self-paced or advancing a week
+ * the demo clock, so flipping the dock to self-paced or advancing a week
  * changes this page the same way it changes the classroom.
  */
 
@@ -188,7 +188,7 @@ export default function Course() {
                       {open ? (
                         <div className="scr-course__lessons">
                           {m.lessons.map((l) => {
-                            /* The first two lessons are the free preview (D6). */
+                            /* The first two lessons are the free preview. */
                             const preview = !locked && isPreviewLesson(l.id);
                             const kind = kinds[l.kind];
                             return (

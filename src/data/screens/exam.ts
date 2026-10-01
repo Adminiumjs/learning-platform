@@ -63,5 +63,5 @@ export const EXAM_LEGEND: ExamLegendRow[] = [
   },
 ];
 
-/** The essay is out of ten and never auto-scored (D7). */
+/** The essay is out of ten and never auto-scored. */
 export const EXAM_ESSAY_MAX = 10;
