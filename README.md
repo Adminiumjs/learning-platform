@@ -236,3 +236,8 @@ manifest.json  the Adminium install spec (17 tables, 9 pages, 2 roles)
 ## License
 
 [AGPL-3.0](LICENSE) © 2026 Learning Platform. A demo shipped with Adminium.
+
+## Building on this app with a coding agent
+
+The Adminium skills teach Claude Code, Codex and other agents to build and change an app:
+`npx skills add Adminiumjs/skills` — https://github.com/Adminiumjs/skills
